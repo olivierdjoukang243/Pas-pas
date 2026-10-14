@@ -193,7 +193,8 @@ details p { margin: .7em 0 0; color: #3b3f4a; }
 .toast.show { transform: translate(-50%, 0); }
 .wa-float { position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: #25d366; display: grid; place-items: center; font-size: 1.6rem; text-decoration: none; box-shadow: 0 6px 20px rgba(0, 0, 0, .2); z-index: 35; }
 
-/* Pas-à-Pas additions */
+/* Pas-à-Pas French additions */
+.logo-sub { font-family: var(--sans); font-weight: 600; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--rouge); }
 .test-card { background: #fff; border-radius: 20px; padding: 1.6em; box-shadow: var(--shadow); border-top: 6px solid var(--rouge); display: flex; flex-direction: column; gap: .8em; }
 .test-card h2 { font-family: var(--serif); margin: 0; color: var(--bleu); font-size: 1.5rem; text-wrap: balance; }
 .test-card p { margin: 0; color: #3b3f4a; }
