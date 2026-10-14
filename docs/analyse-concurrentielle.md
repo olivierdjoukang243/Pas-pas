@@ -1,56 +1,51 @@
-# Analyse concurrentielle — vente en ligne de produits français
+# Analyse concurrentielle — outils numériques pour apprendre le français (public anglophone)
 
-## 1. Le marché observé
+## 1. Qui vend déjà quoi
 
-| Acteur | Positionnement | Points forts | Faiblesses constatées |
+| Acteur | Modèle | Points forts | Limites pour notre cible |
 |---|---|---|---|
-| **Madeleine Market** | Épicerie fine premium (sélection Gault & Millau, chefs) | Caution gastronomique, livraison offerte en France | Catalogue tourné vers la France, peu d'international |
-| **Horizons Gourmet** | Épicerie haut de gamme (~300 références) | Sélection courte, qualitative | Pas de frais/surgelés, peu de contenu producteur |
-| **La Francerie** (Italie) | Produits français pour un pays étranger (~250 réf.) | Ciblage expatriés/locaux | Un seul pays livré |
-| **Délices de France** (Irlande) | Épicerie d'expatriés (~2 000 réf.) | Large choix, PayPal | Zone de livraison très limitée |
-| **Mon Panier Latin** (Londres) | Supermarché français en ligne | Livraison 24 h, 7j/7 | Londres uniquement |
-| **Saveurs de France** (Espagne) | Épicerie-traiteur pour expatriés | Plats cuisinés, fêtes | Un seul pays, site daté |
-| **Grandes enseignes FR** (Carrefour.fr…) | Généralistes | Prix, catalogue | Pas de livraison hors France → les clients passent par des réexpéditeurs (Easy Delivery…) avec frais cumulés |
-| **ALittleMarket / marketplaces "made in France"** | Artisans + épicerie | Lien producteur | Expérience hétérogène, frais de port par vendeur |
+| **Duolingo** | Application gratuite + abonnement « Super » (~7 $/mois, prix variable selon le pays) | Gratuit, ludique, très connu | Peu d'explications de grammaire ; ne prépare pas aux examens (TCF, TEF, DELF) |
+| **Babbel** | Abonnement (~9 à 13 $/mois selon la durée) | Cours structurés pour adultes | Paiement par carte uniquement, en devises fortes ; pas de préparation TCF/TEF Canada |
+| **Pimsleur** | Abonnement audio (~15 à 20 $/mois) | Oral, prononciation | Cher, centré audio, pas d'écrit ni d'examens |
+| **italki / Preply** | Places de marché de professeurs (de 4 à 60 $ l'heure) | Cours humains, beaucoup de professeurs camerounais bilingues spécialisés TCF/TEF | Qualité variable ; on paie à l'heure, rien n'est conservé ; pas de supports structurés |
+| **Formations TCF Canada en ligne** (ex. French with Chadi, Voilà) | Cours intensifs et simulations | Spécialisés Canada | Prix élevés, en devises fortes, peu adaptés à l'Afrique anglophone |
 
-## 2. Les manques du marché (opportunités)
+## 2. Les manques du marché
 
-1. **L'international est mal servi** : chaque épicerie couvre *un* pays, ou le client doit passer par un réexpéditeur. Personne ne cible sérieusement l'**Afrique francophone** et la diaspora.
-2. **Frais de port opaques** : le coût réel n'apparaît qu'au paiement.
-3. **Moyens de paiement** : carte/PayPal uniquement — pas de **Mobile Money** (Orange Money, MTN MoMo, Wave), pourtant dominants en Afrique.
-4. **Prix affichés uniquement en euros**.
-5. **Traçabilité faible** : peu de fiches "qui a fabriqué ce produit, où".
-6. **Pas de personnalisation** : coffrets figés, rarement "composez votre coffret".
-7. **Commande conversationnelle absente** : pas de WhatsApp, alors que c'est le canal n°1 de la clientèle cible.
+1. **Payer en Afrique** : personne ne propose le Mobile Money (MTN MoMo, Orange Money, Wave, Airtel) ni des prix en FCFA, en nairas ou en cédis.
+2. **Les abonnements fatiguent** : la clientèle préfère payer une fois et garder ses fichiers.
+3. **La connexion coûte cher** : il faut des contenus téléchargeables (PDF, MP3) qui marchent hors ligne.
+4. **Expliquer en anglais** : les applications enseignent « en immersion » ; un anglophone veut comprendre la règle dans sa langue.
+5. **L'immigration au Canada** : la demande TCF/TEF Canada est forte, mais les simulations avec correspondance NCLC sont rares et chères.
+6. **Aucun retour humain** dans les applications sur l'oral et l'écrit, alors que ce sont les épreuves qui font échouer.
 
-## 3. Notre proposition "hyperconcurrentielle"
+## 3. Notre positionnement : « Pas-Pas French »
 
 | Levier | Ce que fait le site |
 |---|---|
-| Livraison mondiale transparente | Sélecteur de zone (France, UE, Afrique, Amérique du Nord, Monde) : coût + délai affichés **dès la page d'accueil** et dans le panier, barre "plus que X € pour la livraison offerte" |
-| Multi-devises | EUR, FCFA (XAF/XOF, parité fixe 655,957), USD, GBP, CAD |
-| Paiements locaux | Carte, PayPal, Mobile Money, virement, commande WhatsApp |
-| Traçabilité | Chaque produit : région, producteur, label (AOP, IGP, Label Rouge, Bio, Origine France Garantie) |
-| Coffret sur mesure | 3 produits ou plus = −10 % automatique |
-| Abonnement "Box du terroir" | Revenu récurrent, fidélisation |
-| Fidélité | Code de bienvenue −10 %, points |
-| Confiance | Avis clients, garantie colis cassé remboursé, emballage isotherme |
-| Logistique réaliste | Produits secs/longue conservation privilégiés pour l'international (pas de frais hors France) |
+| Test de niveau gratuit | 12 questions, niveau CECR (A1 à B2) et produits recommandés : il sert à capter des prospects |
+| Expliqué en anglais | Interface et cours en anglais, avec les pièges propres aux anglophones (faux amis, genre, articles) |
+| Paiement local | FCFA (XAF/XOF), NGN, GHS, USD, CAD, GBP, EUR ; Mobile Money, carte, PayPal, commande WhatsApp |
+| Achat unique, accès à vie | Produits téléchargeables ; abonnement « Club » proposé en option seulement |
+| Canada | Packs TCF et TEF Canada avec tableaux NCLC, pack immigration complet |
+| Retour humain | Coaching oral en visio, corrections écrites, leçon quotidienne sur WhatsApp |
+| Pack sur mesure | 3 produits ou plus : −15 % automatique |
+| Confiance | Remboursement sous 7 jours, accès à vie, vrais professeurs |
 
-## 4. Recommandations pour la mise en production
+## 4. À faire avant le lancement
 
-- Brancher un vrai paiement : **Stripe** (carte) + **CinetPay / Flutterwave / PayDunya** (Mobile Money Afrique) + PayPal.
-- Back-office : migrer le catalogue (`js/products.js`) vers Shopify, WooCommerce ou un headless CMS dès 50+ références.
-- Douanes : vérifier les restrictions par pays (alcool, viande, lait cru) et afficher les produits non éligibles par zone.
-- Mentions légales, CGV, RGPD et vente d'alcool (interdite aux mineurs, message sanitaire) à finaliser avec un juriste.
-- SEO : une page par produit et par région, blog recettes, Google Merchant Center.
+- Remplacer le catalogue d'exemple (`js/products.js`) par vos vrais produits, contenus et prix.
+- Mettre votre numéro WhatsApp dans `js/app.js`.
+- Brancher un vrai paiement : CinetPay, Flutterwave ou Paystack (Mobile Money et cartes en Afrique), Stripe ou PayPal ailleurs. Pour la livraison des fichiers, Gumroad, Selar ou Payhip savent envoyer les liens de téléchargement automatiquement.
+- Mettre à jour les taux de change NGN, GHS, USD, CAD et GBP (le FCFA a une parité fixe).
+- Ne publier que de **vrais** avis clients, une fois les premières ventes faites.
+- Mentions légales, conditions de vente et politique de remboursement.
+- TCF et TEF sont des marques de leurs organismes : rester « préparation indépendante » (mention déjà en pied de page).
 
 ### Sources
-- https://www.frenchweb.fr/madeleine-market-epicerie-fine-2-0/93790
-- https://www.lejournaldesentreprises.com/article/horizons-gourmet-une-epicerie-fine-sur-la-toile-85196
-- https://lepetitjournal.com/milan/communaute/francerie-gastronomie-francaise-italie-398327
-- https://lepetitjournal.com/dublin/communaute/laurent-guinot-delices-de-france-329251
-- https://lepetitjournal.com/vivre-a-londres/mon-panier-latin-vos-courses-comme-en-france-avec-reductions-323931
-- https://lepetitjournal.com/madrid/communaute/saveurs-de-france-vos-produits-gourmets-francais-livres-en-espagne-pour-les-fetes-428772
-- https://www.easy-delivery.com/blog/expat-5-sites-pour-acheter-des-produits-francais/
-- https://www.frenchweb.fr/la-plateforme-e-commerce-alittlemarket-com-se-lance-dans-lepicerie-en-ligne/106099
+- https://www.italki.com/en/blog/best-online-platform-to-learn-french
+- https://praktika.ai/blog/best-language-learning-app-2026-ranked-french
+- https://toolradar.com/guides/best-apps-to-learn-french
+- https://preply.com/en/online/tutors-tcf
+- https://www.frenchwithchadi.com/online-vip-courses
+- https://frenchclassesonlinevoila.com/?p=1667

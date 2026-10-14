@@ -1,20 +1,18 @@
-# Pas-Pas — boutique en ligne de produits français
+# Pas-Pas French — learn French step by step
 
-Site e-commerce statique (HTML/CSS/JS, sans build) pour vendre des produits français en France, en Europe, en Afrique et dans le monde.
+Boutique en ligne (HTML/CSS/JS, sans compilation) qui vend des outils numériques pour apprendre le français aux **anglophones** : cours vidéo, préparation TCF/TEF Canada et DELF, e-books, audio, flashcards et coaching. Le site est en anglais, puisqu'il s'adresse à des anglophones.
 
 L'analyse des concurrents et le positionnement sont dans [`docs/analyse-concurrentielle.md`](docs/analyse-concurrentielle.md).
 
 ## Fonctionnalités
 
-- Catalogue de 24 produits (épicerie fine, vins, fromages, douceurs, beauté, artisanat, coffrets) avec région, producteur et label (AOP, IGP, Label Rouge, Bio, Origine France Garantie)
-- Recherche instantanée, filtres par catégorie, région et label, tri, filtre « livrable dans ma zone »
-- **6 zones de livraison** : frais, délai et seuil de gratuité affichés dès l'accueil ; produits frais réservés à la France
-- **Multi-devises** : EUR, FCFA (XAF/XOF), USD, GBP, CAD
-- Panier persistant, favoris, barre « plus que X € pour la livraison offerte », code promo `BIENVENUE10`
-- **Coffret sur mesure** : 3 produits ou plus donnent −10 %
-- Abonnement « Box du Terroir » (3 formules)
-- Paiement : carte, PayPal, Mobile Money, virement (formulaire de démonstration), et commande via **WhatsApp**
-- Confirmation d'âge pour l'alcool, SEO (meta, Open Graph, JSON-LD), responsive mobile
+- **Test de niveau gratuit** (12 questions) qui donne un niveau CECR et recommande des produits
+- Catalogue d'exemple de 18 produits, avec filtres par niveau (A1 à C1), objectif (Canada, travail, DELF, quotidien, enfants) et format, plus recherche et tri
+- **Devises** : FCFA (XAF/XOF), NGN, GHS, USD, CAD, GBP, EUR
+- Panier, favoris, code promo `WELCOME10`, **pack sur mesure** (−15 % dès 3 produits)
+- Abonnement « Pas-Pas Club » (mensuel, trimestriel, annuel)
+- Paiement : Mobile Money, carte, PayPal (formulaire de démonstration), et **commande WhatsApp**
+- Adapté au mobile, référencement (meta, Open Graph, JSON-LD)
 
 ## Lancer en local
 
@@ -27,18 +25,14 @@ python3 -m http.server 8000
 
 | Quoi | Où |
 |---|---|
-| Produits, prix, photos | `js/products.js` |
-| Numéro WhatsApp, codes promo, zones, devises, abonnements | haut de `js/app.js` |
+| Produits, prix, descriptions | `js/products.js` |
+| Numéro WhatsApp, codes promo, devises, abonnements, questions du test | haut de `js/app.js` |
 | Couleurs et typographies | variables `:root` de `css/style.css` |
 
 ## Mise en ligne
 
-Le site est 100 % statique : il se déploie tel quel sur GitHub Pages, Netlify ou Vercel.
+Publié avec GitHub Pages depuis la branche `main` : https://olivierdjoukang243.github.io/Pas-pas/
 
 ## Avant d'encaisser de vraies commandes
 
-Le paiement est **simulé**. Pour vendre réellement, il faut :
-1. Brancher Stripe (carte), PayPal, et CinetPay, Flutterwave ou PayDunya (Mobile Money), ou migrer vers Shopify ou WooCommerce.
-2. Remplacer les emojis par de vraies photos produits.
-3. Rédiger les mentions légales, les CGV et la politique RGPD, et vérifier les règles douanières par pays (alcool, viande, lait cru).
-4. Mettre à jour les taux de change (aujourd'hui fixes et indicatifs, sauf le FCFA qui a une parité fixe).
+Le paiement est **simulé**. Il faut brancher un vrai prestataire (CinetPay, Flutterwave ou Paystack pour le Mobile Money ; Stripe ou PayPal), ou vendre les fichiers via Gumroad, Selar ou Payhip, qui envoient les liens de téléchargement automatiquement.

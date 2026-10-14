@@ -1,40 +1,67 @@
-// Catalogue de démonstration. Prix en euros TTC.
-// intl: false => produit frais non expédié hors France métropolitaine.
+// Example catalogue. Base prices in euros; the page converts them to the visitor's currency.
+// Replace titles, descriptions and prices with your real products before launch.
 const CATEGORIES = {
-  epicerie: "Épicerie fine",
-  vins: "Vins & spiritueux",
-  fromages: "Fromages & charcuterie",
-  douceurs: "Douceurs & biscuits",
-  beaute: "Beauté & bien-être",
-  maison: "Maison & art de vivre",
-  coffrets: "Coffrets cadeaux",
+  courses: "Video courses",
+  exams: "Exam prep",
+  books: "E-books & audio",
+  practice: "Practice tools",
+  coaching: "Live coaching",
+  bundles: "Bundles",
+};
+
+const LEVELS = ["A1", "A2", "B1", "B2", "C1"];
+
+const GOALS = {
+  canada: "Move to Canada",
+  work: "Work & career",
+  daily: "Everyday French",
+  exam: "Diplomas (DELF)",
+  kids: "Children",
+};
+
+const FORMATS = {
+  video: "Video",
+  pdf: "PDF",
+  audio: "Audio",
+  live: "Live",
+  app: "Flashcards",
 };
 
 const PRODUCTS = [
-  { id: 1, name: "Moutarde de Dijon à l'ancienne", cat: "epicerie", region: "Bourgogne", price: 6.9, old: null, label: "IGP", producer: "Moutarderie familiale de Beaune", emoji: "🟡", color: "#f6e7a8", rating: 4.8, reviews: 214, intl: true, best: true, desc: "Graines de moutarde 100 % bourguignonnes, broyées à la meule de pierre. Piquant franc, idéale avec viandes et vinaigrettes. Pot verre 210 g." },
-  { id: 2, name: "Fleur de sel de Guérande", cat: "epicerie", region: "Bretagne", price: 8.5, old: null, label: "Label Rouge", producer: "Paludiers de la presqu'île", emoji: "🧂", color: "#e4eef5", rating: 4.9, reviews: 389, intl: true, best: true, desc: "Récoltée à la main au râteau en surface des œillets. Croquante et légèrement iodée. Boîte 125 g." },
-  { id: 3, name: "Huile d'olive de Nyons", cat: "epicerie", region: "Provence", price: 18.9, old: 22.0, label: "AOP", producer: "Moulin coopératif de Nyons", emoji: "🫒", color: "#e3ebc8", rating: 4.7, reviews: 156, intl: true, desc: "Olive Tanche, première pression à froid. Notes de pomme verte et d'amande. Bouteille 50 cl." },
-  { id: 4, name: "Piment d'Espelette", cat: "epicerie", region: "Pays basque", price: 9.9, old: null, label: "AOP", producer: "Ferme Etxeberria", emoji: "🌶️", color: "#f7d4cc", rating: 4.8, reviews: 201, intl: true, desc: "Poudre de piment séché au soleil puis au four. Chaleur douce et fruitée. Pot 40 g." },
-  { id: 5, name: "Herbes de Provence", cat: "epicerie", region: "Provence", price: 5.5, old: null, label: "Label Rouge", producer: "Herboristerie du Luberon", emoji: "🌿", color: "#dfeccf", rating: 4.6, reviews: 98, intl: true, desc: "Thym, romarin, sarriette, origan. Cultivées et séchées en Provence. Sachet kraft 50 g." },
-  { id: 6, name: "Foie gras de canard entier", cat: "epicerie", region: "Sud-Ouest", price: 34.0, old: 39.0, label: "IGP", producer: "Conserverie du Gers", emoji: "🦆", color: "#f3e0cf", rating: 4.9, reviews: 312, intl: true, best: true, desc: "Mi-cuit en bocal, appertisé : se conserve 3 ans sans réfrigération, idéal à l'export. 180 g." },
-  { id: 7, name: "Champagne Brut Premier Cru", cat: "vins", region: "Champagne", price: 39.0, old: null, label: "AOP", producer: "Maison vigneronne de la Montagne de Reims", emoji: "🍾", color: "#f5ecd0", rating: 4.8, reviews: 177, intl: true, alcohol: true, best: true, desc: "Assemblage pinot noir / chardonnay, 36 mois sur lattes. Bulles fines, notes de brioche. 75 cl." },
-  { id: 8, name: "Bordeaux Saint-Émilion Grand Cru", cat: "vins", region: "Bordeaux", price: 29.0, old: 34.0, label: "AOP", producer: "Château familial de la rive droite", emoji: "🍷", color: "#ecd1d6", rating: 4.7, reviews: 143, intl: true, alcohol: true, desc: "Merlot dominant, élevé 18 mois en fût de chêne. Fruits noirs, tanins soyeux. 75 cl, millésime 2021." },
-  { id: 9, name: "Cognac VSOP", cat: "vins", region: "Charente", price: 49.0, old: null, label: "AOP", producer: "Distillerie de Jarnac", emoji: "🥃", color: "#f1ddc2", rating: 4.8, reviews: 88, intl: true, alcohol: true, desc: "Eaux-de-vie de Fins Bois vieillies au moins 4 ans. Vanille, fruits secs. 70 cl." },
-  { id: 10, name: "Calvados Pays d'Auge", cat: "vins", region: "Normandie", price: 36.0, old: null, label: "AOP", producer: "Domaine cidricole du Calvados", emoji: "🍎", color: "#f3dcc9", rating: 4.6, reviews: 61, intl: true, alcohol: true, desc: "Double distillation en alambic à repasse, 6 ans d'âge. Pomme cuite, épices. 70 cl." },
-  { id: 11, name: "Comté 24 mois", cat: "fromages", region: "Jura", price: 14.5, old: null, label: "AOP", producer: "Fruitière du Haut-Doubs", emoji: "🧀", color: "#fbefc4", rating: 4.9, reviews: 265, intl: false, best: true, desc: "Affiné 24 mois en cave d'épicéa. Cristaux, notes de noisette grillée. Portion 300 g, sous vide." },
-  { id: 12, name: "Saucisson sec pur porc", cat: "fromages", region: "Auvergne", price: 9.9, old: null, label: "IGP", producer: "Salaisons des Monts d'Auvergne", emoji: "🥓", color: "#f3d6cf", rating: 4.7, reviews: 190, intl: false, desc: "Séché 6 semaines en altitude. Recette traditionnelle sel, poivre, ail. 250 g." },
-  { id: 13, name: "Roquefort", cat: "fromages", region: "Occitanie", price: 11.9, old: null, label: "AOP", producer: "Caves de Roquefort-sur-Soulzon", emoji: "🧀", color: "#e6ebe6", rating: 4.6, reviews: 74, intl: false, desc: "Lait cru de brebis, affiné en caves naturelles. Puissant et crémeux. 200 g." },
-  { id: 14, name: "Macarons de Paris (boîte de 12)", cat: "douceurs", region: "Île-de-France", price: 19.9, old: null, label: "Fait main", producer: "Pâtisserie du Marais", emoji: "🍬", color: "#f8d9e4", rating: 4.7, reviews: 233, intl: false, best: true, desc: "Framboise, pistache, chocolat, vanille, caramel beurre salé, citron. À déguster sous 7 jours." },
-  { id: 15, name: "Caramels au beurre salé", cat: "douceurs", region: "Bretagne", price: 7.9, old: null, label: "Origine France Garantie", producer: "Confiserie de Quiberon", emoji: "🍮", color: "#f6e0bf", rating: 4.9, reviews: 402, intl: true, best: true, desc: "Beurre AOP et fleur de sel de Guérande, cuits au chaudron. Sachet 200 g." },
-  { id: 16, name: "Calissons d'Aix", cat: "douceurs", region: "Provence", price: 16.5, old: null, label: "IGP", producer: "Confiseur aixois depuis 1920", emoji: "💠", color: "#eaf1f4", rating: 4.7, reviews: 119, intl: true, desc: "Pâte d'amande et melon confit sur fond d'hostie, glaçage royal. Boîte losange 250 g." },
-  { id: 17, name: "Confiture de mirabelles de Lorraine", cat: "douceurs", region: "Lorraine", price: 6.5, old: null, label: "IGP", producer: "Vergers de la Moselle", emoji: "🍯", color: "#fbe8b5", rating: 4.8, reviews: 87, intl: true, desc: "65 % de fruits, cuite au chaudron de cuivre. Pot 350 g." },
-  { id: 18, name: "Savon de Marseille 72 % huile d'olive", cat: "beaute", region: "Provence", price: 5.9, old: null, label: "Origine France Garantie", producer: "Savonnerie marseillaise", emoji: "🧼", color: "#e7efdc", rating: 4.8, reviews: 512, intl: true, best: true, desc: "Cuit au chaudron selon le procédé marseillais. Sans parfum ni colorant. Cube 300 g." },
-  { id: 19, name: "Eau de lavande de Provence", cat: "beaute", region: "Provence", price: 14.9, old: 17.9, label: "Bio", producer: "Distillerie du plateau de Valensole", emoji: "💜", color: "#e8e1f4", rating: 4.6, reviews: 96, intl: true, desc: "Huile essentielle de lavande fine AOP distillée sur place. Flacon 100 ml." },
-  { id: 20, name: "Crème mains à l'huile d'amande", cat: "beaute", region: "Occitanie", price: 9.5, old: null, label: "Bio", producer: "Laboratoire cosmétique de Grasse", emoji: "🌸", color: "#f8e3e8", rating: 4.5, reviews: 58, intl: true, desc: "98 % d'ingrédients d'origine naturelle. Non grasse. Tube 75 ml." },
-  { id: 21, name: "Marinière en coton bio", cat: "maison", region: "Bretagne", price: 59.0, old: 69.0, label: "Origine France Garantie", producer: "Atelier de tricotage breton", emoji: "👕", color: "#dfe6f2", rating: 4.8, reviews: 144, intl: true, desc: "Jersey épais, rayures tissées. Tailles XS à XXL. Coupe unisexe." },
-  { id: 22, name: "Couteau pliant en bois d'olivier", cat: "maison", region: "Auvergne", price: 45.0, old: null, label: "Fait main", producer: "Coutellerie de Thiers", emoji: "🔪", color: "#ece2d4", rating: 4.9, reviews: 121, intl: true, desc: "Lame inox 11 cm forgée à Thiers, manche olivier. Livré en étui. Vente aux majeurs." },
-  { id: 23, name: "Coffret Apéritif « Tour de France »", cat: "coffrets", region: "Toute la France", price: 59.0, old: 68.0, label: "Sélection", producer: "Composé par notre équipe", emoji: "🎁", color: "#f6dfd2", rating: 4.9, reviews: 167, intl: true, best: true, desc: "Rillettes, tapenade, piment d'Espelette, fleur de sel, caramels et mini-moutarde. 6 produits longue conservation." },
-  { id: 24, name: "Coffret « Grands Crus »", cat: "coffrets", region: "Toute la France", price: 89.0, old: 99.0, label: "Sélection", producer: "Composé par notre sommelier", emoji: "🎀", color: "#ecd6dd", rating: 4.8, reviews: 72, intl: true, alcohol: true, desc: "Champagne Premier Cru, Saint-Émilion Grand Cru et foie gras entier. Caisse bois gravée." },
+  { id: 1, name: "French from Zero", cat: "courses", levels: ["A1"], goals: ["daily", "canada"], formats: ["video", "pdf"], price: 19, old: 29, best: true, hue: 222,
+    size: "32 video lessons · 6 h", desc: "Start from nothing. Every rule is explained in English, with short videos, a printable workbook and a quiz after each lesson. Ends with a mini A1 mock test." },
+  { id: 2, name: "Step Up to A2", cat: "courses", levels: ["A2"], goals: ["daily", "canada"], formats: ["video", "pdf"], price: 24, hue: 214,
+    size: "36 video lessons · 7 h", desc: "Past tenses, everyday situations, phone calls and emails. Built around the mistakes English speakers make most: gender, articles and false friends." },
+  { id: 3, name: "Intermediate French B1", cat: "courses", levels: ["B1"], goals: ["canada", "work", "exam"], formats: ["video", "pdf", "audio"], price: 34, best: true, hue: 206,
+    size: "40 video lessons · 9 h", desc: "The level most immigration and job applications ask for. Subjunctive basics, giving opinions, writing structured texts and following real radio clips." },
+  { id: 4, name: "TCF Canada Prep Pack", cat: "exams", levels: ["B1", "B2", "C1"], goals: ["canada"], formats: ["pdf", "audio", "video"], price: 39, old: 49, best: true, hue: 4,
+    size: "4 full mock exams · 160 questions", desc: "Four timed mock exams in the official format: listening, reading, writing and speaking. Answer keys explained in English and a score table mapped to CLB/NCLC levels." },
+  { id: 5, name: "TEF Canada Prep Pack", cat: "exams", levels: ["B1", "B2", "C1"], goals: ["canada"], formats: ["pdf", "audio"], price: 39, hue: 356,
+    size: "3 mock exams · 120 audio tracks", desc: "Practice for all four TEF Canada sections, with model answers for the written tasks and speaking prompts you can record yourself on." },
+  { id: 6, name: "DELF B1 & B2 Prep", cat: "exams", levels: ["B1", "B2"], goals: ["exam", "work"], formats: ["pdf", "audio"], price: 29, hue: 12,
+    size: "2 mock exams per level", desc: "Mock papers, marking grids and corrected sample essays for the DELF B1 and B2 diplomas, recognised for life worldwide." },
+  { id: 7, name: "French Grammar for English Speakers", cat: "books", levels: ["A1", "A2", "B1"], goals: ["daily", "exam"], formats: ["pdf"], price: 12, best: true, hue: 38,
+    size: "E-book · 180 pages", desc: "Grammar compared side by side with English, so you see exactly where the two languages differ. 300 exercises with answers." },
+  { id: 8, name: "500 False Friends", cat: "books", levels: ["A2", "B1", "B2"], goals: ["daily", "work"], formats: ["pdf", "audio"], price: 7, hue: 30,
+    size: "E-book + audio", desc: "Actually ≠ actuellement, library ≠ librairie… 500 traps for English speakers, each with an example sentence and its recording." },
+  { id: 9, name: "Pronunciation Bootcamp", cat: "books", levels: ["A1", "A2"], goals: ["daily", "canada"], formats: ["audio", "video"], price: 15, hue: 46,
+    size: "21 days · 10 min a day", desc: "Nasal vowels, the French R, silent letters and liaisons. Listen, repeat and compare with native recordings, one short drill a day." },
+  { id: 10, name: "Everyday Phrasebook (offline)", cat: "books", levels: ["A1", "A2"], goals: ["daily", "canada"], formats: ["pdf", "audio"], price: 5, hue: 52,
+    size: "1,200 phrases · MP3", desc: "Phrases for the market, the bank, the doctor, school and transport. Downloads once and works without internet." },
+  { id: 11, name: "2,000 Essential Words Flashcards", cat: "practice", levels: ["A1", "A2", "B1"], goals: ["daily", "canada", "exam"], formats: ["app", "audio"], price: 9, hue: 160,
+    size: "Anki & printable deck", desc: "The 2,000 most frequent French words with audio, gender colour-coding and an English example. Spaced repetition keeps them in memory." },
+  { id: 12, name: "Daily French on WhatsApp", cat: "practice", levels: ["A1", "A2", "B1"], goals: ["daily", "work"], formats: ["audio", "live"], price: 6, per: "month", hue: 150,
+    size: "1 lesson a day · voice notes", desc: "Every morning: a voice note, a mini lesson and a question. Reply by voice and a teacher corrects you the same day. Cancel anytime." },
+  { id: 13, name: "Workplace French", cat: "courses", levels: ["B1", "B2"], goals: ["work"], formats: ["video", "pdf"], price: 29, hue: 196,
+    size: "24 lessons · templates", desc: "Meetings, formal letters, reports and job interviews in French. Includes 30 email and letter templates you can adapt." },
+  { id: 14, name: "Speaking Coaching · 5 sessions", cat: "coaching", levels: ["A2", "B1", "B2", "C1"], goals: ["canada", "work", "exam"], formats: ["live"], price: 59, hue: 280,
+    size: "5 × 45 min on video call", desc: "One-to-one sessions with a bilingual teacher. Ideal before the TCF/TEF speaking test: realistic prompts, timed answers and written feedback." },
+  { id: 15, name: "Written Expression Corrections", cat: "coaching", levels: ["B1", "B2", "C1"], goals: ["canada", "exam"], formats: ["pdf"], price: 25, hue: 270,
+    size: "5 texts corrected in 48 h", desc: "Send five exam-style texts. Each comes back annotated, with an estimated level and a rewritten model version." },
+  { id: 16, name: "Kids' French Adventure", cat: "practice", levels: ["A1"], goals: ["kids"], formats: ["video", "pdf"], price: 14, hue: 120,
+    size: "Ages 6–11 · 20 episodes", desc: "Animated episodes, songs and colouring worksheets so children pick up their first 300 words in French." },
+  { id: 17, name: "Zero to B1 Complete", cat: "bundles", levels: ["A1", "A2", "B1"], goals: ["daily", "canada", "work"], formats: ["video", "pdf", "audio", "app"], price: 69, old: 109, best: true, hue: 240,
+    size: "3 courses + grammar + flashcards", desc: "French from Zero, Step Up to A2, Intermediate B1, the grammar e-book and the 2,000-word flashcards. About 22 hours of video." },
+  { id: 18, name: "Canada Immigration Pack", cat: "bundles", levels: ["B1", "B2", "C1"], goals: ["canada"], formats: ["pdf", "audio", "video", "live"], price: 119, old: 162, hue: 350,
+    size: "TCF + TEF + 5 coaching sessions", desc: "Both Canada prep packs, five live speaking sessions and five written corrections. Everything you need to hit your NCLC target." },
 ];
-
-const LABELS = ["AOP", "IGP", "Label Rouge", "Bio", "Origine France Garantie", "Fait main", "Sélection"];
