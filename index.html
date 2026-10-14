@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pas-Pas — Le meilleur de la France, livré partout dans le monde</title>
+  <meta name="description" content="Épicerie fine, vins, cosmétiques et artisanat 100 % français. Livraison en France, en Europe, en Afrique et dans le monde. Prix en EUR, FCFA, USD. Paiement carte, PayPal, Mobile Money.">
+  <meta property="og:title" content="Pas-Pas — Le meilleur de la France, livré partout">
+  <meta property="og:description" content="Produits du terroir français tracés jusqu'au producteur, livrés dans plus de 60 pays.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇫🇷</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"OnlineStore","name":"Pas-Pas","description":"Produits français livrés dans le monde entier","currenciesAccepted":"EUR, XAF, XOF, USD, GBP, CAD","paymentAccepted":"Carte bancaire, PayPal, Mobile Money, Virement"}
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container topbar-inner">
+    <span>🚚 Livraison offerte dès <strong id="freeShipTop">79 €</strong> vers <strong id="zoneTop">France</strong></span>
+    <span class="hide-sm">🎁 −10 % sur la 1<sup>re</sup> commande : <strong>BIENVENUE10</strong></span>
+    <span class="hide-sm">⭐ 4,8/5 — 3 900 avis vérifiés</span>
+  </div>
+</div>
+
+<header class="header">
+  <div class="container header-inner">
+    <a href="#" class="logo" aria-label="Accueil Pas-Pas">
+      <span class="logo-flag" aria-hidden="true"><i></i><i></i><i></i></span>
+      Pas-Pas
+    </a>
+    <div class="search">
+      <input id="search" type="search" placeholder="Rechercher : comté, champagne, savon…" aria-label="Rechercher un produit">
+    </div>
+    <div class="header-tools">
+      <label class="select-wrap" title="Pays de livraison">
+        <span aria-hidden="true">📍</span>
+        <select id="zone" aria-label="Zone de livraison"></select>
+      </label>
+      <label class="select-wrap" title="Devise">
+        <select id="currency" aria-label="Devise"></select>
+      </label>
+      <button class="icon-btn" id="wishBtn" aria-label="Favoris">♡<span class="badge" id="wishCount">0</span></button>
+      <button class="icon-btn" id="cartBtn" aria-label="Panier">🛒<span class="badge" id="cartCount">0</span></button>
+    </div>
+  </div>
+  <nav class="container nav" id="catNav" aria-label="Catégories"></nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <p class="eyebrow">Épicerie fine · Vins · Beauté · Artisanat</p>
+        <h1>Le meilleur de la France,<br><em>livré là où vous êtes.</em></h1>
+        <p class="lead">Plus de 300 producteurs français sélectionnés, chaque produit tracé jusqu'à sa ferme ou son atelier. Prix affichés dans votre devise, frais de port connus d'avance, paiement par carte, PayPal ou Mobile Money.</p>
+        <div class="hero-cta">
+          <a href="#boutique" class="btn btn-primary">Découvrir la boutique</a>
+          <a href="#coffret" class="btn btn-ghost">Composer mon coffret</a>
+        </div>
+        <ul class="hero-proof">
+          <li><strong>60+</strong> pays livrés</li>
+          <li><strong>100 %</strong> fabriqué en France</li>
+          <li><strong>48 h</strong> expédition</li>
+        </ul>
+      </div>
+      <div class="ship-card" aria-live="polite">
+        <h2>Votre livraison</h2>
+        <div class="ship-row"><span>Destination</span><strong id="shipZone">—</strong></div>
+        <div class="ship-row"><span>Délai</span><strong id="shipDelay">—</strong></div>
+        <div class="ship-row"><span>Frais de port</span><strong id="shipCost">—</strong></div>
+        <div class="ship-row"><span>Offerte dès</span><strong id="shipFree">—</strong></div>
+        <p class="ship-note" id="shipNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="usp container" aria-label="Nos engagements">
+    <div><span>🌍</span><h3>Livraison mondiale</h3><p>France, Europe, Afrique, Amériques — coût affiché avant le panier.</p></div>
+    <div><span>💱</span><h3>Votre devise</h3><p>EUR, FCFA, USD, GBP, CAD. Aucun frais caché.</p></div>
+    <div><span>📱</span><h3>Mobile Money</h3><p>Orange Money, MTN MoMo, Wave, en plus de la carte et de PayPal.</p></div>
+    <div><span>🔎</span><h3>100 % traçable</h3><p>Région, producteur et label officiel sur chaque fiche.</p></div>
+  </section>
+
+  <section id="boutique" class="container shop">
+    <div class="shop-head">
+      <h2 class="section-title">La boutique</h2>
+      <div class="shop-controls">
+        <select id="region" aria-label="Région"><option value="">Toutes les régions</option></select>
+        <select id="label" aria-label="Label"><option value="">Tous les labels</option></select>
+        <select id="sort" aria-label="Trier">
+          <option value="best">Meilleures ventes</option>
+          <option value="price-asc">Prix croissant</option>
+          <option value="price-desc">Prix décroissant</option>
+          <option value="rating">Mieux notés</option>
+        </select>
+        <label class="check"><input type="checkbox" id="onlyShippable"> Livrable dans ma zone</label>
+      </div>
+    </div>
+    <p class="result-count" id="resultCount"></p>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="coffret" class="builder">
+    <div class="container builder-inner">
+      <div>
+        <p class="eyebrow">Exclusif</p>
+        <h2 class="section-title">Composez votre coffret sur mesure</h2>
+        <p>Choisissez 3 produits ou plus dans la boutique avec le bouton <strong>＋ Coffret</strong> : <strong>−10 % automatique</strong>, emballage cadeau et carte personnalisée offerts.</p>
+      </div>
+      <div class="builder-box">
+        <ul id="builderList" class="builder-list"></ul>
+        <div class="builder-total" id="builderTotal"></div>
+        <button class="btn btn-primary" id="builderAdd" disabled>Ajouter le coffret au panier</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="container compare">
+    <h2 class="section-title">Pourquoi nous plutôt qu'ailleurs ?</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th></th><th class="us">Pas-Pas</th><th>Épiceries fines en ligne</th><th>Épiceries d'expatriés</th><th>Grande distribution + réexpédition</th></tr></thead>
+        <tbody>
+          <tr><td>Pays livrés</td><td class="us">60+, Afrique incluse</td><td>France surtout</td><td>1 seul pays</td><td>Oui, avec double frais</td></tr>
+          <tr><td>Frais de port affichés d'avance</td><td class="us">✔ dès l'accueil</td><td>Au paiement</td><td>Au paiement</td><td>✘ deux factures</td></tr>
+          <tr><td>Prix en FCFA / USD / GBP</td><td class="us">✔</td><td>✘</td><td>Devise locale seule</td><td>✘</td></tr>
+          <tr><td>Mobile Money</td><td class="us">✔</td><td>✘</td><td>✘</td><td>✘</td></tr>
+          <tr><td>Producteur et label sur chaque fiche</td><td class="us">✔</td><td>Partiel</td><td>✘</td><td>✘</td></tr>
+          <tr><td>Coffret sur mesure −10 %</td><td class="us">✔</td><td>Coffrets figés</td><td>✘</td><td>✘</td></tr>
+          <tr><td>Commande par WhatsApp</td><td class="us">✔</td><td>✘</td><td>Rare</td><td>✘</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="box container">
+    <div class="box-inner">
+      <div>
+        <p class="eyebrow">Abonnement</p>
+        <h2 class="section-title">La Box du Terroir</h2>
+        <p>Chaque mois, une région française à découvrir : 5 à 7 produits d'artisans, une fiche recettes et l'histoire des producteurs. Sans engagement, résiliable en un clic.</p>
+        <ul class="ticks"><li>Livraison incluse en France et en Europe</li><li>Produits longue conservation pour l'international</li><li>Économie moyenne de 20 % sur les prix boutique</li></ul>
+      </div>
+      <div class="plans" id="plans"></div>
+    </div>
+  </section>
+
+  <section class="container reviews">
+    <h2 class="section-title">Ils nous font confiance</h2>
+    <div class="review-grid">
+      <blockquote><p>« Enfin un site qui livre à Douala sans passer par trois intermédiaires. Le comté est arrivé sous vide, impeccable. »</p><cite>Aïcha N. — Cameroun ⭐⭐⭐⭐⭐</cite></blockquote>
+      <blockquote><p>« J'ai payé en Orange Money, colis reçu en 7 jours à Abidjan. Le foie gras pour les fêtes a fait sensation. »</p><cite>Koffi A. — Côte d'Ivoire ⭐⭐⭐⭐⭐</cite></blockquote>
+      <blockquote><p>« Prix en dollars, frais de port clairs, coffret personnalisé pour ma belle-mère : parfait. »</p><cite>Julie M. — Montréal ⭐⭐⭐⭐⭐</cite></blockquote>
+    </div>
+  </section>
+
+  <section class="container faq">
+    <h2 class="section-title">Questions fréquentes</h2>
+    <details><summary>Quels produits puis-je recevoir hors de France ?</summary><p>Tous les produits marqués « Livraison monde » : épicerie, conserves, vins, cosmétiques, artisanat. Les produits frais (fromages au lait cru, charcuterie, pâtisseries) ne sont livrés qu'en France métropolitaine, pour la chaîne du froid et les règles douanières.</p></details>
+    <details><summary>Comment payer avec Mobile Money ?</summary><p>Choisissez « Mobile Money » à l'étape de paiement, saisissez votre numéro : vous recevez une demande de validation sur votre téléphone (Orange Money, MTN MoMo, Wave, Moov).</p></details>
+    <details><summary>Qui paie les droits de douane ?</summary><p>Hors Union européenne, des droits peuvent être demandés à la réception selon la réglementation de votre pays. Nous les indiquons à titre estimatif avant validation.</p></details>
+    <details><summary>Que se passe-t-il si mon colis arrive abîmé ?</summary><p>Envoyez-nous une photo sous 48 h : remboursement ou renvoi immédiat, sans retour du produit.</p></details>
+    <details><summary>Vendez-vous de l'alcool à tout le monde ?</summary><p>Non. La vente d'alcool est interdite aux mineurs ; une confirmation d'âge est demandée. L'abus d'alcool est dangereux pour la santé, à consommer avec modération.</p></details>
+  </section>
+
+  <section class="newsletter">
+    <div class="container newsletter-inner">
+      <div><h2>−10 % sur votre première commande</h2><p>Recettes, nouveaux producteurs et ventes privées, une fois par semaine.</p></div>
+      <form id="newsletter" class="nl-form">
+        <input type="email" required placeholder="votre@email.com" aria-label="Adresse e-mail">
+        <button class="btn btn-primary">Je m'inscris</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-grid">
+    <div><a class="logo" href="#"><span class="logo-flag" aria-hidden="true"><i></i><i></i><i></i></span>Pas-Pas</a><p>Le meilleur de la France, livré partout dans le monde.</p></div>
+    <div><h4>Boutique</h4><ul id="footerCats"></ul></div>
+    <div><h4>Aide</h4><ul><li><a href="#">Livraison & délais</a></li><li><a href="#">Paiement sécurisé</a></li><li><a href="#">Retours</a></li><li><a href="#" id="waFooter">WhatsApp</a></li></ul></div>
+    <div><h4>Légal</h4><ul><li><a href="#">Mentions légales</a></li><li><a href="#">CGV</a></li><li><a href="#">Confidentialité (RGPD)</a></li></ul></div>
+  </div>
+  <p class="container legal">L'abus d'alcool est dangereux pour la santé, à consommer avec modération. Vente d'alcool interdite aux mineurs. © <span id="year"></span> Pas-Pas.</p>
+</footer>
+
+<a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Commander sur WhatsApp">💬</a>
+
+<!-- Panier -->
+<div class="overlay" id="overlay" hidden></div>
+<aside class="drawer" id="cart" aria-label="Panier" aria-hidden="true">
+  <div class="drawer-head"><h2>Mon panier</h2><button class="icon-btn" data-close aria-label="Fermer">✕</button></div>
+  <div class="free-bar"><p id="freeMsg"></p><div class="bar"><span id="freeBar"></span></div></div>
+  <ul class="cart-list" id="cartList"></ul>
+  <div class="drawer-foot">
+    <form class="promo" id="promoForm"><input id="promoInput" placeholder="Code promo" aria-label="Code promo"><button class="btn btn-ghost">OK</button></form>
+    <div class="totals" id="totals"></div>
+    <button class="btn btn-primary btn-block" id="checkoutBtn">Commander</button>
+    <button class="btn btn-wa btn-block" id="waOrder">Commander via WhatsApp</button>
+  </div>
+</aside>
+
+<!-- Favoris -->
+<aside class="drawer" id="wish" aria-label="Favoris" aria-hidden="true">
+  <div class="drawer-head"><h2>Mes favoris</h2><button class="icon-btn" data-close aria-label="Fermer">✕</button></div>
+  <ul class="cart-list" id="wishList"></ul>
+</aside>
+
+<!-- Fiche produit / paiement -->
+<dialog id="modal" class="modal"><div id="modalBody"></div></dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="js/products.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
