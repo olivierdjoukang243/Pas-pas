@@ -1,26 +1,27 @@
 // ====== Shop settings (edit before launch) ======
-const WHATSAPP_NUMBER = "33600000000"; // international format, no "+"
+const WHATSAPP_NUMBER = "237600000000"; // international format, no "+"
 const PROMO_CODES = { WELCOME10: 0.10 };
-const PACK_MIN = 3;
-const PACK_DISCOUNT = 0.15;
 
 // Indicative rates for 1 EUR. FCFA has a fixed parity with the euro; update the others regularly.
 const CURRENCIES = {
+  EUR: { rate: 1, label: "€ EUR", code: "EUR", decimals: 2 },
+  USD: { rate: 1.08, label: "$ USD", code: "USD", decimals: 2 },
+  GBP: { rate: 0.85, label: "£ GBP", code: "GBP", decimals: 2 },
+  CAD: { rate: 1.48, label: "$ CAD", code: "CAD", decimals: 2 },
   XAF: { rate: 655.957, label: "FCFA (XAF)", symbol: "FCFA", decimals: 0 },
   XOF: { rate: 655.957, label: "FCFA (XOF)", symbol: "FCFA", decimals: 0 },
   NGN: { rate: 1700, label: "₦ NGN", code: "NGN", decimals: 0 },
   GHS: { rate: 17, label: "₵ GHS", code: "GHS", decimals: 2 },
-  USD: { rate: 1.08, label: "$ USD", code: "USD", decimals: 2 },
-  CAD: { rate: 1.48, label: "$ CAD", code: "CAD", decimals: 2 },
-  GBP: { rate: 0.85, label: "£ GBP", code: "GBP", decimals: 2 },
-  EUR: { rate: 1, label: "€ EUR", code: "EUR", decimals: 2 },
 };
 
-const PLANS = [
-  { name: "Monthly", price: 12, months: 1 },
-  { name: "Quarterly", price: 9, months: 3, featured: true },
-  { name: "Yearly", price: 7, months: 12 },
-];
+// Checkout countries. Cameroon gets MTN MoMo and Orange Money; everyone gets card and PayPal.
+const COUNTRIES = ["Cameroon", "Nigeria", "Ghana", "United States", "Canada", "United Kingdom", "France", "Other country"];
+const PAY_METHODS = {
+  momo: { label: "MTN MoMo", phone: true, cm: true },
+  om: { label: "Orange Money", phone: true, cm: true },
+  card: { label: "Bank card" },
+  paypal: { label: "PayPal" },
+};
 
 // Placement test: 3 questions per level. The level reached is the highest one passed in a row (2/3 or better).
 const TEST = [
@@ -36,192 +37,224 @@ const TEST = [
   { lvl: "B2", q: "Bien qu'il ___ malade, il est venu.", a: ["est", "soit", "était", "sera"], ok: 1 },
   { lvl: "B2", q: "Il est parti tôt ___ éviter les embouteillages.", a: ["afin d'", "afin qu'", "pour qu'", "parce qu'"], ok: 0 },
   { lvl: "B2", q: "« Actuellement » means…", a: ["currently", "actually", "eventually", "accurately"], ok: 0 },
+  { lvl: "C1", q: "Il a réussi, ___ les difficultés rencontrées.", a: ["malgré", "bien que", "quoique", "pourtant"], ok: 0 },
+  { lvl: "C1", q: "Quoi qu'il en ___, nous partirons demain.", a: ["soit", "est", "sera", "serait"], ok: 0 },
+  { lvl: "C1", q: "« Elle n'est pas sans savoir que… » means…", a: ["She is well aware that…", "She doesn't know that…", "She has no idea that…", "She wants to know whether…"], ok: 0 },
 ];
 
 // ====== State ======
 const store = {
-  get(key, fallback) { try { return JSON.parse(localStorage.getItem("ppf_" + key)) ?? fallback; } catch { return fallback; } },
-  set(key, value) { try { localStorage.setItem("ppf_" + key, JSON.stringify(value)); } catch { /* storage unavailable */ } },
+  get(key, fallback) { try { return JSON.parse(localStorage.getItem("ppf2_" + key)) ?? fallback; } catch { return fallback; } },
+  set(key, value) { try { localStorage.setItem("ppf2_" + key, JSON.stringify(value)); } catch { /* storage unavailable */ } },
 };
 
+function guessLocale() {
+  let tz = "", lang = "";
+  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; lang = navigator.language || ""; } catch { /* ignore */ }
+  if (tz === "Africa/Douala") return { currency: "XAF", country: "Cameroon" };
+  if (tz === "Africa/Lagos") return { currency: "NGN", country: "Nigeria" };
+  if (tz === "Africa/Accra") return { currency: "GHS", country: "Ghana" };
+  if (/-CA$/.test(lang) || /^America\/(Toronto|Vancouver|Montreal|Edmonton|Winnipeg|Halifax)/.test(tz)) return { currency: "CAD", country: "Canada" };
+  if (lang === "en-GB" || tz === "Europe/London") return { currency: "GBP", country: "United Kingdom" };
+  if (lang === "en-US" || tz.startsWith("America/")) return { currency: "USD", country: "United States" };
+  return { currency: "EUR", country: "Other country" };
+}
+const guess = guessLocale();
+
 const state = {
-  cat: "", query: "", level: "", goal: "", format: "", sort: "best",
-  currency: store.get("currency", "XAF"),
-  cart: store.get("cart", []),     // [{ id, pack }]
-  wish: store.get("wish", []),     // [id]
-  builder: [],                     // [id]
+  query: "", level: store.get("level", "A1"), family: "",
+  currency: store.get("currency", guess.currency),
+  country: store.get("country", guess.country),
+  cart: store.get("cart", []), // [id]
   promo: store.get("promo", null),
 };
-if (!CURRENCIES[state.currency]) state.currency = "XAF";
-state.cart = state.cart.filter((l) => PRODUCTS.some((p) => p.id === l.id));
-state.wish = state.wish.filter((id) => PRODUCTS.some((p) => p.id === id));
+if (!CURRENCIES[state.currency]) state.currency = "EUR";
+if (!LEVELS.includes(state.level)) state.level = "A1";
+state.cart = state.cart.filter((id) => PRODUCTS.some((p) => p.id === id));
 
 const $ = (sel) => document.querySelector(sel);
 const byId = (id) => PRODUCTS.find((p) => p.id === id);
+const inCart = (id) => state.cart.includes(id);
 
-function money(eur) {
-  const c = CURRENCIES[state.currency];
+function money(eur, currency = state.currency) {
+  const c = CURRENCIES[currency];
   const value = eur * c.rate;
   if (!c.code) return Math.round(value).toLocaleString("fr-FR") + " " + c.symbol;
   return value.toLocaleString("en-US", { style: "currency", currency: c.code, currencyDisplay: "narrowSymbol", minimumFractionDigits: c.decimals, maximumFractionDigits: c.decimals });
 }
-const priceTag = (p) => money(p.price) + (p.per ? ` / ${p.per}` : "");
-const levelRange = (p) => p.levels.length > 1 ? `${p.levels[0]}–${p.levels[p.levels.length - 1]}` : p.levels[0];
 
 function toast(msg) {
   const t = $("#toast");
   t.textContent = msg;
   t.classList.add("show");
   clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => t.classList.remove("show"), 2200);
+  toast.timer = setTimeout(() => t.classList.remove("show"), 2600);
 }
 
-// ====== Header & filters ======
-function renderSelectors() {
-  $("#currency").innerHTML = Object.entries(CURRENCIES).map(([k, c]) => `<option value="${k}">${c.label}</option>`).join("");
-  $("#currency").value = state.currency;
-  $("#level").insertAdjacentHTML("beforeend", LEVELS.map((l) => `<option>${l}</option>`).join(""));
-  $("#goal").insertAdjacentHTML("beforeend", Object.entries(GOALS).map(([k, v]) => `<option value="${k}">${v}</option>`).join(""));
-  $("#format").insertAdjacentHTML("beforeend", Object.entries(FORMATS).map(([k, v]) => `<option value="${k}">${v}</option>`).join(""));
-  const cats = [["", "All"], ...Object.entries(CATEGORIES)];
-  $("#catNav").innerHTML = cats.map(([k, v]) => `<button data-cat="${k}">${v}</button>`).join("");
-  $("#footerCats").innerHTML = Object.entries(CATEGORIES).map(([k, v]) => `<li><a href="#shop" data-cat="${k}">${v}</a></li>`).join("");
+const levelLabel = (p) => p.levels && p.levels.length > 1 ? `${p.levels[0]}–${p.levels[p.levels.length - 1]}` : p.level;
+const typeLabel = { level: "Full level", module: "Module", exam: "Exam papers", practice: "Practice tests" };
+
+// ====== Cart rules: a full level replaces its modules ======
+function addToCart(id) {
+  const p = byId(id);
+  if (inCart(id)) { toast("Already in your cart"); return; }
+  if (p.type === "module" && inCart(`level-${p.level}`)) { toast(`Included in the full ${p.level} level already in your cart`); return; }
+  if (p.type === "level") {
+    const before = state.cart.length;
+    state.cart = state.cart.filter((cid) => !(byId(cid).type === "module" && byId(cid).level === p.level));
+    const removed = before - state.cart.length;
+    state.cart.push(id);
+    toast(removed ? `Full ${p.level} level added; it replaces ${removed} module${removed > 1 ? "s" : ""}` : `Full ${p.level} level added`);
+  } else {
+    state.cart.push(id);
+    toast(`"${p.short || p.name}" added`);
+  }
+  saveCart();
 }
 
-// ====== Catalogue ======
-function filtered() {
-  const q = state.query.trim().toLowerCase();
-  const list = PRODUCTS.filter((p) =>
-    (!state.cat || p.cat === state.cat) &&
-    (!state.level || p.levels.includes(state.level)) &&
-    (!state.goal || p.goals.includes(state.goal)) &&
-    (!state.format || p.formats.includes(state.format)) &&
-    (!q || [p.name, p.desc, p.size, CATEGORIES[p.cat], ...p.levels, ...p.goals.map((g) => GOALS[g])].join(" ").toLowerCase().includes(q))
-  );
-  const sorters = {
-    best: (a, b) => (b.best ? 1 : 0) - (a.best ? 1 : 0) || a.id - b.id,
-    "price-asc": (a, b) => a.price - b.price,
-    "price-desc": (a, b) => b.price - a.price,
-    level: (a, b) => LEVELS.indexOf(a.levels[0]) - LEVELS.indexOf(b.levels[0]) || a.price - b.price,
-  };
-  return list.sort(sorters[state.sort]);
+function removeFromCart(id) {
+  state.cart = state.cart.filter((c) => c !== id);
+  saveCart();
 }
 
+function saveCart() {
+  store.set("cart", state.cart);
+  renderCart();
+  renderLevelPanel();
+  renderCardsState();
+}
+
+function totals() {
+  const subtotal = state.cart.reduce((s, id) => s + byId(id).price, 0);
+  const promoDisc = state.promo ? subtotal * PROMO_CODES[state.promo] : 0;
+  return { subtotal, promoDisc, total: subtotal - promoDisc };
+}
+
+// Suggest the full level when the modules already in the cart get close to its price.
+function upgradeHints() {
+  return LEVELS.map((lvl) => {
+    const mods = state.cart.filter((id) => byId(id).type === "module" && byId(id).level === lvl);
+    if (mods.length < 2 || inCart(`level-${lvl}`)) return null;
+    const paid = mods.reduce((s, id) => s + byId(id).price, 0);
+    const full = byId(`level-${lvl}`);
+    return { lvl, extra: full.price - paid, count: LEVEL_COURSES[lvl].modules.length - mods.length };
+  }).filter(Boolean);
+}
+
+function renderCart() {
+  $("#cartCount").textContent = state.cart.length;
+  $("#cartList").innerHTML = state.cart.length ? state.cart.map((id) => {
+    const p = byId(id);
+    return `<li class="cart-item">
+      <div class="cart-thumb" style="--h:${p.hue}">${levelLabel(p)}</div>
+      <div><h4>${p.name}</h4><small>${typeLabel[p.type]} · ${p.size}</small></div>
+      <div class="cart-right"><strong>${money(p.price)}</strong><button class="remove" data-rm="${id}">Remove</button></div>
+    </li>`;
+  }).join("") + upgradeHints().map((h) => `<li class="upgrade">
+      <span>${h.extra > 0 ? `Get the other ${h.count} ${h.lvl} modules for only <strong>${money(h.extra)}</strong> more` : `The full ${h.lvl} level is <strong>${money(-h.extra)}</strong> cheaper than these modules`}</span>
+      <button class="btn btn-primary mini" data-add="level-${h.lvl}">Switch to full ${h.lvl}</button>
+    </li>`).join("") : `<li class="empty">Your cart is empty.</li>`;
+
+  const t = totals();
+  $("#totals").innerHTML = `
+    <div><span>Subtotal</span><span>${money(t.subtotal)}</span></div>
+    ${t.promoDisc ? `<div class="disc"><span>Code ${state.promo}</span><span>−${money(t.promoDisc)}</span></div>` : ""}
+    <div><span>Delivery</span><span>Instant access</span></div>
+    <div class="grand"><span>Total</span><span>${money(t.total)}</span></div>`;
+  $("#checkoutBtn").disabled = !state.cart.length;
+  $("#waOrder").disabled = !state.cart.length;
+}
+
+// ====== Courses by level ======
+function renderLevelTabs() {
+  $("#levelTabs").innerHTML = LEVELS.map((lvl) => `<button role="tab" aria-selected="${lvl === state.level}" data-level="${lvl}" style="--h:${LEVEL_COURSES[lvl].hue}">
+    <b>${lvl}</b><span>${LEVEL_COURSES[lvl].name}</span></button>`).join("");
+}
+
+function renderLevelPanel() {
+  const lvl = state.level;
+  const c = LEVEL_COURSES[lvl];
+  const full = byId(`level-${lvl}`);
+  const fullIn = inCart(full.id);
+  const exams = PRODUCTS.filter((p) => p.type === "exam" && p.levels.includes(lvl));
+  $("#levelPanel").innerHTML = `
+    <div class="lp-head" style="--h:${c.hue}">
+      <div class="lp-title"><span class="lp-code">${lvl}</span><div><h3>${c.name}</h3><p>${c.can}</p></div></div>
+      <div class="lp-buy">
+        <span class="lp-label">Full level · ${c.modules.length} modules</span>
+        <span class="price">${money(full.price)} <s>${money(full.old)}</s></span>
+        <button class="btn ${fullIn ? "btn-ghost" : "btn-light"}" data-add="${full.id}" ${fullIn ? "disabled" : ""}>${fullIn ? "In your cart" : "Add full level · save 30%"}</button>
+      </div>
+    </div>
+    <ol class="modules">
+      ${c.modules.map((title, i) => {
+        const m = byId(`mod-${lvl}-${i + 1}`);
+        const status = fullIn ? "Included" : inCart(m.id) ? "In cart" : "";
+        return `<li>
+          <span class="m-num">${i + 1}</span>
+          <div class="m-body"><strong>${title}</strong><small>${m.size}</small></div>
+          <span class="m-price">${money(m.price)}</span>
+          <button class="btn ${status ? "btn-ghost" : "btn-primary"} mini" data-add="${m.id}" ${status ? "disabled" : ""}>${status || "Add"}</button>
+        </li>`;
+      }).join("")}
+    </ol>
+    <div class="lp-foot">
+      <span>Train for this level:</span>
+      <button class="link-btn" data-open="practice-${lvl}">${lvl} practice tests · ${money(byId(`practice-${lvl}`).price)}</button>
+      ${exams.map((e) => `<button class="link-btn" data-open="${e.id}">${e.name}</button>`).join("")}
+    </div>`;
+  document.querySelectorAll("#levelTabs button").forEach((b) => b.setAttribute("aria-selected", b.dataset.level === lvl));
+}
+
+// ====== Product cards (exams, practice, search) ======
 function coverHTML(p, big = false) {
   return `<div class="cover ${big ? "cover-big" : ""}" style="--h:${p.hue}">
-    <span class="cover-level">${levelRange(p)}</span>
-    <span class="cover-cat">${CATEGORIES[p.cat]}</span>
-    <span class="cover-title">${p.name}</span>
+    <span class="cover-level">${levelLabel(p)}</span>
+    <span class="cover-cat">${typeLabel[p.type]}</span>
+    <span class="cover-title">${p.type === "exam" ? p.name.replace(" exam papers", "") : p.type === "module" ? p.short : p.name}</span>
   </div>`;
 }
 
 function cardHTML(p) {
-  const wished = state.wish.includes(p.id);
-  const promo = p.old ? `<span class="tag promo">−${Math.round((1 - p.price / p.old) * 100)}%</span>` : "";
-  const best = p.best ? `<span class="tag best">Popular</span>` : "";
+  const added = inCart(p.id) || (p.type === "module" && inCart(`level-${p.level}`));
   return `<article class="card">
     <button class="card-media" data-open="${p.id}" aria-label="View ${p.name}">${coverHTML(p)}</button>
-    <div class="card-tags">${promo}${best}</div>
-    <button class="wish-toggle" data-wish="${p.id}" aria-label="${wished ? "Remove from saved" : "Save"}">${wished ? "♥" : "♡"}</button>
+    ${p.best ? `<div class="card-tags"><span class="tag best">Popular</span></div>` : ""}
     <div class="card-body">
       <h3><button data-open="${p.id}">${p.name}</button></h3>
       <div class="card-meta">${p.size}</div>
-      <div class="chips">${p.formats.map((f) => `<span class="chip">${FORMATS[f]}</span>`).join("")}</div>
       <div class="price-row">
-        <span class="price">${priceTag(p)}${p.old ? `<s>${money(p.old)}</s>` : ""}</span>
-        <div class="card-actions">
-          <button class="btn btn-ghost mini" data-pack="${p.id}" title="Add to your pack">＋ Pack</button>
-          <button class="btn btn-primary mini" data-add="${p.id}">Add</button>
-        </div>
+        <span class="price">${money(p.price)}${p.old ? `<s>${money(p.old)}</s>` : ""}</span>
+        <button class="btn ${added ? "btn-ghost" : "btn-primary"} mini" data-add="${p.id}" data-card-add ${added ? "disabled" : ""}>${added ? "In cart" : "Add"}</button>
       </div>
     </div>
   </article>`;
 }
 
-function renderGrid() {
-  const list = filtered();
-  $("#resultCount").textContent = `${list.length} product${list.length === 1 ? "" : "s"}`;
-  $("#grid").innerHTML = list.length
-    ? list.map(cardHTML).join("")
-    : `<p class="empty">No product matches. Try another level or goal.</p>`;
-  document.querySelectorAll("#catNav button").forEach((b) => b.classList.toggle("active", b.dataset.cat === state.cat));
+function renderExams() {
+  const list = PRODUCTS.filter((p) => p.type === "exam" && (!state.family || p.family === state.family));
+  $("#examGrid").innerHTML = list.map(cardHTML).join("");
+  document.querySelectorAll("#examFilter button").forEach((b) => b.classList.toggle("active", b.dataset.family === state.family));
 }
 
-// ====== Cart (digital products: one of each) ======
-function saveCart() { store.set("cart", state.cart); }
-
-function addToCart(id, pack = false) {
-  const p = byId(id);
-  const line = state.cart.find((l) => l.id === id);
-  if (line) {
-    if (pack && !line.pack) { line.pack = true; saveCart(); renderCart(); }
-    else if (!pack) toast(`"${p.name}" is already in your cart`);
-    return;
-  }
-  state.cart.push({ id, pack });
-  saveCart();
-  renderCart();
-  if (!pack) toast(`"${p.name}" added to cart`);
+function renderPractice() {
+  $("#practiceGrid").innerHTML = PRODUCTS.filter((p) => p.type === "practice").map(cardHTML).join("");
 }
 
-function totals() {
-  let subtotal = 0, packSum = 0, packCount = 0;
-  for (const l of state.cart) {
-    const p = byId(l.id);
-    subtotal += p.price;
-    if (l.pack) { packSum += p.price; packCount++; }
-  }
-  const packDisc = packCount >= PACK_MIN ? packSum * PACK_DISCOUNT : 0;
-  const promoDisc = state.promo ? (subtotal - packDisc) * PROMO_CODES[state.promo] : 0;
-  return { subtotal, packDisc, promoDisc, total: subtotal - packDisc - promoDisc };
+function renderSearch() {
+  const q = state.query.trim().toLowerCase();
+  $("#results").hidden = !q;
+  if (!q) return;
+  const words = q.split(/\s+/);
+  const list = PRODUCTS.filter((p) => {
+    const hay = [p.name, p.desc, p.size, typeLabel[p.type], p.family || "", p.level, LEVEL_COURSES[p.level]?.name || ""].join(" ").toLowerCase();
+    return words.every((w) => hay.includes(w));
+  });
+  $("#resultCount").textContent = `${list.length} result${list.length === 1 ? "" : "s"} for "${state.query.trim()}"`;
+  $("#resultGrid").innerHTML = list.length ? list.map(cardHTML).join("") : `<p class="empty">Nothing found. Try a level (B1), an exam (DELF) or a topic (subjunctive).</p>`;
 }
 
-function renderCart() {
-  $("#cartCount").textContent = state.cart.length;
-  $("#wishCount").textContent = state.wish.length;
-
-  $("#cartList").innerHTML = state.cart.length ? state.cart.map((l, i) => {
-    const p = byId(l.id);
-    return `<li class="cart-item">
-      <div class="cart-thumb" style="--h:${p.hue}">${levelRange(p)}</div>
-      <div><h4>${p.name}${l.pack ? ` <span class="chip">Pack</span>` : ""}</h4><small>${p.size}</small></div>
-      <div class="cart-right"><strong>${priceTag(p)}</strong><button class="remove" data-rm="${i}">Remove</button></div>
-    </li>`;
-  }).join("") : `<li class="empty">Your cart is empty.</li>`;
-
-  const t = totals();
-  $("#totals").innerHTML = `
-    <div><span>Subtotal</span><span>${money(t.subtotal)}</span></div>
-    ${t.packDisc ? `<div class="disc"><span>Your pack −15%</span><span>−${money(t.packDisc)}</span></div>` : ""}
-    ${t.promoDisc ? `<div class="disc"><span>Code ${state.promo}</span><span>−${money(t.promoDisc)}</span></div>` : ""}
-    <div><span>Delivery</span><span>Instant download</span></div>
-    <div class="grand"><span>Total</span><span>${money(t.total)}</span></div>`;
-  $("#checkoutBtn").disabled = !state.cart.length;
-  $("#waOrder").disabled = !state.cart.length;
-
-  $("#wishList").innerHTML = state.wish.length ? state.wish.map((id) => {
-    const p = byId(id);
-    return `<li class="cart-item">
-      <div class="cart-thumb" style="--h:${p.hue}">${levelRange(p)}</div>
-      <div><h4>${p.name}</h4><small>${priceTag(p)}</small></div>
-      <div><button class="btn btn-primary mini" data-add="${p.id}">Add</button></div>
-    </li>`;
-  }).join("") : `<li class="empty">Nothing saved yet.</li>`;
-}
-
-// ====== Pack builder ======
-function renderBuilder() {
-  const items = state.builder.map(byId);
-  $("#builderList").innerHTML = items.length
-    ? items.map((p, i) => `<li><span>${p.name} <small>${levelRange(p)}</small></span><span>${money(p.price)} <button class="remove" data-brm="${i}" aria-label="Remove ${p.name}">✕</button></span></li>`).join("")
-    : `<li class="hint">Tap "＋ Pack" on the products you want…</li>`;
-  const sum = items.reduce((s, p) => s + p.price, 0);
-  const ok = items.length >= PACK_MIN;
-  $("#builderTotal").innerHTML = !items.length ? ""
-    : ok ? `Pack price: <s>${money(sum)}</s> <span class="ok">${money(sum * (1 - PACK_DISCOUNT))}</span>`
-    : `Add ${PACK_MIN - items.length} more to unlock −15%`;
-  $("#builderAdd").disabled = !ok;
-}
+function renderCardsState() { renderExams(); renderPractice(); renderSearch(); }
 
 // ====== Dialogs ======
 const modal = $("#modal");
@@ -232,73 +265,110 @@ function openModal(html) {
 
 function openProduct(id) {
   const p = byId(id);
+  const included = p.type === "module" && inCart(`level-${p.level}`);
+  const added = inCart(id) || included;
   openModal(`<div class="pd">
     <div class="pd-media">${coverHTML(p, true)}</div>
     <div class="pd-body">
-      <p class="eyebrow">${CATEGORIES[p.cat]}</p>
+      <p class="eyebrow">${typeLabel[p.type]}${p.family ? ` · ${p.family}` : ""}</p>
       <h2>${p.name}</h2>
       <p>${p.desc}</p>
       <div class="pd-facts">
-        <div><span>Level</span>${p.levels.join(", ")}</div>
+        <div><span>Level</span>${p.levels ? p.levels.join(", ") : p.level}</div>
         <div><span>Content</span>${p.size}</div>
-        <div><span>Format</span>${p.formats.map((f) => FORMATS[f]).join(", ")}</div>
-        <div><span>Best for</span>${p.goals.map((g) => GOALS[g]).join(", ")}</div>
+        <div><span>Access</span>Instant, for life</div>
+        <div><span>Language of instruction</span>English</div>
       </div>
-      <div class="price">${priceTag(p)}${p.old ? `<s>${money(p.old)}</s>` : ""}</div>
+      <div class="price">${money(p.price)}${p.old ? `<s>${money(p.old)}</s>` : ""}</div>
       <div class="hero-cta tight">
-        <button class="btn btn-primary" data-add="${p.id}">Add to cart</button>
-        <button class="btn btn-ghost" data-pack="${p.id}">＋ Pack</button>
+        <button class="btn ${added ? "btn-ghost" : "btn-primary"}" data-add="${p.id}" ${added ? "disabled" : ""}>${included ? "Included in your full level" : added ? "In your cart" : "Add to cart"}</button>
+        ${p.type === "module" || p.type === "level" ? `<button class="link-btn" data-goto-level="${p.level}">See all ${p.level} modules</button>` : ""}
       </div>
     </div>
   </div>`);
 }
 
-function openCheckout() {
+// ---- Checkout ----
+// Cameroon: MTN MoMo, Orange Money, card and PayPal. Elsewhere: card and PayPal.
+function methodsFor(country) {
+  return Object.entries(PAY_METHODS).filter(([, m]) => country === "Cameroon" || !m.cm);
+}
+
+function renderPayOptions() {
+  const country = $("#coCountry").value;
+  const methods = methodsFor(country);
+  $("#payMethods").innerHTML = methods.map(([k, m], i) => `<label class="pm pm-${k}"><input type="radio" name="pay" value="${k}" ${i === 0 ? "checked" : ""}> ${m.label}</label>`).join("");
+  renderPayDetails();
+}
+
+function renderPayDetails() {
+  const country = $("#coCountry").value;
+  const method = document.querySelector('input[name="pay"]:checked')?.value;
+  const m = PAY_METHODS[method];
   const t = totals();
+  const fcfa = country === "Cameroon" && state.currency !== "XAF" ? `<div><span>Charged in FCFA</span><span>${money(t.total, "XAF")}</span></div>` : "";
+  $("#payDetails").innerHTML = m?.phone ? `<label for="coMomo">${m.label} number
+      <input id="coMomo" name="momo" type="tel" required inputmode="tel" placeholder="6XX XX XX XX" autocomplete="tel"></label>
+      <p class="note">You will receive a payment request on this phone. Confirm it with your ${m.label} PIN.</p>` : "";
+  $("#coTotals").innerHTML = `${fcfa}<div class="grand"><span>Total</span><span>${money(t.total)}</span></div>`;
+  $("#payBtn").textContent = m?.phone ? `Send ${m.label} request` : `Pay ${money(t.total)}`;
+}
+
+function openCheckout() {
   closeDrawers();
-  openModal(`<form class="checkout" id="checkoutForm">
+  openModal(`<form class="checkout" id="checkoutForm" novalidate>
     <h2>Checkout</h2>
     <div class="form-grid">
       <label for="coName">Full name<input id="coName" name="name" required autocomplete="name"></label>
-      <label for="coEmail">Email (to receive your links)<input id="coEmail" name="email" type="email" required autocomplete="email"></label>
-      <label for="coPhone" class="full">WhatsApp number<input id="coPhone" name="phone" type="tel" required autocomplete="tel" placeholder="+237 6…"></label>
+      <label for="coEmail">Email (to receive your access)<input id="coEmail" name="email" type="email" required autocomplete="email"></label>
+      <label for="coCountry">Country<select id="coCountry" name="country">${COUNTRIES.map((c) => `<option ${c === state.country ? "selected" : ""}>${c}</option>`).join("")}</select></label>
+      <label for="coPhone">WhatsApp number (optional)<input id="coPhone" name="phone" type="tel" autocomplete="tel"></label>
     </div>
-    <div class="pay-methods" role="radiogroup" aria-label="Payment method">
-      <label><input type="radio" name="pay" value="Mobile Money" checked> 📱 Mobile Money</label>
-      <label><input type="radio" name="pay" value="Card"> 💳 Card</label>
-      <label><input type="radio" name="pay" value="PayPal"> 🅿️ PayPal</label>
-    </div>
-    <div class="totals"><div class="grand"><span>Total</span><span>${money(t.total)}</span></div></div>
-    <button class="btn btn-primary btn-block">Pay ${money(t.total)}</button>
+    <p class="eyebrow pm-title">Payment method</p>
+    <div class="pay-methods" id="payMethods" role="radiogroup" aria-label="Payment method"></div>
+    <div id="payDetails"></div>
+    <div class="totals" id="coTotals"></div>
+    <p class="form-error" id="formError" hidden></p>
+    <button class="btn btn-primary btn-block" id="payBtn"></button>
     <p class="note">🔒 Demo checkout: no real payment is taken yet.</p>
   </form>`);
+  renderPayOptions();
 }
+
+const CM_MOBILE = /^(?:\+?237)?6\d{8}$/;
 
 function confirmOrder(form) {
   const data = new FormData(form);
+  const err = $("#formError");
+  const method = data.get("pay");
+  const m = PAY_METHODS[method];
+  let msg = "";
+  if (!data.get("name").trim()) msg = "Please enter your name.";
+  else if (!form.coEmail.checkValidity() || !data.get("email")) msg = "Please enter a valid email address: your access links are sent there.";
+  else if (m.phone && !CM_MOBILE.test(String(data.get("momo")).replace(/[\s.-]/g, ""))) msg = `Enter a Cameroon mobile number for ${m.label}: 9 digits starting with 6, e.g. 677 12 34 56.`;
+  if (msg) { err.textContent = msg; err.hidden = false; return; }
+
+  state.country = data.get("country"); store.set("country", state.country);
   const ref = "PPF-" + Date.now().toString(36).toUpperCase().slice(-6);
-  const total = money(totals().total);
-  const names = state.cart.map((l) => byId(l.id).name);
+  const t = totals();
+  const amount = state.country === "Cameroon" ? money(t.total, "XAF") : money(t.total);
+  const names = state.cart.map((id) => byId(id).name);
   state.cart = []; state.promo = null;
-  saveCart(); store.set("promo", null);
-  renderCart();
+  store.set("promo", null);
+  saveCart();
   openModal(`<div class="success">
-    <h2 class="section-title">Merci, ${data.get("name").split(" ")[0]}!</h2>
-    <p>Order <strong>${ref}</strong> · ${total} · ${data.get("pay")}</p>
+    <h2 class="section-title">Merci, ${data.get("name").trim().split(" ")[0]}!</h2>
+    <p>Order <strong>${ref}</strong> · ${amount} · ${m.label}</p>
+    ${m.phone ? `<p class="note">In the live shop, the ${m.label} payment request would now go to ${data.get("momo")}.</p>` : ""}
     <ul class="ticks">${names.map((n) => `<li>${n}</li>`).join("")}</ul>
-    <p>Your access links go to <strong>${data.get("email")}</strong> and to your WhatsApp.</p>
+    <p>Your access links go to <strong>${data.get("email")}</strong>.</p>
     <button class="btn btn-primary" data-modal-close>Back to the shop</button>
   </div>`);
 }
 
 // ====== Placement test ======
 let testStep = 0, testAnswers = [];
-
-function openTest() {
-  testStep = 0; testAnswers = [];
-  closeDrawers();
-  renderTestStep();
-}
+function openTest() { testStep = 0; testAnswers = []; closeDrawers(); renderTestStep(); }
 
 function renderTestStep() {
   const item = TEST[testStep];
@@ -312,23 +382,23 @@ function renderTestStep() {
 }
 
 function testResult() {
-  let reached = "A1", started = false;
-  for (const lvl of ["A1", "A2", "B1", "B2"]) {
-    const qs = TEST.map((t, i) => ({ t, i })).filter((x) => x.t.lvl === lvl);
-    const score = qs.filter((x) => testAnswers[x.i] === x.t.ok).length;
-    if (score >= 2) { reached = lvl; started = true; } else break;
+  let reached = "A0";
+  for (const lvl of ["A1", "A2", "B1", "B2", "C1"]) {
+    const score = TEST.filter((t, i) => t.lvl === lvl && testAnswers[i] === t.ok).length;
+    if (score >= 2) reached = lvl; else break;
   }
   const correct = TEST.filter((t, i) => testAnswers[i] === t.ok).length;
-  const target = !started ? "A1" : LEVELS[Math.min(LEVELS.indexOf(reached) + 1, LEVELS.length - 1)];
-  const picks = PRODUCTS.filter((p) => p.levels.includes(target) && p.cat !== "bundles").sort((a, b) => (b.best ? 1 : 0) - (a.best ? 1 : 0)).slice(0, 3);
-  store.set("level", started ? reached : "A1");
+  const next = LEVELS[Math.min(LEVELS.indexOf(reached) + 1, LEVELS.length - 1)];
+  const picks = [`mod-${next}-1`, `practice-${reached === "A0" ? "A0" : reached}`, `level-${next}`].map(byId);
+  state.level = next; store.set("level", next);
+  renderLevelTabs(); renderLevelPanel();
   openModal(`<div class="quiz quiz-result">
     <p class="eyebrow">Your result · ${correct}/${TEST.length} correct</p>
-    <h2>${started ? `You're around <em>${reached}</em>` : "You're starting at <em>A1</em>"}</h2>
-    <p>${started ? `Your next step is <strong>${target}</strong>. These products fit it:` : "Perfect: everything below is explained in English from the very first word."}</p>
-    <ul class="pick-list">${picks.map((p) => `<li><span>${p.name} <small>${levelRange(p)}</small></span><span><strong>${priceTag(p)}</strong> <button class="btn btn-primary mini" data-add="${p.id}">Add</button></span></li>`).join("")}</ul>
+    <h2>${reached === "A0" ? "Start at <em>A0</em>" : `You're around <em>${reached}</em>`}</h2>
+    <p>${reached === "A0" ? "Perfect: everything is explained in English from the very first word." : `Your next step is <strong>${next}</strong>. A good way to begin:`}</p>
+    <ul class="pick-list">${picks.map((p) => `<li><span>${p.name}</span><span><strong>${money(p.price)}</strong> <button class="btn btn-primary mini" data-add="${p.id}">Add</button></span></li>`).join("")}</ul>
     <div class="hero-cta tight">
-      <button class="btn btn-ghost" data-show-level="${target}">See all ${target} products</button>
+      <button class="btn btn-ghost" data-goto-level="${next}">See all ${next} modules</button>
       <button class="link-btn" data-test>Retake the test</button>
     </div>
   </div>`);
@@ -337,46 +407,29 @@ function testResult() {
 // ====== WhatsApp ======
 const whatsappLink = (text) => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 function whatsappOrder() {
-  const lines = state.cart.map((l) => `• ${byId(l.id).name}${l.pack ? " (pack)" : ""}`).join("\n");
+  const lines = state.cart.map((id) => `• ${byId(id).name}`).join("\n");
   const text = `Hello, I'd like to order:\n${lines}\n\nTotal: ${money(totals().total)}${state.promo ? `\nPromo code: ${state.promo}` : ""}`;
   window.open(whatsappLink(text), "_blank", "noopener");
 }
 
-// ====== Drawers ======
-function openDrawer(id) {
-  closeDrawers();
-  $(id).classList.add("open");
-  $(id).setAttribute("aria-hidden", "false");
-  $("#overlay").hidden = false;
-}
-function closeDrawers() {
-  document.querySelectorAll(".drawer").forEach((d) => { d.classList.remove("open"); d.setAttribute("aria-hidden", "true"); });
-  $("#overlay").hidden = true;
-}
+// ====== Drawer ======
+function openDrawer() { $("#cart").classList.add("open"); $("#cart").setAttribute("aria-hidden", "false"); $("#overlay").hidden = false; }
+function closeDrawers() { $("#cart").classList.remove("open"); $("#cart").setAttribute("aria-hidden", "true"); $("#overlay").hidden = true; }
 
 // ====== Events ======
 document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-add],[data-open],[data-wish],[data-pack],[data-rm],[data-brm],[data-cat],[data-close],[data-modal-close],[data-plan],[data-test],[data-answer],[data-show-level]");
+  const el = e.target.closest("[data-add],[data-open],[data-rm],[data-level],[data-family],[data-close],[data-modal-close],[data-test],[data-answer],[data-goto-level]");
   if (!el) return;
   const d = el.dataset;
-  if (d.add) addToCart(+d.add);
-  else if (d.open) openProduct(+d.open);
-  else if (d.wish) {
-    const id = +d.wish;
-    state.wish = state.wish.includes(id) ? state.wish.filter((w) => w !== id) : [...state.wish, id];
-    store.set("wish", state.wish);
-    renderGrid(); renderCart();
+  if (d.add) {
+    addToCart(d.add);
+    if (el.closest(".pd")) openProduct(d.add);
+    else if (el.closest(".quiz")) { el.disabled = true; el.textContent = "Added"; }
   }
-  else if (d.pack) {
-    const id = +d.pack;
-    if (state.builder.includes(id)) { toast("Already in your pack"); return; }
-    state.builder.push(id);
-    renderBuilder();
-    toast(`Added to your pack (${state.builder.length})`);
-  }
-  else if (d.rm) { state.cart.splice(+d.rm, 1); saveCart(); renderCart(); }
-  else if (d.brm) { state.builder.splice(+d.brm, 1); renderBuilder(); }
-  else if (d.cat !== undefined) { state.cat = d.cat; renderGrid(); }
+  else if (d.open) openProduct(d.open);
+  else if (d.rm) removeFromCart(d.rm);
+  else if (d.level) { state.level = d.level; store.set("level", d.level); renderLevelPanel(); }
+  else if (d.family !== undefined) { state.family = d.family; renderExams(); }
   else if ("close" in d) closeDrawers();
   else if ("modalClose" in d) modal.close();
   else if ("test" in d) { e.preventDefault(); openTest(); }
@@ -385,34 +438,31 @@ document.addEventListener("click", (e) => {
     testStep++;
     testStep < TEST.length ? renderTestStep() : testResult();
   }
-  else if (d.showLevel) {
-    modal.close();
-    state.level = d.showLevel; state.cat = "";
-    $("#level").value = d.showLevel;
-    renderGrid();
-    $("#shop").scrollIntoView();
-  }
-  else if (d.plan) {
-    const plan = PLANS[+d.plan];
-    window.open(whatsappLink(`Hello, I'd like to join the Pas-Pas Club (${plan.name} plan, ${money(plan.price)}/month).`), "_blank", "noopener");
+  else if (d.gotoLevel) {
+    if (modal.open) modal.close();
+    state.level = d.gotoLevel; store.set("level", d.gotoLevel);
+    renderLevelPanel();
+    $("#courses").scrollIntoView();
   }
 });
 
 modal.addEventListener("click", (e) => { if (e.target === modal) modal.close(); });
+modal.addEventListener("change", (e) => {
+  if (e.target.id === "coCountry") renderPayOptions();
+  else if (e.target.name === "pay") renderPayDetails();
+});
 modal.addEventListener("submit", (e) => { if (e.target.id === "checkoutForm") { e.preventDefault(); confirmOrder(e.target); } });
 
-$("#cartBtn").addEventListener("click", () => openDrawer("#cart"));
-$("#wishBtn").addEventListener("click", () => openDrawer("#wish"));
+$("#cartBtn").addEventListener("click", openDrawer);
 $("#overlay").addEventListener("click", closeDrawers);
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawers(); });
 $("#checkoutBtn").addEventListener("click", openCheckout);
 $("#waOrder").addEventListener("click", whatsappOrder);
 
-$("#search").addEventListener("input", (e) => { state.query = e.target.value; renderGrid(); });
-$("#search").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#shop").scrollIntoView(); });
-for (const key of ["level", "goal", "format", "sort"]) {
-  $("#" + key).addEventListener("change", (e) => { state[key] = e.target.value; renderGrid(); });
-}
+$("#search").addEventListener("input", (e) => { state.query = e.target.value; renderSearch(); });
+$("#search").addEventListener("keydown", (e) => { if (e.key === "Enter" && state.query.trim()) $("#results").scrollIntoView(); });
+$("#clearSearch").addEventListener("click", () => { state.query = ""; $("#search").value = ""; renderSearch(); });
+
 $("#currency").addEventListener("change", (e) => {
   state.currency = e.target.value; store.set("currency", state.currency);
   renderAll();
@@ -427,39 +477,24 @@ $("#promoForm").addEventListener("submit", (e) => {
   renderCart();
 });
 
-$("#builderAdd").addEventListener("click", () => {
-  state.builder.forEach((id) => addToCart(id, true));
-  state.builder = [];
-  renderBuilder();
-  openDrawer("#cart");
-});
-
 $("#newsletter").addEventListener("submit", (e) => {
   e.preventDefault();
   e.target.reset();
   toast("Subscribed. Your code: WELCOME10");
 });
 
-function renderPlans() {
-  $("#plans").innerHTML = PLANS.map((p, i) => `<div class="plan ${p.featured ? "featured" : ""}">
-    <h3>${p.name}</h3>
-    <span class="price">${money(p.price)}</span><small>per month${p.months > 1 ? `, billed ${money(p.price * p.months)} every ${p.months} months` : ""}</small>
-    <button class="btn ${p.featured ? "btn-primary" : "btn-ghost"} mini" data-plan="${i}">Join</button>
-  </div>`).join("");
-}
-
 function renderAll() {
-  renderGrid();
   renderCart();
-  renderBuilder();
-  renderPlans();
+  renderLevelTabs();
+  renderLevelPanel();
+  renderCardsState();
 }
 
 // ====== Start ======
+$("#currency").innerHTML = Object.entries(CURRENCIES).map(([k, c]) => `<option value="${k}">${c.label}</option>`).join("");
+$("#currency").value = state.currency;
 const waGreeting = whatsappLink("Hello, I have a question about your French courses.");
-$("#waFloat").href = waGreeting;
-$("#waFooter").href = waGreeting;
-$("#waFooter").target = "_blank";
+for (const sel of ["#waFloat", "#waFooter", "#waPay"]) { $(sel).href = waGreeting; $(sel).target = "_blank"; $(sel).rel = "noopener"; }
 $("#year").textContent = new Date().getFullYear();
-renderSelectors();
+document.querySelectorAll("[data-module-count]").forEach((el) => { el.textContent = PRODUCTS.filter((p) => p.type === "module").length; });
 renderAll();

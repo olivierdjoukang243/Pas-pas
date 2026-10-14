@@ -23,24 +23,23 @@
 
 | Levier | Ce que fait le site |
 |---|---|
-| Test de niveau gratuit | 12 questions, niveau CECR (A1 à B2) et produits recommandés : il sert à capter des prospects |
-| Expliqué en anglais | Interface et cours en anglais, avec les pièges propres aux anglophones (faux amis, genre, articles) |
-| Paiement local | FCFA (XAF/XOF), NGN, GHS, USD, CAD, GBP, EUR ; Mobile Money, carte, PayPal, commande WhatsApp |
-| Achat unique, accès à vie | Produits téléchargeables ; abonnement « Club » proposé en option seulement |
-| Canada | Packs TCF et TEF Canada avec tableaux NCLC, pack immigration complet |
-| Retour humain | Coaching oral en visio, corrections écrites, leçon quotidienne sur WhatsApp |
-| Pack sur mesure | 3 produits ou plus : −15 % automatique |
-| Confiance | Remboursement sous 7 jours, accès à vie, vrais professeurs |
+| Parcours complet A0 → C2 | 7 niveaux découpés en 38 modules ; achat au module ou au niveau complet (−30 %) |
+| Expliqué en anglais | Interface et cours en anglais, pour un public anglophone international |
+| Examens | Sujets au format officiel DELF (A1–B2), DALF (C1–C2), TCF Tout public et TCF Canada |
+| Entraînement | Sujets d'entraînement simples pour chaque niveau, entre les modules |
+| Test de niveau gratuit | 15 questions, niveau A0 à C1 et module recommandé : il sert à capter des prospects |
+| Paiement | International : carte et PayPal. Cameroun : MTN MoMo et Orange Money en FCFA |
+| Achat unique, accès à vie | Pas d'abonnement obligatoire ; passage au niveau complet en payant la différence |
 
 ## 4. À faire avant le lancement
 
 - Remplacer le catalogue d'exemple (`js/products.js`) par vos vrais produits, contenus et prix.
 - Mettre votre numéro WhatsApp dans `js/app.js`.
-- Brancher un vrai paiement : CinetPay, Flutterwave ou Paystack (Mobile Money et cartes en Afrique), Stripe ou PayPal ailleurs. Pour la livraison des fichiers, Gumroad, Selar ou Payhip savent envoyer les liens de téléchargement automatiquement.
+- Brancher un vrai paiement : CinetPay, Campay ou NotchPay pour MTN MoMo et Orange Money au Cameroun ; Stripe ou PayPal à l'international.
 - Mettre à jour les taux de change NGN, GHS, USD, CAD et GBP (le FCFA a une parité fixe).
 - Ne publier que de **vrais** avis clients, une fois les premières ventes faites.
 - Mentions légales, conditions de vente et politique de remboursement.
-- TCF et TEF sont des marques de leurs organismes : rester « préparation indépendante » (mention déjà en pied de page).
+- DELF, DALF et TCF appartiennent à France Éducation international : vendre des **sujets originaux** au format officiel, jamais des copies des épreuves officielles, et rester « préparation indépendante » (mention déjà en pied de page).
 
 ### Sources
 - https://www.italki.com/en/blog/best-online-platform-to-learn-french
