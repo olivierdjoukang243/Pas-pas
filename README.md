@@ -17,7 +17,7 @@ Site de vente de la méthode Pas-à-Pas : cours de français pour adultes anglop
 - Un niveau complet coûte 9 $ (4 900 FCFA) de moins que ses deux parties. La Complete Method coûte 37 $ (20 300 FCFA) de moins que les quatre niveaux. Le site calcule ces économies à partir des prix, sans les saisir à la main.
 - B2, C1 et C2 sont en préparation (B2 partie 1 commencé) : affichés, mais non vendus.
 - Sujets DELF et TCF : en production, rien en vente. Pas de DALF.
-- Formats livrés : PDF « édition vendue » avec corrigé, édition web interactive, mémo PDF et enregistrements audio de chaque module. Pas de vidéo. L'édition CLASSROOM n'est jamais vendue.
+- Formats livrés : PDF « édition vendue » avec corrigé, accompagné de l'audio en MP3 et d'un mémo PDF ; édition web interactive, à faire en ligne sur le site, avec l'audio intégré à la page. Pas de vidéo. L'édition CLASSROOM n'est jamais vendue.
 - Ventes définitives, sans remboursement.
 
 ## Fonctionnalités
@@ -45,8 +45,10 @@ GitHub Pages, branche `main` : https://olivierdjoukang243.github.io/Pas-pas/
 
 Le bouton « Buy » ouvre pour l'instant une fenêtre « Online checkout opens soon » : aucun paiement n'est encaissé. Restent à fournir ou à construire :
 1. Le prestataire de paiement (piste principale : Notch Pay, carte et mobile money au Cameroun) et l'état du compte.
-2. Un serveur de livraison : webhook de paiement, puis lien de téléchargement signé et limité dans le temps.
+2. Un serveur de livraison : webhook de paiement, puis lien de téléchargement signé et limité dans le temps (PDF, MP3, mémo).
+   Les éditions web se font en ligne sur le site : elles doivent être servies derrière un accès acheteur, pas en fichiers publics. GitHub Pages ne sait pas protéger un contenu payant.
 3. Le stockage privé des fichiers.
 4. Le nom de domaine, l'adresse e-mail dédiée et le numéro WhatsApp.
 5. Les pages légales : conditions de vente et confidentialité.
-6. Les titres des 56 modules (aucun titre n'est inventé sur le site).
+6. Les titres des 56 modules (aucun titre n'est inventé sur le site ; seul le module A0-1, « Letters, Vowels and Introducing Yourself », est cité).
+7. Les noms définitifs des fichiers à livrer, fixés au moment de la mise en ligne.
