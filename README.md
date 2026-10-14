@@ -1,20 +1,18 @@
-# Pas-Pas — boutique en ligne de produits français
+# Pas-Pas French — learn French step by step
 
-Site e-commerce statique (HTML/CSS/JS, sans build) pour vendre des produits français en France, en Europe, en Afrique et dans le monde.
+Boutique en ligne internationale (HTML/CSS/JS, sans compilation) qui vend des outils numériques pour apprendre le français aux **anglophones** : cours de A0 à C2 découpés en modules, sujets DELF, DALF et TCF, et sujets d'entraînement par niveau. Le site est en anglais.
 
 L'analyse des concurrents et le positionnement sont dans [`docs/analyse-concurrentielle.md`](docs/analyse-concurrentielle.md).
 
 ## Fonctionnalités
 
-- Catalogue de 24 produits (épicerie fine, vins, fromages, douceurs, beauté, artisanat, coffrets) avec région, producteur et label (AOP, IGP, Label Rouge, Bio, Origine France Garantie)
-- Recherche instantanée, filtres par catégorie, région et label, tri, filtre « livrable dans ma zone »
-- **6 zones de livraison** : frais, délai et seuil de gratuité affichés dès l'accueil ; produits frais réservés à la France
-- **Multi-devises** : EUR, FCFA (XAF/XOF), USD, GBP, CAD
-- Panier persistant, favoris, barre « plus que X € pour la livraison offerte », code promo `BIENVENUE10`
-- **Coffret sur mesure** : 3 produits ou plus donnent −10 %
-- Abonnement « Box du Terroir » (3 formules)
-- Paiement : carte, PayPal, Mobile Money, virement (formulaire de démonstration), et commande via **WhatsApp**
-- Confirmation d'âge pour l'alcool, SEO (meta, Open Graph, JSON-LD), responsive mobile
+- **7 niveaux, de A0 à C2**, chacun découpé en **modules** (38 au total). Chaque module s'achète seul ; le niveau complet coûte 30 % de moins. Le panier propose de passer au niveau complet quand on a déjà plusieurs modules.
+- **Sujets d'examen** au format officiel : DELF A1 à B2, DALF C1 et C2, TCF Tout public, TCF Canada
+- **Sujets d'entraînement simples par niveau** (A0 à C2)
+- **Test de niveau gratuit** (15 questions) qui donne un niveau de A0 à C1 et recommande le module suivant
+- **Vente internationale** : carte bancaire et PayPal partout ; **MTN MoMo et Orange Money** quand le pays choisi est le Cameroun (montant en FCFA, numéro vérifié)
+- Devises : EUR, USD, GBP, CAD, FCFA (XAF/XOF), NGN, GHS. La devise est devinée d'après le fuseau horaire du visiteur (FCFA au Cameroun, CAD au Canada…)
+- Recherche, panier, code promo `WELCOME10`, commande WhatsApp, adapté au mobile
 
 ## Lancer en local
 
@@ -27,18 +25,14 @@ python3 -m http.server 8000
 
 | Quoi | Où |
 |---|---|
-| Produits, prix, photos | `js/products.js` |
-| Numéro WhatsApp, codes promo, zones, devises, abonnements | haut de `js/app.js` |
+| Niveaux, modules, sujets d'examen, prix | `js/products.js` |
+| Numéro WhatsApp, codes promo, devises, pays et moyens de paiement, questions du test | haut de `js/app.js` |
 | Couleurs et typographies | variables `:root` de `css/style.css` |
 
 ## Mise en ligne
 
-Le site est 100 % statique : il se déploie tel quel sur GitHub Pages, Netlify ou Vercel.
+Publié avec GitHub Pages depuis la branche `main` : https://olivierdjoukang243.github.io/Pas-pas/
 
 ## Avant d'encaisser de vraies commandes
 
-Le paiement est **simulé**. Pour vendre réellement, il faut :
-1. Brancher Stripe (carte), PayPal, et CinetPay, Flutterwave ou PayDunya (Mobile Money), ou migrer vers Shopify ou WooCommerce.
-2. Remplacer les emojis par de vraies photos produits.
-3. Rédiger les mentions légales, les CGV et la politique RGPD, et vérifier les règles douanières par pays (alcool, viande, lait cru).
-4. Mettre à jour les taux de change (aujourd'hui fixes et indicatifs, sauf le FCFA qui a une parité fixe).
+Le paiement est **simulé**. Pour MTN MoMo et Orange Money au Cameroun, il faut un agrégateur comme **CinetPay**, **Campay** ou **NotchPay** ; pour la carte et PayPal à l'international, **Stripe** ou **PayPal**. Les sujets DELF, DALF et TCF vendus doivent être des sujets originaux au format officiel, pas des copies des épreuves officielles (droits de France Éducation international).

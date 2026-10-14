@@ -1,40 +1,84 @@
-// Catalogue de démonstration. Prix en euros TTC.
-// intl: false => produit frais non expédié hors France métropolitaine.
-const CATEGORIES = {
-  epicerie: "Épicerie fine",
-  vins: "Vins & spiritueux",
-  fromages: "Fromages & charcuterie",
-  douceurs: "Douceurs & biscuits",
-  beaute: "Beauté & bien-être",
-  maison: "Maison & art de vivre",
-  coffrets: "Coffrets cadeaux",
+// Catalogue. Base prices in euros; the page converts them to the visitor's currency.
+// Titles, module lists and prices are examples: replace them with your real content.
+
+const LEVELS = ["A0", "A1", "A2", "B1", "B2", "C1", "C2"];
+
+// Each level is a course made of modules. Modules sell one by one, or the whole level at a discount.
+const LEVEL_COURSES = {
+  A0: { name: "Discovery", hue: 190, modulePrice: 5, lessons: 5,
+    can: "Never studied French? Start here: the sounds of French, greetings and your first 200 words.",
+    modules: ["Sounds & the alphabet", "Greetings & introductions", "Numbers, dates & time", "Survival phrases"] },
+  A1: { name: "Beginner", hue: 210, modulePrice: 7, lessons: 6,
+    can: "Introduce yourself, ask simple questions and handle everyday situations.",
+    modules: ["Être, avoir & articles", "Family & describing people", "Daily routine (present tense)", "Food & shopping", "Town & directions", "Plans & the near future"] },
+  A2: { name: "Elementary", hue: 225, modulePrice: 7, lessons: 6,
+    can: "Talk about past events, travel and handle routine tasks at work or school.",
+    modules: ["The passé composé", "Imparfait or passé composé?", "Travel & transport", "Health & the body", "Object pronouns", "Comparisons & the future"] },
+  B1: { name: "Intermediate", hue: 245, modulePrice: 9, lessons: 7,
+    can: "Give opinions, tell stories and work or study in French with some support.",
+    modules: ["Expressing opinions", "Subjunctive essentials", "Conditional & hypotheses", "Relative pronouns: qui, que, dont, où", "Work & studies", "Letters & short essays"] },
+  B2: { name: "Upper-intermediate", hue: 265, modulePrice: 9, lessons: 7,
+    can: "Argue a point, follow the news and write clear, structured texts.",
+    modules: ["Argument & connectors", "Advanced subjunctive", "Reported speech", "Passive voice & nominalisation", "Media & current affairs", "Formal writing & synthesis"] },
+  C1: { name: "Advanced", hue: 330, modulePrice: 12, lessons: 8,
+    can: "Use French flexibly for academic and professional purposes, with nuance.",
+    modules: ["Nuance & register", "Complex sentence structures", "Academic writing", "Presentations & debate", "Idioms & culture"] },
+  C2: { name: "Mastery", hue: 350, modulePrice: 12, lessons: 8,
+    can: "Understand virtually everything and express yourself with precision and style.",
+    modules: ["Style & rhetoric", "Literary texts", "Professional & legal French", "Synthesis & critical review", "Mastering spoken French"] },
+};
+const LEVEL_DISCOUNT = 0.30; // whole level vs. buying every module
+
+// Exam papers in the official format (original mock papers, not copies of official exams).
+const EXAMS = [
+  { code: "DELF A1", family: "DELF", levels: ["A1"], price: 15, sets: 4 },
+  { code: "DELF A2", family: "DELF", levels: ["A2"], price: 15, sets: 4 },
+  { code: "DELF B1", family: "DELF", levels: ["B1"], price: 19, sets: 4, best: true },
+  { code: "DELF B2", family: "DELF", levels: ["B2"], price: 19, sets: 4, best: true },
+  { code: "DALF C1", family: "DALF", levels: ["C1"], price: 25, sets: 3 },
+  { code: "DALF C2", family: "DALF", levels: ["C2"], price: 25, sets: 3 },
+  { code: "TCF Tout public", family: "TCF", levels: ["A1", "A2", "B1", "B2", "C1", "C2"], price: 22, sets: 4 },
+  { code: "TCF Canada", family: "TCF", levels: ["A1", "A2", "B1", "B2", "C1", "C2"], price: 25, sets: 4, best: true },
+];
+const EXAM_HUES = { DELF: 205, DALF: 280, TCF: 4 };
+const EXAM_NOTES = {
+  DELF: "Listening, reading, writing and speaking, timed like the real exam, with marking grids out of 100.",
+  DALF: "Long listening and reading documents, synthesis and argued essay, with model answers.",
+  TCF: "Multiple-choice listening, reading and language sections, plus writing and speaking tasks, with a score-to-level table.",
 };
 
-const PRODUCTS = [
-  { id: 1, name: "Moutarde de Dijon à l'ancienne", cat: "epicerie", region: "Bourgogne", price: 6.9, old: null, label: "IGP", producer: "Moutarderie familiale de Beaune", emoji: "🟡", color: "#f6e7a8", rating: 4.8, reviews: 214, intl: true, best: true, desc: "Graines de moutarde 100 % bourguignonnes, broyées à la meule de pierre. Piquant franc, idéale avec viandes et vinaigrettes. Pot verre 210 g." },
-  { id: 2, name: "Fleur de sel de Guérande", cat: "epicerie", region: "Bretagne", price: 8.5, old: null, label: "Label Rouge", producer: "Paludiers de la presqu'île", emoji: "🧂", color: "#e4eef5", rating: 4.9, reviews: 389, intl: true, best: true, desc: "Récoltée à la main au râteau en surface des œillets. Croquante et légèrement iodée. Boîte 125 g." },
-  { id: 3, name: "Huile d'olive de Nyons", cat: "epicerie", region: "Provence", price: 18.9, old: 22.0, label: "AOP", producer: "Moulin coopératif de Nyons", emoji: "🫒", color: "#e3ebc8", rating: 4.7, reviews: 156, intl: true, desc: "Olive Tanche, première pression à froid. Notes de pomme verte et d'amande. Bouteille 50 cl." },
-  { id: 4, name: "Piment d'Espelette", cat: "epicerie", region: "Pays basque", price: 9.9, old: null, label: "AOP", producer: "Ferme Etxeberria", emoji: "🌶️", color: "#f7d4cc", rating: 4.8, reviews: 201, intl: true, desc: "Poudre de piment séché au soleil puis au four. Chaleur douce et fruitée. Pot 40 g." },
-  { id: 5, name: "Herbes de Provence", cat: "epicerie", region: "Provence", price: 5.5, old: null, label: "Label Rouge", producer: "Herboristerie du Luberon", emoji: "🌿", color: "#dfeccf", rating: 4.6, reviews: 98, intl: true, desc: "Thym, romarin, sarriette, origan. Cultivées et séchées en Provence. Sachet kraft 50 g." },
-  { id: 6, name: "Foie gras de canard entier", cat: "epicerie", region: "Sud-Ouest", price: 34.0, old: 39.0, label: "IGP", producer: "Conserverie du Gers", emoji: "🦆", color: "#f3e0cf", rating: 4.9, reviews: 312, intl: true, best: true, desc: "Mi-cuit en bocal, appertisé : se conserve 3 ans sans réfrigération, idéal à l'export. 180 g." },
-  { id: 7, name: "Champagne Brut Premier Cru", cat: "vins", region: "Champagne", price: 39.0, old: null, label: "AOP", producer: "Maison vigneronne de la Montagne de Reims", emoji: "🍾", color: "#f5ecd0", rating: 4.8, reviews: 177, intl: true, alcohol: true, best: true, desc: "Assemblage pinot noir / chardonnay, 36 mois sur lattes. Bulles fines, notes de brioche. 75 cl." },
-  { id: 8, name: "Bordeaux Saint-Émilion Grand Cru", cat: "vins", region: "Bordeaux", price: 29.0, old: 34.0, label: "AOP", producer: "Château familial de la rive droite", emoji: "🍷", color: "#ecd1d6", rating: 4.7, reviews: 143, intl: true, alcohol: true, desc: "Merlot dominant, élevé 18 mois en fût de chêne. Fruits noirs, tanins soyeux. 75 cl, millésime 2021." },
-  { id: 9, name: "Cognac VSOP", cat: "vins", region: "Charente", price: 49.0, old: null, label: "AOP", producer: "Distillerie de Jarnac", emoji: "🥃", color: "#f1ddc2", rating: 4.8, reviews: 88, intl: true, alcohol: true, desc: "Eaux-de-vie de Fins Bois vieillies au moins 4 ans. Vanille, fruits secs. 70 cl." },
-  { id: 10, name: "Calvados Pays d'Auge", cat: "vins", region: "Normandie", price: 36.0, old: null, label: "AOP", producer: "Domaine cidricole du Calvados", emoji: "🍎", color: "#f3dcc9", rating: 4.6, reviews: 61, intl: true, alcohol: true, desc: "Double distillation en alambic à repasse, 6 ans d'âge. Pomme cuite, épices. 70 cl." },
-  { id: 11, name: "Comté 24 mois", cat: "fromages", region: "Jura", price: 14.5, old: null, label: "AOP", producer: "Fruitière du Haut-Doubs", emoji: "🧀", color: "#fbefc4", rating: 4.9, reviews: 265, intl: false, best: true, desc: "Affiné 24 mois en cave d'épicéa. Cristaux, notes de noisette grillée. Portion 300 g, sous vide." },
-  { id: 12, name: "Saucisson sec pur porc", cat: "fromages", region: "Auvergne", price: 9.9, old: null, label: "IGP", producer: "Salaisons des Monts d'Auvergne", emoji: "🥓", color: "#f3d6cf", rating: 4.7, reviews: 190, intl: false, desc: "Séché 6 semaines en altitude. Recette traditionnelle sel, poivre, ail. 250 g." },
-  { id: 13, name: "Roquefort", cat: "fromages", region: "Occitanie", price: 11.9, old: null, label: "AOP", producer: "Caves de Roquefort-sur-Soulzon", emoji: "🧀", color: "#e6ebe6", rating: 4.6, reviews: 74, intl: false, desc: "Lait cru de brebis, affiné en caves naturelles. Puissant et crémeux. 200 g." },
-  { id: 14, name: "Macarons de Paris (boîte de 12)", cat: "douceurs", region: "Île-de-France", price: 19.9, old: null, label: "Fait main", producer: "Pâtisserie du Marais", emoji: "🍬", color: "#f8d9e4", rating: 4.7, reviews: 233, intl: false, best: true, desc: "Framboise, pistache, chocolat, vanille, caramel beurre salé, citron. À déguster sous 7 jours." },
-  { id: 15, name: "Caramels au beurre salé", cat: "douceurs", region: "Bretagne", price: 7.9, old: null, label: "Origine France Garantie", producer: "Confiserie de Quiberon", emoji: "🍮", color: "#f6e0bf", rating: 4.9, reviews: 402, intl: true, best: true, desc: "Beurre AOP et fleur de sel de Guérande, cuits au chaudron. Sachet 200 g." },
-  { id: 16, name: "Calissons d'Aix", cat: "douceurs", region: "Provence", price: 16.5, old: null, label: "IGP", producer: "Confiseur aixois depuis 1920", emoji: "💠", color: "#eaf1f4", rating: 4.7, reviews: 119, intl: true, desc: "Pâte d'amande et melon confit sur fond d'hostie, glaçage royal. Boîte losange 250 g." },
-  { id: 17, name: "Confiture de mirabelles de Lorraine", cat: "douceurs", region: "Lorraine", price: 6.5, old: null, label: "IGP", producer: "Vergers de la Moselle", emoji: "🍯", color: "#fbe8b5", rating: 4.8, reviews: 87, intl: true, desc: "65 % de fruits, cuite au chaudron de cuivre. Pot 350 g." },
-  { id: 18, name: "Savon de Marseille 72 % huile d'olive", cat: "beaute", region: "Provence", price: 5.9, old: null, label: "Origine France Garantie", producer: "Savonnerie marseillaise", emoji: "🧼", color: "#e7efdc", rating: 4.8, reviews: 512, intl: true, best: true, desc: "Cuit au chaudron selon le procédé marseillais. Sans parfum ni colorant. Cube 300 g." },
-  { id: 19, name: "Eau de lavande de Provence", cat: "beaute", region: "Provence", price: 14.9, old: 17.9, label: "Bio", producer: "Distillerie du plateau de Valensole", emoji: "💜", color: "#e8e1f4", rating: 4.6, reviews: 96, intl: true, desc: "Huile essentielle de lavande fine AOP distillée sur place. Flacon 100 ml." },
-  { id: 20, name: "Crème mains à l'huile d'amande", cat: "beaute", region: "Occitanie", price: 9.5, old: null, label: "Bio", producer: "Laboratoire cosmétique de Grasse", emoji: "🌸", color: "#f8e3e8", rating: 4.5, reviews: 58, intl: true, desc: "98 % d'ingrédients d'origine naturelle. Non grasse. Tube 75 ml." },
-  { id: 21, name: "Marinière en coton bio", cat: "maison", region: "Bretagne", price: 59.0, old: 69.0, label: "Origine France Garantie", producer: "Atelier de tricotage breton", emoji: "👕", color: "#dfe6f2", rating: 4.8, reviews: 144, intl: true, desc: "Jersey épais, rayures tissées. Tailles XS à XXL. Coupe unisexe." },
-  { id: 22, name: "Couteau pliant en bois d'olivier", cat: "maison", region: "Auvergne", price: 45.0, old: null, label: "Fait main", producer: "Coutellerie de Thiers", emoji: "🔪", color: "#ece2d4", rating: 4.9, reviews: 121, intl: true, desc: "Lame inox 11 cm forgée à Thiers, manche olivier. Livré en étui. Vente aux majeurs." },
-  { id: 23, name: "Coffret Apéritif « Tour de France »", cat: "coffrets", region: "Toute la France", price: 59.0, old: 68.0, label: "Sélection", producer: "Composé par notre équipe", emoji: "🎁", color: "#f6dfd2", rating: 4.9, reviews: 167, intl: true, best: true, desc: "Rillettes, tapenade, piment d'Espelette, fleur de sel, caramels et mini-moutarde. 6 produits longue conservation." },
-  { id: 24, name: "Coffret « Grands Crus »", cat: "coffrets", region: "Toute la France", price: 89.0, old: 99.0, label: "Sélection", producer: "Composé par notre sommelier", emoji: "🎀", color: "#ecd6dd", rating: 4.8, reviews: 72, intl: true, alcohol: true, desc: "Champagne Premier Cru, Saint-Émilion Grand Cru et foie gras entier. Caisse bois gravée." },
-];
+const PRACTICE_PRICES = { A0: 4, A1: 6, A2: 6, B1: 8, B2: 8, C1: 10, C2: 10 };
 
-const LABELS = ["AOP", "IGP", "Label Rouge", "Bio", "Origine France Garantie", "Fait main", "Sélection"];
+// ---- Build one flat product list from the definitions above ----
+const PRODUCTS = [];
+for (const lvl of LEVELS) {
+  const c = LEVEL_COURSES[lvl];
+  const full = c.modulePrice * c.modules.length;
+  PRODUCTS.push({
+    id: `level-${lvl}`, type: "level", level: lvl, hue: c.hue,
+    name: `${lvl} ${c.name}: full level`, price: Math.round(full * (1 - LEVEL_DISCOUNT)), old: full,
+    size: `${c.modules.length} modules · ${c.modules.length * c.lessons} lessons`, desc: c.can,
+  });
+  c.modules.forEach((title, i) => PRODUCTS.push({
+    id: `mod-${lvl}-${i + 1}`, type: "module", level: lvl, hue: c.hue, num: i + 1,
+    name: `${lvl} · Module ${i + 1}: ${title}`, short: title, price: c.modulePrice,
+    size: `${c.lessons} lessons · video, PDF, audio & quiz`,
+    desc: `Module ${i + 1} of the ${lvl} ${c.name} course. ${c.lessons} lessons explained in English, with exercises and a final quiz.`,
+  }));
+}
+for (const e of EXAMS) {
+  PRODUCTS.push({
+    id: `exam-${e.code.toLowerCase().replace(/\s+/g, "-")}`, type: "exam", family: e.family, levels: e.levels,
+    level: e.levels[0], hue: EXAM_HUES[e.family], best: e.best,
+    name: `${e.code} exam papers`, price: e.price,
+    size: `${e.sets} complete papers · audio · answer keys`, desc: EXAM_NOTES[e.family],
+  });
+}
+for (const lvl of LEVELS) {
+  PRODUCTS.push({
+    id: `practice-${lvl}`, type: "practice", level: lvl, hue: LEVEL_COURSES[lvl].hue,
+    name: `${lvl} practice tests`, price: PRACTICE_PRICES[lvl],
+    size: "10 short tests · answers explained",
+    desc: `Simple training papers for level ${lvl}: 20-minute tests mixing listening, reading, grammar and vocabulary, each with explained answers in English.`,
+  });
+}

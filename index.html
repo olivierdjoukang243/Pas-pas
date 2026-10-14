@@ -1,178 +1,198 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pas-Pas — Le meilleur de la France, livré partout dans le monde</title>
-  <meta name="description" content="Épicerie fine, vins, cosmétiques et artisanat 100 % français. Livraison en France, en Europe, en Afrique et dans le monde. Prix en EUR, FCFA, USD. Paiement carte, PayPal, Mobile Money.">
-  <meta property="og:title" content="Pas-Pas — Le meilleur de la France, livré partout">
-  <meta property="og:description" content="Produits du terroir français tracés jusqu'au producteur, livrés dans plus de 60 pays.">
+  <title>Pas-Pas French — Learn French step by step</title>
+  <meta name="description" content="French courses from A0 to C2, module by module, explained in English. DELF, DALF and TCF exam papers and practice tests. Pay by card or PayPal worldwide, MTN MoMo or Orange Money in Cameroon.">
+  <meta property="og:title" content="Pas-Pas French — Learn French step by step">
+  <meta property="og:description" content="French from A0 to C2, module by module. DELF, DALF & TCF exam papers. Sold worldwide.">
   <meta property="og:type" content="website">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇫🇷</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231d2f6f'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>Pà</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"OnlineStore","name":"Pas-Pas","description":"Produits français livrés dans le monde entier","currenciesAccepted":"EUR, XAF, XOF, USD, GBP, CAD","paymentAccepted":"Carte bancaire, PayPal, Mobile Money, Virement"}
+  {"@context":"https://schema.org","@type":"EducationalOrganization","name":"Pas-Pas French","description":"French courses from A0 to C2 and DELF, DALF and TCF exam preparation for English speakers","knowsLanguage":["en","fr"]}
   </script>
 </head>
 <body>
 
 <div class="topbar">
   <div class="container topbar-inner">
-    <span>🚚 Livraison offerte dès <strong id="freeShipTop">79 €</strong> vers <strong id="zoneTop">France</strong></span>
-    <span class="hide-sm">🎁 −10 % sur la 1<sup>re</sup> commande : <strong>BIENVENUE10</strong></span>
-    <span class="hide-sm">⭐ 4,8/5 — 3 900 avis vérifiés</span>
+    <span>🌍 Sold worldwide · instant access</span>
+    <span class="hide-sm">🎁 10% off your first order: <strong>WELCOME10</strong></span>
+    <span class="hide-sm">🇨🇲 Cameroon: MTN MoMo &amp; Orange Money</span>
   </div>
 </div>
 
 <header class="header">
   <div class="container header-inner">
-    <a href="#" class="logo" aria-label="Accueil Pas-Pas">
+    <a href="#" class="logo" aria-label="Pas-Pas French home">
       <span class="logo-flag" aria-hidden="true"><i></i><i></i><i></i></span>
-      Pas-Pas
+      Pas-Pas <span class="logo-sub">French</span>
     </a>
     <div class="search">
-      <input id="search" type="search" placeholder="Rechercher : comté, champagne, savon…" aria-label="Rechercher un produit">
+      <input id="search" type="search" placeholder="Search: B1, DELF, subjunctive, TCF Canada…" aria-label="Search products">
     </div>
     <div class="header-tools">
-      <label class="select-wrap" title="Pays de livraison">
-        <span aria-hidden="true">📍</span>
-        <select id="zone" aria-label="Zone de livraison"></select>
+      <label class="select-wrap" title="Currency">
+        <select id="currency" aria-label="Currency"></select>
       </label>
-      <label class="select-wrap" title="Devise">
-        <select id="currency" aria-label="Devise"></select>
-      </label>
-      <button class="icon-btn" id="wishBtn" aria-label="Favoris">♡<span class="badge" id="wishCount">0</span></button>
-      <button class="icon-btn" id="cartBtn" aria-label="Panier">🛒<span class="badge" id="cartCount">0</span></button>
+      <button class="icon-btn" id="cartBtn" aria-label="Cart">🛒<span class="badge" id="cartCount">0</span></button>
     </div>
   </div>
-  <nav class="container nav" id="catNav" aria-label="Catégories"></nav>
+  <nav class="container nav" aria-label="Sections">
+    <a href="#courses">Courses A0–C2</a>
+    <a href="#exams">DELF · DALF · TCF</a>
+    <a href="#practice">Practice tests</a>
+    <a href="#pay">Payment</a>
+    <a href="#" data-test>Free level test</a>
+  </nav>
 </header>
 
 <main>
   <section class="hero">
     <div class="container hero-inner">
       <div>
-        <p class="eyebrow">Épicerie fine · Vins · Beauté · Artisanat</p>
-        <h1>Le meilleur de la France,<br><em>livré là où vous êtes.</em></h1>
-        <p class="lead">Plus de 300 producteurs français sélectionnés, chaque produit tracé jusqu'à sa ferme ou son atelier. Prix affichés dans votre devise, frais de port connus d'avance, paiement par carte, PayPal ou Mobile Money.</p>
+        <p class="eyebrow">French for English speakers · A0 to C2</p>
+        <h1>Learn French <em>pas à pas</em>,<br>one module at a time.</h1>
+        <p class="lead">Seven levels, from your very first word (A0) to full mastery (C2). Each level is split into short modules you can buy one by one. Prepare for DELF, DALF and TCF with exam papers in the official format.</p>
         <div class="hero-cta">
-          <a href="#boutique" class="btn btn-primary">Découvrir la boutique</a>
-          <a href="#coffret" class="btn btn-ghost">Composer mon coffret</a>
+          <button class="btn btn-primary" data-test>Take the free level test</button>
+          <a href="#courses" class="btn btn-ghost">See the levels</a>
         </div>
         <ul class="hero-proof">
-          <li><strong>60+</strong> pays livrés</li>
-          <li><strong>100 %</strong> fabriqué en France</li>
-          <li><strong>48 h</strong> expédition</li>
+          <li><strong>7 levels</strong>A0 → C2</li>
+          <li><strong><span data-module-count>38</span> modules</strong>buy one or a full level</li>
+          <li><strong>3 exams</strong>DELF, DALF, TCF</li>
         </ul>
       </div>
-      <div class="ship-card" aria-live="polite">
-        <h2>Votre livraison</h2>
-        <div class="ship-row"><span>Destination</span><strong id="shipZone">—</strong></div>
-        <div class="ship-row"><span>Délai</span><strong id="shipDelay">—</strong></div>
-        <div class="ship-row"><span>Frais de port</span><strong id="shipCost">—</strong></div>
-        <div class="ship-row"><span>Offerte dès</span><strong id="shipFree">—</strong></div>
-        <p class="ship-note" id="shipNote"></p>
-      </div>
+      <aside class="test-card" aria-labelledby="testCardTitle">
+        <p class="eyebrow">3-minute test</p>
+        <h2 id="testCardTitle">Where should you start?</h2>
+        <p>15 questions from beginner to advanced. You get your level and the modules and exam papers that fit it.</p>
+        <div class="level-scale" aria-hidden="true"><span>A0</span><span>A1</span><span>A2</span><span>B1</span><span>B2</span><span>C1</span><span>C2</span></div>
+        <button class="btn btn-primary btn-block" data-test>Start the test</button>
+      </aside>
     </div>
   </section>
 
-  <section class="usp container" aria-label="Nos engagements">
-    <div><span>🌍</span><h3>Livraison mondiale</h3><p>France, Europe, Afrique, Amériques — coût affiché avant le panier.</p></div>
-    <div><span>💱</span><h3>Votre devise</h3><p>EUR, FCFA, USD, GBP, CAD. Aucun frais caché.</p></div>
-    <div><span>📱</span><h3>Mobile Money</h3><p>Orange Money, MTN MoMo, Wave, en plus de la carte et de PayPal.</p></div>
-    <div><span>🔎</span><h3>100 % traçable</h3><p>Région, producteur et label officiel sur chaque fiche.</p></div>
+  <section class="steps container" aria-label="How it works">
+    <div><b>1</b><h3>Find your level</h3><p>Take the free test or choose from A0 to C2.</p></div>
+    <div><b>2</b><h3>Pick modules</h3><p>Buy one module, or the full level and save 30%.</p></div>
+    <div><b>3</b><h3>Pay your way</h3><p>Card or PayPal worldwide; MoMo or OM in Cameroon.</p></div>
+    <div><b>4</b><h3>Train for the exam</h3><p>Practice tests by level, then DELF, DALF or TCF papers.</p></div>
   </section>
 
-  <section id="boutique" class="container shop">
-    <div class="shop-head">
-      <h2 class="section-title">La boutique</h2>
-      <div class="shop-controls">
-        <select id="region" aria-label="Région"><option value="">Toutes les régions</option></select>
-        <select id="label" aria-label="Label"><option value="">Tous les labels</option></select>
-        <select id="sort" aria-label="Trier">
-          <option value="best">Meilleures ventes</option>
-          <option value="price-asc">Prix croissant</option>
-          <option value="price-desc">Prix décroissant</option>
-          <option value="rating">Mieux notés</option>
-        </select>
-        <label class="check"><input type="checkbox" id="onlyShippable"> Livrable dans ma zone</label>
-      </div>
-    </div>
+  <section id="results" class="container block" hidden>
+    <div class="block-head"><h2 class="section-title">Search results</h2><button class="link-btn" id="clearSearch">Clear search</button></div>
     <p class="result-count" id="resultCount"></p>
-    <div class="grid" id="grid"></div>
+    <div class="grid" id="resultGrid"></div>
   </section>
 
-  <section id="coffret" class="builder">
-    <div class="container builder-inner">
+  <section id="courses" class="container block">
+    <div class="block-head">
       <div>
-        <p class="eyebrow">Exclusif</p>
-        <h2 class="section-title">Composez votre coffret sur mesure</h2>
-        <p>Choisissez 3 produits ou plus dans la boutique avec le bouton <strong>＋ Coffret</strong> : <strong>−10 % automatique</strong>, emballage cadeau et carte personnalisée offerts.</p>
+        <p class="eyebrow">Courses</p>
+        <h2 class="section-title">Seven levels, built from modules</h2>
       </div>
-      <div class="builder-box">
-        <ul id="builderList" class="builder-list"></ul>
-        <div class="builder-total" id="builderTotal"></div>
-        <button class="btn btn-primary" id="builderAdd" disabled>Ajouter le coffret au panier</button>
+    </div>
+    <div class="level-tabs" id="levelTabs" role="tablist" aria-label="Levels"></div>
+    <div class="level-panel" id="levelPanel" role="tabpanel"></div>
+  </section>
+
+  <section id="exams" class="block-band">
+    <div class="container block">
+      <div class="block-head">
+        <div>
+          <p class="eyebrow">Exam papers</p>
+          <h2 class="section-title">DELF, DALF &amp; TCF</h2>
+          <p class="sub">Complete mock papers in the official format: timed sections, audio, answer keys and marking grids.</p>
+        </div>
+        <div class="seg" id="examFilter" role="group" aria-label="Filter exams">
+          <button data-family="" class="active">All</button>
+          <button data-family="DELF">DELF</button>
+          <button data-family="DALF">DALF</button>
+          <button data-family="TCF">TCF</button>
+        </div>
+      </div>
+      <div class="grid" id="examGrid"></div>
+    </div>
+  </section>
+
+  <section id="practice" class="container block">
+    <div class="block-head">
+      <div>
+        <p class="eyebrow">Practice tests</p>
+        <h2 class="section-title">Simple training papers for every level</h2>
+        <p class="sub">Ten short tests per level to check your progress between modules, before you attempt a full exam paper.</p>
+      </div>
+    </div>
+    <div class="grid grid-7" id="practiceGrid"></div>
+  </section>
+
+  <section id="pay" class="container block">
+    <div class="block-head"><div><p class="eyebrow">Payment</p><h2 class="section-title">Pay from anywhere</h2></div></div>
+    <div class="pay-grid">
+      <div class="pay-card">
+        <h3>🌍 International</h3>
+        <p>Pay by bank card (Visa, Mastercard) or PayPal, in your own currency.</p>
+        <div class="chips"><span class="chip">Visa</span><span class="chip">Mastercard</span><span class="chip">PayPal</span></div>
+      </div>
+      <div class="pay-card pay-cm">
+        <h3>🇨🇲 Cameroon</h3>
+        <p>Pay in FCFA from your phone. You confirm the payment with your PIN.</p>
+        <div class="chips"><span class="chip chip-momo">MTN MoMo</span><span class="chip chip-om">Orange Money</span></div>
+      </div>
+      <div class="pay-card">
+        <h3>💬 WhatsApp</h3>
+        <p>Prefer to talk first? Send your cart on WhatsApp and we reply with payment details.</p>
+        <a class="btn btn-wa mini" id="waPay" href="#" target="_blank" rel="noopener">Chat on WhatsApp</a>
       </div>
     </div>
   </section>
 
   <section class="container compare">
-    <h2 class="section-title">Pourquoi nous plutôt qu'ailleurs ?</h2>
+    <h2 class="section-title">Why Pas-Pas?</h2>
     <div class="table-wrap">
       <table>
-        <thead><tr><th></th><th class="us">Pas-Pas</th><th>Épiceries fines en ligne</th><th>Épiceries d'expatriés</th><th>Grande distribution + réexpédition</th></tr></thead>
+        <thead><tr><th></th><th class="us">Pas-Pas French</th><th>Free gamified apps</th><th>Subscription apps</th><th>Tutor marketplaces</th></tr></thead>
         <tbody>
-          <tr><td>Pays livrés</td><td class="us">60+, Afrique incluse</td><td>France surtout</td><td>1 seul pays</td><td>Oui, avec double frais</td></tr>
-          <tr><td>Frais de port affichés d'avance</td><td class="us">✔ dès l'accueil</td><td>Au paiement</td><td>Au paiement</td><td>✘ deux factures</td></tr>
-          <tr><td>Prix en FCFA / USD / GBP</td><td class="us">✔</td><td>✘</td><td>Devise locale seule</td><td>✘</td></tr>
-          <tr><td>Mobile Money</td><td class="us">✔</td><td>✘</td><td>✘</td><td>✘</td></tr>
-          <tr><td>Producteur et label sur chaque fiche</td><td class="us">✔</td><td>Partiel</td><td>✘</td><td>✘</td></tr>
-          <tr><td>Coffret sur mesure −10 %</td><td class="us">✔</td><td>Coffrets figés</td><td>✘</td><td>✘</td></tr>
-          <tr><td>Commande par WhatsApp</td><td class="us">✔</td><td>✘</td><td>Rare</td><td>✘</td></tr>
+          <tr><td>Full path from A0 to C2</td><td class="us">✔ 7 levels, <span data-module-count>38</span> modules</td><td>Up to B1/B2</td><td>Up to B2</td><td>Depends on tutor</td></tr>
+          <tr><td>Rules explained in English</td><td class="us">✔ every lesson</td><td>Rarely</td><td>Partly</td><td>Depends on tutor</td></tr>
+          <tr><td>DELF, DALF &amp; TCF papers</td><td class="us">✔ with marking grids</td><td>✘</td><td>✘</td><td>Some tutors</td></tr>
+          <tr><td>Pay once, keep forever</td><td class="us">✔ per module or level</td><td>Ads or subscription</td><td>Monthly fee</td><td>Pay per hour</td></tr>
+          <tr><td>MTN MoMo &amp; Orange Money</td><td class="us">✔ Cameroon</td><td>✘</td><td>✘</td><td>✘</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
-  <section class="box container">
-    <div class="box-inner">
-      <div>
-        <p class="eyebrow">Abonnement</p>
-        <h2 class="section-title">La Box du Terroir</h2>
-        <p>Chaque mois, une région française à découvrir : 5 à 7 produits d'artisans, une fiche recettes et l'histoire des producteurs. Sans engagement, résiliable en un clic.</p>
-        <ul class="ticks"><li>Livraison incluse en France et en Europe</li><li>Produits longue conservation pour l'international</li><li>Économie moyenne de 20 % sur les prix boutique</li></ul>
-      </div>
-      <div class="plans" id="plans"></div>
-    </div>
-  </section>
-
-  <section class="container reviews">
-    <h2 class="section-title">Ils nous font confiance</h2>
-    <div class="review-grid">
-      <blockquote><p>« Enfin un site qui livre à Douala sans passer par trois intermédiaires. Le comté est arrivé sous vide, impeccable. »</p><cite>Aïcha N. — Cameroun ⭐⭐⭐⭐⭐</cite></blockquote>
-      <blockquote><p>« J'ai payé en Orange Money, colis reçu en 7 jours à Abidjan. Le foie gras pour les fêtes a fait sensation. »</p><cite>Koffi A. — Côte d'Ivoire ⭐⭐⭐⭐⭐</cite></blockquote>
-      <blockquote><p>« Prix en dollars, frais de port clairs, coffret personnalisé pour ma belle-mère : parfait. »</p><cite>Julie M. — Montréal ⭐⭐⭐⭐⭐</cite></blockquote>
+  <section class="container promise">
+    <h2 class="section-title">Our promise</h2>
+    <div class="promise-grid">
+      <div><h3>7-day refund</h3><p>Wrong level? Write to us within 7 days and we refund you or swap the module.</p></div>
+      <div><h3>Lifetime access</h3><p>Buy once and keep your files. Updates to your modules are free.</p></div>
+      <div><h3>Upgrade anytime</h3><p>Bought some modules first? Pay only the difference for the full level.</p></div>
     </div>
   </section>
 
   <section class="container faq">
-    <h2 class="section-title">Questions fréquentes</h2>
-    <details><summary>Quels produits puis-je recevoir hors de France ?</summary><p>Tous les produits marqués « Livraison monde » : épicerie, conserves, vins, cosmétiques, artisanat. Les produits frais (fromages au lait cru, charcuterie, pâtisseries) ne sont livrés qu'en France métropolitaine, pour la chaîne du froid et les règles douanières.</p></details>
-    <details><summary>Comment payer avec Mobile Money ?</summary><p>Choisissez « Mobile Money » à l'étape de paiement, saisissez votre numéro : vous recevez une demande de validation sur votre téléphone (Orange Money, MTN MoMo, Wave, Moov).</p></details>
-    <details><summary>Qui paie les droits de douane ?</summary><p>Hors Union européenne, des droits peuvent être demandés à la réception selon la réglementation de votre pays. Nous les indiquons à titre estimatif avant validation.</p></details>
-    <details><summary>Que se passe-t-il si mon colis arrive abîmé ?</summary><p>Envoyez-nous une photo sous 48 h : remboursement ou renvoi immédiat, sans retour du produit.</p></details>
-    <details><summary>Vendez-vous de l'alcool à tout le monde ?</summary><p>Non. La vente d'alcool est interdite aux mineurs ; une confirmation d'âge est demandée. L'abus d'alcool est dangereux pour la santé, à consommer avec modération.</p></details>
+    <h2 class="section-title">Questions</h2>
+    <details><summary>What is level A0?</summary><p>A0 is for complete beginners who have never studied French. It prepares you for A1, the first official CEFR level.</p></details>
+    <details><summary>Can I buy a single module?</summary><p>Yes. Every level is split into modules sold separately. The full level costs 30% less than buying all its modules one by one.</p></details>
+    <details><summary>Are these the official DELF, DALF and TCF exams?</summary><p>No. They are original mock papers written in the official format, with the same sections, timings and marking criteria, so you can train under real conditions.</p></details>
+    <details><summary>How do I pay with MTN MoMo or Orange Money?</summary><p>At checkout, choose Cameroon as your country, then MTN MoMo or Orange Money, and enter your number. A payment request arrives on your phone; confirm it with your PIN.</p></details>
+    <details><summary>How do I receive my products?</summary><p>Right after payment you get your access links by email and on WhatsApp. Videos stream online; PDFs and MP3s download and work offline.</p></details>
   </section>
 
   <section class="newsletter">
     <div class="container newsletter-inner">
-      <div><h2>−10 % sur votre première commande</h2><p>Recettes, nouveaux producteurs et ventes privées, une fois par semaine.</p></div>
+      <div><h2>One free French lesson a week</h2><p>Plus 10% off your first order.</p></div>
       <form id="newsletter" class="nl-form">
-        <input type="email" required placeholder="votre@email.com" aria-label="Adresse e-mail">
-        <button class="btn btn-primary">Je m'inscris</button>
+        <input id="nlEmail" type="email" required placeholder="you@email.com" aria-label="Email address">
+        <button class="btn btn-primary">Subscribe</button>
       </form>
     </div>
   </section>
@@ -180,37 +200,28 @@
 
 <footer class="footer">
   <div class="container footer-grid">
-    <div><a class="logo" href="#"><span class="logo-flag" aria-hidden="true"><i></i><i></i><i></i></span>Pas-Pas</a><p>Le meilleur de la France, livré partout dans le monde.</p></div>
-    <div><h4>Boutique</h4><ul id="footerCats"></ul></div>
-    <div><h4>Aide</h4><ul><li><a href="#">Livraison & délais</a></li><li><a href="#">Paiement sécurisé</a></li><li><a href="#">Retours</a></li><li><a href="#" id="waFooter">WhatsApp</a></li></ul></div>
-    <div><h4>Légal</h4><ul><li><a href="#">Mentions légales</a></li><li><a href="#">CGV</a></li><li><a href="#">Confidentialité (RGPD)</a></li></ul></div>
+    <div><a class="logo" href="#"><span class="logo-flag" aria-hidden="true"><i></i><i></i><i></i></span>Pas-Pas <span class="logo-sub">French</span></a><p>Learn French step by step, explained in English.</p></div>
+    <div><h4>Shop</h4><ul><li><a href="#courses">Courses A0–C2</a></li><li><a href="#exams">Exam papers</a></li><li><a href="#practice">Practice tests</a></li></ul></div>
+    <div><h4>Help</h4><ul><li><a href="#" data-test>Free level test</a></li><li><a href="#pay">Payment</a></li><li><a href="#" id="waFooter">WhatsApp</a></li></ul></div>
+    <div><h4>Legal</h4><ul><li><a href="#">Terms of sale</a></li><li><a href="#">Privacy</a></li><li><a href="#">Refund policy</a></li></ul></div>
   </div>
-  <p class="container legal">L'abus d'alcool est dangereux pour la santé, à consommer avec modération. Vente d'alcool interdite aux mineurs. © <span id="year"></span> Pas-Pas.</p>
+  <p class="container legal">DELF, DALF and TCF are diplomas and tests of France Éducation international. Pas-Pas French is an independent preparation provider; our papers are original practice material. © <span id="year"></span> Pas-Pas French.</p>
 </footer>
 
-<a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Commander sur WhatsApp">💬</a>
+<a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">💬</a>
 
-<!-- Panier -->
 <div class="overlay" id="overlay" hidden></div>
-<aside class="drawer" id="cart" aria-label="Panier" aria-hidden="true">
-  <div class="drawer-head"><h2>Mon panier</h2><button class="icon-btn" data-close aria-label="Fermer">✕</button></div>
-  <div class="free-bar"><p id="freeMsg"></p><div class="bar"><span id="freeBar"></span></div></div>
+<aside class="drawer" id="cart" aria-label="Cart" aria-hidden="true">
+  <div class="drawer-head"><h2>Your cart</h2><button class="icon-btn" data-close aria-label="Close">✕</button></div>
   <ul class="cart-list" id="cartList"></ul>
   <div class="drawer-foot">
-    <form class="promo" id="promoForm"><input id="promoInput" placeholder="Code promo" aria-label="Code promo"><button class="btn btn-ghost">OK</button></form>
+    <form class="promo" id="promoForm"><input id="promoInput" placeholder="Promo code" aria-label="Promo code"><button class="btn btn-ghost">Apply</button></form>
     <div class="totals" id="totals"></div>
-    <button class="btn btn-primary btn-block" id="checkoutBtn">Commander</button>
-    <button class="btn btn-wa btn-block" id="waOrder">Commander via WhatsApp</button>
+    <button class="btn btn-primary btn-block" id="checkoutBtn">Checkout</button>
+    <button class="btn btn-wa btn-block" id="waOrder">Order on WhatsApp</button>
   </div>
 </aside>
 
-<!-- Favoris -->
-<aside class="drawer" id="wish" aria-label="Favoris" aria-hidden="true">
-  <div class="drawer-head"><h2>Mes favoris</h2><button class="icon-btn" data-close aria-label="Fermer">✕</button></div>
-  <ul class="cart-list" id="wishList"></ul>
-</aside>
-
-<!-- Fiche produit / paiement -->
 <dialog id="modal" class="modal"><div id="modalBody"></div></dialog>
 
 <div class="toast" id="toast" role="status"></div>
