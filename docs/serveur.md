@@ -16,7 +16,8 @@ Le serveur est indispensable pour quatre raisons :
 
 | Besoin | Prestataire | Pourquoi |
 |---|---|---|
-| Paiement | **Notch Pay** | Vendeur au Cameroun, FCFA, MTN MoMo, Orange Money et carte, page de paiement hébergée, webhooks |
+| Paiement, monde entier (carte, PayPal, Apple Pay, Google Pay) | **Paddle** ou **Lemon Squeezy**, comme « marchand officiel » (*merchant of record*) | Le vendeur est Nuvalex LLC (Wyoming), et les clients sont des anglophones du monde entier. Vendre des produits numériques à des particuliers oblige à percevoir la TVA ou la GST de leur pays, souvent dès la première vente : TVA de l'UE (guichet OSS), TVA du Royaume-Uni, GST d'Australie et du Canada au-delà de leurs seuils. Un marchand officiel encaisse, calcule, déclare et reverse ces taxes à la place de la LLC. Les deux acceptent une LLC américaine avec son EIN |
+| Paiement, Cameroun (MTN MoMo, Orange Money) | **Notch Pay** | FCFA, MoMo et Orange Money, page de paiement hébergée, webhooks. **À vérifier à l'ouverture du compte :** Notch Pay accepte-t-il Nuvalex LLC, ou faut-il un compte au nom d'Olivier au Cameroun ? |
 | E-mails | **Gmail**, depuis l'alias de la boutique | Choix d'Olivier. Envoi par l'API Gmail (voir plus bas) |
 | Visio dans le site | **JaaS (Jitsi as a Service, 8x8)** | S'intègre dans la page ; gratuit jusqu'à 25 utilisateurs actifs par mois. L'instance publique meet.jit.si ne peut plus être intégrée dans un autre site |
 
@@ -89,12 +90,16 @@ Le serveur doit :
 1. **recalculer le prix** à partir de `product` et de la devise, sans jamais faire confiance à `amount` ;
 2. **refuser un moyen de paiement absent du pays de résidence** déclaré. MTN MoMo et Orange Money ne valent que pour le Cameroun ; la carte et PayPal valent partout. C'est la même règle que `PAY_METHODS` dans `js/app.js` ;
 3. pour une séance, **vérifier que l'heure fait partie de celles qu'Olivier a cochées** pour cette demande, qu'elle est toujours libre, puis la **bloquer 20 minutes** ;
-4. créer la transaction Notch Pay (`POST /payments`, clé dans l'en-tête `Authorization`), avec un `callback` vers `return_url?paid=<référence>`. Pour MoMo et Orange Money, il peut traiter directement (`POST /payments/{reference}` avec le canal `cm.mtn` ou `cm.orange` et le numéro).
+4. créer la transaction chez le bon prestataire, avec un retour vers `return_url?paid=<référence>` :
+   - **carte ou PayPal :** un checkout Paddle ou Lemon Squeezy, qui ajoute la taxe du pays si elle est due ;
+   - **MoMo ou Orange Money :** une transaction Notch Pay (`POST /payments`, clé dans l'en-tête `Authorization`), traitée directement avec le canal `cm.mtn` ou `cm.orange` et le numéro.
+
+   Le site ne change pas : il reçoit toujours une `authorization_url`.
 
 Réponse : `{ "authorization_url": "https://…" }`, ou `{ "error": "…" }` avec un code 4xx.
 
-### `POST /webhooks/notchpay`
-Vérifier la signature HMAC-SHA256 du corps brut (en-tête `X-Notchpay-Signature`, à confirmer dans le tableau de bord). Puis :
+### `POST /webhooks/notchpay` (et le webhook du marchand officiel)
+Vérifier la signature du corps brut : HMAC-SHA256 dans l'en-tête `X-Notchpay-Signature` pour Notch Pay, en-tête de signature propre pour Paddle ou Lemon Squeezy. Puis :
 - **`payment.complete` :**
   1. relire la transaction chez Notch Pay ;
   2. marquer la commande payée ;
@@ -169,5 +174,8 @@ Durées de conservation : voir `policies.html#privacy`. Une base légère suffit
 - Gmail, envoyer depuis une autre adresse (alias) : https://support.google.com/mail/answer/22370
 - Google, règles pour les expéditeurs : https://support.google.com/a/answer/81126
 - Limites d'envoi de Google Workspace : https://support.google.com/a/answer/166852
+- Paddle, marchand officiel : https://www.paddle.com/blog/what-is-merchant-of-record
+- Lemon Squeezy, marchand officiel : https://docs.lemonsqueezy.com/help/payments/merchant-of-record
+- UE, TVA sur les services numériques fournis par des vendeurs hors UE : https://vat-one-stop-shop.ec.europa.eu/
 - JaaS : https://jitsi.org/jaas/ et https://developer.8x8.com/jaas/docs/faq
 - Avis clients, règle de la FTC (2024) : https://www.ftc.gov/legal-library/browse/rules/trade-regulation-rule-use-consumer-reviews-testimonials

@@ -1,5 +1,7 @@
 # Pas à Pas French — learn French step by step
 
+Vendeur : **Nuvalex LLC** (Wyoming, États-Unis), qui vend sous le nom commercial Pas à Pas FRENCH ; gérant et auteur : Olivier Djoukang. Clientèle : les anglophones du monde entier.
+
 Site de vente de la méthode Pas à Pas : cours de français pour adultes anglophones, écrits par Olivier Djoukang. Site statique (HTML/CSS/JS, sans compilation), en anglais.
 
 ## Catalogue (faits confirmés le 14/10/2026)
@@ -28,7 +30,7 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 
 - Sélecteur de niveau A0 à C2 (B2 à C2 grisés « In preparation »), avec les packs, leurs descriptions, leurs prix et la liste de leurs modules (titres réels, tirés des sources par l'atelier)
 - Bande « The Complete Method »
-- Devises : dollar US et FCFA (XAF, XOF) au prix exact ; euro calculé depuis le FCFA (parité fixe 655,957) ; livre, dollar canadien, naira et cédi convertis depuis le dollar à des taux indicatifs, marqués « ≈ ». La devise suit le pays du visiteur : d'abord la région du navigateur et le fuseau horaire, puis le pays de sa connexion via get.geojs.io (gratuit, sans clé). Un choix manuel du visiteur prime et est mémorisé. Cette consultation envoie l'adresse IP du visiteur à geojs : à mentionner dans la politique de confidentialité.
+- Devises : dollar US et FCFA (XAF, XOF) au prix exact ; euro calculé depuis le FCFA (parité fixe 655,957) ; livre, dollars canadien, australien, néo-zélandais et singapourien, roupie, rand, naira, cédi, shilling kényan et peso philippin convertis depuis le dollar à des taux indicatifs, marqués « ≈ » et rafraîchis chaque jour (open.er-api.com, taux de secours dans le code). Pays de résidence : la liste complète des pays. La devise suit le pays du visiteur : d'abord la région du navigateur et le fuseau horaire, puis le pays de sa connexion via get.geojs.io (gratuit, sans clé). Un choix manuel du visiteur prime et est mémorisé. Cette consultation envoie l'adresse IP du visiteur à geojs : à mentionner dans la politique de confidentialité.
 - Moyens de paiement : **seulement ceux du pays de résidence** de l'acheteur (champ « Country of residence », prérempli d'après le pays détecté) : carte bancaire (Visa, Mastercard) et PayPal partout ; MTN MoMo et Orange Money au Cameroun (montant en FCFA, numéro vérifié). Le serveur applique la même règle. Le formulaire de paiement est en place, mais n'encaisse rien : il annonce « Online payment opens soon » et propose d'envoyer la commande sur WhatsApp quand le numéro est renseigné.
 - **Séances en visio dans le site** (`js/live.js`) : 30 min 9 $ / 4 900 FCFA ; 60 min 15 $ / 8 200 FCFA ; 5 × 60 min 65 $ / 35 700 FCFA. Les disponibilités d'Olivier suivent celles de l'élève :
   1. l'élève propose **au moins 6 heures sur au moins 3 jours** (entre 06:00 et 22:00, heure de Douala, affichées dans son fuseau) ;

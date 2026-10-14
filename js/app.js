@@ -9,8 +9,9 @@ const store = {
 
 // ====== Currencies ======
 // USD and FCFA prices are fixed in the catalogue. XOF has the same parity as XAF.
-// EUR is derived from FCFA (fixed parity 655.957). The others are converted from USD
-// at indicative rates: update them before launch; the amount charged is the USD or FCFA price.
+// EUR is derived from FCFA (fixed parity 655.957). The others are converted from USD at
+// indicative rates, refreshed once a day from open.er-api.com (free, no key); the values
+// below are the fallback. The amount charged is always the USD or FCFA price.
 const XAF_PER_EUR = 655.957;
 const CURRENCIES = {
   USD: { label: "$ USD" },
@@ -19,12 +20,33 @@ const CURRENCIES = {
   EUR: { label: "€ EUR" },
   GBP: { label: "£ GBP", perUSD: 0.79 },
   CAD: { label: "$ CAD", perUSD: 1.37 },
-  NGN: { label: "₦ NGN", perUSD: 1550 },
+  AUD: { label: "$ AUD", perUSD: 1.52 },
+  NZD: { label: "$ NZD", perUSD: 1.68 },
+  INR: { label: "₹ INR", perUSD: 84, whole: true },
+  ZAR: { label: "R ZAR", perUSD: 18 },
+  NGN: { label: "₦ NGN", perUSD: 1550, whole: true },
   GHS: { label: "₵ GHS", perUSD: 15.5 },
+  KES: { label: "KSh KES", perUSD: 129, whole: true },
+  PHP: { label: "₱ PHP", perUSD: 57, whole: true },
+  SGD: { label: "$ SGD", perUSD: 1.33 },
 };
+async function refreshRates() {
+  const saved = store.get("rates", null);
+  const apply = (r) => Object.keys(CURRENCIES).forEach((k) => { if (CURRENCIES[k].perUSD && r[k]) CURRENCIES[k].perUSD = r[k]; });
+  if (saved && Date.now() - saved.at < 864e5) return apply(saved.rates);
+  try {
+    const d = await (await fetch("https://open.er-api.com/v6/latest/USD")).json();
+    if (d.result !== "success") throw new Error();
+    store.set("rates", { at: Date.now(), rates: d.rates });
+    apply(d.rates);
+  } catch { if (saved) apply(saved.rates); }
+}
 
-// Starting payment methods. Cameroon adds MTN MoMo and Orange Money.
-const COUNTRIES = ["Cameroon", "Nigeria", "Ghana", "Côte d'Ivoire", "Senegal", "United States", "Canada", "United Kingdom", "France", "Other country"];
+// Every country of residence, by its English name. The shop serves English speakers worldwide.
+const ISO = "AD AE AF AG AI AL AM AO AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GT GU GW GY HK HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG US UY UZ VA VC VE VG VI VN VU WF WS XK YE YT ZA ZM ZW".split(" ");
+const regionName = (() => { try { const dn = new Intl.DisplayNames(["en"], { type: "region" }); return (c) => dn.of(c); } catch { return (c) => c; } })();
+const COUNTRY_NAMES = Object.fromEntries(ISO.map((c) => [c, regionName(c)]));
+const COUNTRIES = [...Object.values(COUNTRY_NAMES).sort((a, b) => a.localeCompare(b, "en")), "Other country"];
 // Each method lists the countries of residence where it is available; no list = every country.
 // The checkout only shows the methods of the buyer's country of residence.
 const PAY_METHODS = {
@@ -38,14 +60,11 @@ const CM_MOBILE = /^(?:\+?237)?6\d{8}$/;
 // ====== Visitor's country ======
 // Country code → currency and checkout country. Euro-zone countries use EUR.
 const EURO = ["AT", "BE", "HR", "CY", "EE", "FI", "FR", "DE", "GR", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PT", "SK", "SI", "ES"];
-const COUNTRY_NAMES = { CM: "Cameroon", NG: "Nigeria", GH: "Ghana", CI: "Côte d'Ivoire", SN: "Senegal", US: "United States", CA: "Canada", GB: "United Kingdom", FR: "France" };
 function currencyFor(code) {
   if (["CM", "GA", "GQ", "CG", "CF", "TD"].includes(code)) return "XAF";
   if (["CI", "SN", "BJ", "BF", "ML", "NE", "TG", "GW"].includes(code)) return "XOF";
-  if (code === "NG") return "NGN";
-  if (code === "GH") return "GHS";
-  if (code === "GB") return "GBP";
-  if (code === "CA") return "CAD";
+  const own = { NG: "NGN", GH: "GHS", GB: "GBP", CA: "CAD", AU: "AUD", NZ: "NZD", IN: "INR", ZA: "ZAR", KE: "KES", PH: "PHP", SG: "SGD" }[code];
+  if (own) return own;
   if (EURO.includes(code)) return "EUR";
   return "USD";
 }
@@ -64,13 +83,15 @@ function guessLocale() {
   try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch { /* ignore */ }
   const byZone = { "Africa/Douala": "CM", "Africa/Libreville": "GA", "Africa/Malabo": "GQ", "Africa/Brazzaville": "CG", "Africa/Bangui": "CF", "Africa/Ndjamena": "TD",
     "Africa/Abidjan": "CI", "Africa/Dakar": "SN", "Africa/Lome": "TG", "Africa/Porto-Novo": "BJ", "Africa/Bamako": "ML", "Africa/Ouagadougou": "BF", "Africa/Niamey": "NE",
-    "Africa/Accra": "GH", "Europe/London": "GB", "Europe/Paris": "FR" };
+    "Africa/Accra": "GH", "Europe/London": "GB", "Europe/Dublin": "IE", "Europe/Paris": "FR", "Africa/Johannesburg": "ZA", "Africa/Nairobi": "KE",
+    "Asia/Kolkata": "IN", "Asia/Calcutta": "IN", "Asia/Manila": "PH", "Asia/Singapore": "SG", "Pacific/Auckland": "NZ" };
   if (byZone[tz]) return localeFor(byZone[tz]);
   if (tz === "Africa/Lagos") return { code: "", currency: "XAF", country: "Other country" }; // Nigeria or Central Africa: settled by the IP lookup
   if (tz.startsWith("Africa/")) return { code: "", currency: "XAF", country: "Other country" };
   if (tz.startsWith("Europe/")) return { code: "", currency: "EUR", country: "Other country" };
   if (/^America\/(Toronto|Vancouver|Montreal|Edmonton|Winnipeg|Halifax|Regina|St_Johns)/.test(tz)) return localeFor("CA");
   if (tz.startsWith("America/")) return localeFor("US");
+  if (tz.startsWith("Australia/")) return localeFor("AU");
   return { code: "", currency: "USD", country: "Other country" };
 }
 
@@ -103,7 +124,8 @@ const levelOf = (code) => LEVELS.find((l) => l.code === code);
 
 const fmtUSD = (n) => "$" + n.toLocaleString("en-US");
 const fmtXAF = (n) => n.toLocaleString("en-US").replace(/,/g, " ") + " FCFA";
-const fmtMoney = (value, code) => value.toLocaleString("en-US", { style: "currency", currency: code, currencyDisplay: code === "CAD" ? "symbol" : "narrowSymbol", minimumFractionDigits: code === "NGN" ? 0 : 2, maximumFractionDigits: code === "NGN" ? 0 : 2 });
+const fmtMoney = (value, code) => { const d = CURRENCIES[code]?.whole ? 0 : 2;
+  return value.toLocaleString("en-US", { style: "currency", currency: code, currencyDisplay: ["CAD", "AUD", "NZD", "SGD"].includes(code) ? "symbol" : "narrowSymbol", minimumFractionDigits: d, maximumFractionDigits: d }); };
 
 // Price shown in the selected currency. "≈" marks a conversion; USD and FCFA are exact.
 function amount(usd, xaf, currency = state.currency) {
@@ -642,3 +664,4 @@ $("#currency").innerHTML = Object.entries(CURRENCIES).map(([k, c]) => `<option v
 $("#currency").value = state.currency;
 renderLevelTabs();
 renderPrices();
+refreshRates().then(renderPrices);
