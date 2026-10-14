@@ -1,6 +1,6 @@
-# Pas-à-Pas French — learn French step by step
+# Pas à Pas French — learn French step by step
 
-Site de vente de la méthode Pas-à-Pas : cours de français pour adultes anglophones, écrits par Olivier Djoukang. Site statique (HTML/CSS/JS, sans compilation), en anglais.
+Site de vente de la méthode Pas à Pas : cours de français pour adultes anglophones, écrits par Olivier Djoukang. Site statique (HTML/CSS/JS, sans compilation), en anglais.
 
 ## Catalogue (faits confirmés le 14/10/2026)
 
