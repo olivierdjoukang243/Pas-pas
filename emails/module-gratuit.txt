@@ -1,0 +1,32 @@
+Hello {{NAME}},
+
+Here is your free module: A0 Module 1 — Letters, Vowels and Introducing Yourself.
+It is the full module, exactly as in the course.
+
+Start the module online (answers checked, audio in the page):
+{{WEB_URL}}
+
+Prefer to print it?
+- The PDF edition, with the answer key: {{PDF_URL}}
+{{AUDIO_LINKS}}
+
+How to get the most out of it
+1. Read the grammar: it is explained in English.
+2. Do the exercises, then check them with the answer key.
+3. Listen to the dialogue and do the dictation.
+4. Finish with the test out of 20.
+
+Liked Module 1? Seven more modules are waiting.
+A0 Complete takes you from the alphabet to a first conversation: 8 modules
+and a level check that tells you what to revise, for {{A0_PRICE}}.
+One payment, the files are yours: {{SITE_URL}}#levels
+
+Already know some French? Take the free level test: {{SITE_URL}}
+Want to speak with a teacher? Book a live video lesson, from {{LIVE_PRICE}}.
+
+Bon courage, and see you in Module 2!
+Olivier Djoukang
+Qualified French teacher since 2011 · 7,800+ lessons taught online
+
+You receive this email because you asked for the free module on Pas à Pas FRENCH.
+Unsubscribe: {{UNSUBSCRIBE_URL}}

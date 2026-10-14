@@ -1,0 +1,49 @@
+<!doctype html>
+<!-- Sent by the server right after the free-module form (POST /free-module).
+     Placeholders filled by the server: {{NAME}} (first name, or "there"), {{WEB_URL}},
+     {{PDF_URL}}, {{AUDIO_LINKS}} (one <li> per MP3), {{A0_PRICE}} and {{LIVE_PRICE}}
+     (in the visitor's currency), {{SITE_URL}}, {{UNSUBSCRIBE_URL}}. -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your free French module</title></head>
+<body style="margin:0;background:#faf6ef;font-family:Arial,Helvetica,sans-serif;color:#1b1d24;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf6ef;"><tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:14px;">
+  <tr><td style="background:#1d2f6f;border-radius:14px 14px 0 0;padding:22px 28px;color:#ffffff;font-size:22px;font-weight:bold;">
+    Pas à Pas <span style="font-size:12px;letter-spacing:3px;color:#ffb4bc;">FRENCH</span></td></tr>
+  <tr><td style="padding:28px;font-size:16px;line-height:1.6;">
+    <p style="margin:0 0 14px;">Hello {{NAME}},</p>
+    <p style="margin:0 0 14px;">Here is your free module: <strong>A0 Module 1 — Letters, Vowels and Introducing Yourself</strong>. It is the full module, exactly as in the course.</p>
+
+    <p style="margin:0 0 8px;"><a href="{{WEB_URL}}" style="display:inline-block;background:#d6283b;color:#ffffff;text-decoration:none;font-weight:bold;padding:13px 22px;border-radius:999px;">Start the module online</a></p>
+    <p style="margin:0 0 6px;font-size:14px;color:#6b6f7b;">The web edition checks your answers and plays the audio in the page.</p>
+    <p style="margin:14px 0 4px;">Prefer to print it?</p>
+    <ul style="margin:0 0 18px;padding-left:20px;">
+      <li><a href="{{PDF_URL}}" style="color:#2a43a0;">The PDF edition, with the answer key</a></li>
+      {{AUDIO_LINKS}}
+    </ul>
+
+    <p style="margin:0 0 6px;font-weight:bold;">How to get the most out of it</p>
+    <ol style="margin:0 0 18px;padding-left:20px;">
+      <li>Read the grammar: it is explained in English.</li>
+      <li>Do the exercises, then check them with the answer key.</li>
+      <li>Listen to the dialogue and do the dictation.</li>
+      <li>Finish with the test out of 20.</li>
+    </ol>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef1fb;border-radius:12px;margin:0 0 18px;"><tr><td style="padding:18px 20px;">
+      <p style="margin:0 0 6px;font-weight:bold;color:#1d2f6f;">Liked Module 1? Seven more modules are waiting.</p>
+      <p style="margin:0 0 10px;">A0 Complete takes you from the alphabet to a first conversation: 8 modules and a level check that tells you what to revise, for {{A0_PRICE}}. One payment, the files are yours.</p>
+      <p style="margin:0;"><a href="{{SITE_URL}}#levels" style="color:#d6283b;font-weight:bold;">See A0 Complete</a></p>
+    </td></tr></table>
+
+    <p style="margin:0 0 14px;">Already know some French? <a href="{{SITE_URL}}" style="color:#2a43a0;">Take the free level test</a>: it tells you which pack to start with.</p>
+    <p style="margin:0 0 14px;">Want to speak with a teacher? Book a live video lesson with me, from {{LIVE_PRICE}}, at a time that suits you.</p>
+    <p style="margin:0 0 4px;">Bon courage, and see you in Module 2!</p>
+    <p style="margin:0;">Olivier Djoukang<br><span style="font-size:14px;color:#6b6f7b;">Qualified French teacher since 2011 · 7,800+ lessons taught online</span></p>
+  </td></tr>
+  <tr><td style="padding:16px 28px 24px;font-size:12px;line-height:1.5;color:#6b6f7b;border-top:1px solid #e7e1d6;">
+    You receive this email because you asked for the free module on Pas à Pas FRENCH.
+    <a href="{{UNSUBSCRIBE_URL}}" style="color:#6b6f7b;">Unsubscribe</a>.
+  </td></tr>
+</table></td></tr></table>
+</body></html>

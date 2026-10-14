@@ -45,12 +45,26 @@ const PRODUCTS = [
     desc: "Everything: 56 modules and 7 level checks, from the alphabet to arguing a point in French. Four levels that share one method, one set of characters and one way of explaining, so nothing is ever re-taught differently halfway through. You keep the files for good, including the updates." },
 ];
 
-// Exam papers: the workshop can produce DELF, DALF and TCF papers. Nothing is priced or on sale yet.
-const EXAMS = [
-  { name: "DELF", levels: "A1 · A2 · B1 · B2", note: "The French diploma for levels A1 to B2, valid for life." },
-  { name: "DALF", levels: "C1 · C2", note: "The advanced diploma, for university and professional use." },
-  { name: "TCF", levels: "Including TCF Canada", note: "The French language test used for studies, citizenship and immigration." },
+// Exam practice papers, produced by the atelier from its exam reserves (examen.py).
+// Each paper covers the four skills: the paper, a marking guide with transcripts and grids,
+// an answer sheet, and a web edition that marks reading and listening by itself, audio included.
+// DALF has no reserve yet (C1 and C2 are in preparation): it stays "coming soon".
+const EXAM_PACKS = [
+  { id: "delf-a1", kind: "exam", level: "DELF", exam: "DELF A1", name: "DELF A1 — 3 practice papers", contents: "3 complete papers · four skills · audio included", usd: 19, xaf: 10400,
+    desc: "Three complete DELF A1 papers in the official format: reading, listening, writing and speaking. Marking guide with transcripts and grids, answer sheet, and a web edition that marks reading and listening for you." },
+  { id: "delf-a2", kind: "exam", level: "DELF", exam: "DELF A2", name: "DELF A2 — 3 practice papers", contents: "3 complete papers · four skills · audio included", usd: 19, xaf: 10400,
+    desc: "Three complete DELF A2 papers in the official format: reading, listening, writing and speaking. Marking guide with transcripts and grids, answer sheet, and a web edition that marks reading and listening for you." },
+  { id: "delf-b1", kind: "exam", level: "DELF", exam: "DELF B1", name: "DELF B1 — 3 practice papers", contents: "3 complete papers · four skills · audio included", usd: 25, xaf: 13700,
+    desc: "Three complete DELF B1 papers in the official format: reading, listening, writing and speaking. Marking guide with transcripts and grids, answer sheet, and a web edition that marks reading and listening for you." },
+  { id: "delf-b2", kind: "exam", level: "DELF", exam: "DELF B2", name: "DELF B2 — 3 practice papers", contents: "3 complete papers · four skills · audio included", usd: 25, xaf: 13700,
+    desc: "Three complete DELF B2 papers in the official format: reading, listening, writing and speaking. Marking guide with transcripts and grids, answer sheet, and a web edition that marks reading and listening for you." },
+  { id: "tcf-canada", kind: "exam", level: "TCF", exam: "TCF Canada", name: "TCF Canada — 4 practice papers, A1 to B2", contents: "4 papers of rising difficulty · four skills · audio included", usd: 29, xaf: 15900,
+    desc: "Four TCF Canada papers in the official format, one each at A1, A2, B1 and B2, so you see where your score stands and what the next band asks. Reading, listening, writing and speaking, with marking guide, answer sheet and a self-marking web edition." },
 ];
+const EXAMS_SOON = [
+  { name: "DALF", levels: "C1 · C2", note: "The advanced diploma, for university and professional use. In preparation with the C1 and C2 levels." },
+];
+PRODUCTS.push(...EXAM_PACKS);
 
 // Live lessons with the author, one to one. Booked in two steps: a free exchange
 // to agree on the content and the time, then payment to confirm the session.

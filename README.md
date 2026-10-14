@@ -13,10 +13,14 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 | A1, A2, B1 Part 2 | modules 9–16 + bilan | 29 $ / 15 900 FCFA chacun |
 | A1, A2, B1 Complete | parties 1 et 2 | 49 $ / 26 900 FCFA chacun |
 | The Complete Method | A0 à B1, 56 modules, 7 bilans | 129 $ / 70 800 FCFA |
+| DELF A1, DELF A2 | 3 sujets complets chacun | 19 $ / 10 400 FCFA chacun |
+| DELF B1, DELF B2 | 3 sujets complets chacun | 25 $ / 13 700 FCFA chacun |
+| TCF Canada | 4 sujets, A1 à B2 | 29 $ / 15 900 FCFA |
+| A0 Module 1 | module complet | gratuit, envoyé par e-mail |
 
 - Un niveau complet coûte 9 $ (4 900 FCFA) de moins que ses deux parties. La Complete Method coûte 37 $ (20 300 FCFA) de moins que les quatre niveaux. Le site calcule ces économies à partir des prix, sans les saisir à la main.
 - B2, C1 et C2 sont en préparation (B2 partie 1 commencé) : affichés, mais non vendus.
-- Sujets d'examen DELF (A1–B2), DALF (C1–C2) et TCF (dont TCF Canada) : l'atelier sait les produire (sujet, correcteur, feuille de réponses, édition web notée, audio intégré au web et joint au PDF). Affichés « Coming soon », sans prix tant qu'ils ne sont pas fixés.
+- Sujets d'examen : DELF A1 à B2 et TCF Canada **en vente**, produits par l'atelier depuis ses réserves (sujet, correcteur, feuille de réponses, édition web qui note la compréhension écrite et orale, audio). DALF reste « Coming soon » : l'atelier n'a pas encore de réserve C1/C2. Ce sont des sujets originaux au format officiel, jamais des épreuves officielles.
 - Formats livrés : PDF « édition vendue » avec corrigé, accompagné de l'audio en MP3 et d'un mémo PDF ; édition web interactive, à faire en ligne sur le site, avec l'audio intégré à la page. Pas de vidéo. L'édition CLASSROOM n'est jamais vendue.
 - Ventes définitives, sans remboursement.
 
@@ -25,12 +29,14 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 - Sélecteur de niveau A0 à C2 (B2 à C2 grisés « In preparation »), avec les packs, leurs descriptions, leurs prix et la liste de leurs modules (titres réels, tirés des sources par l'atelier)
 - Bande « The Complete Method »
 - Devises : dollar US et FCFA (XAF, XOF) au prix exact ; euro calculé depuis le FCFA (parité fixe 655,957) ; livre, dollar canadien, naira et cédi convertis depuis le dollar à des taux indicatifs, marqués « ≈ ». La devise suit le pays du visiteur : d'abord la région du navigateur et le fuseau horaire, puis le pays de sa connexion via get.geojs.io (gratuit, sans clé). Un choix manuel du visiteur prime et est mémorisé. Cette consultation envoie l'adresse IP du visiteur à geojs : à mentionner dans la politique de confidentialité.
-- Moyens de paiement de départ : carte bancaire (Visa, Mastercard) et PayPal partout ; MTN MoMo et Orange Money en plus pour le Cameroun (montant en FCFA, numéro vérifié). Le formulaire de paiement est en place, mais n'encaisse rien : il annonce « Online payment opens soon » et propose d'envoyer la commande sur WhatsApp quand le numéro est renseigné.
+- Moyens de paiement : carte bancaire (Visa, Mastercard), PayPal, MTN MoMo et Orange Money **dans tous les pays** ; ceux du pays du visiteur viennent en premier. MoMo et Orange Money demandent un numéro camerounais (diaspora, ou un proche qui paie) et sont encaissés en FCFA. Le formulaire de paiement est en place, mais n'encaisse rien : il annonce « Online payment opens soon » et propose d'envoyer la commande sur WhatsApp quand le numéro est renseigné.
 - **Séances en visio dans le site** (`js/live.js`) : l'élève choisit une séance (30 min 9 $ / 4 900 FCFA ; 60 min 15 $ / 8 200 FCFA ; 5 × 60 min 65 $ / 35 700 FCFA) et une heure parmi les disponibilités d'Olivier (`LIVE_CONFIG.weekly`, en heure de Douala, affichées dans le fuseau du visiteur), puis paie avec les moyens de son pays. « My live lessons » affiche un compte à rebours ; le bouton **Join** s'active 10 min avant ; la salle vidéo s'ouvre dans la page avec un minuteur (temps restant, alerte à 5 min). Un pack donne 4 réservations de plus sans repayer. Échange gratuit possible avant de réserver (WhatsApp ou e-mail).
 - **Paiement par le site** : avec `SHOP.api` renseigné, « Pay » ouvre la page Notch Pay (carte, MTN MoMo, Orange Money) et le site confirme au retour. Contrat du serveur : [`docs/serveur.md`](docs/serveur.md).
 - **Mode démo** : ajouter `?demo` à l'adresse pour essayer achats et séances sans payer (réservations gardées dans ce navigateur).
-- Test de niveau en 15 questions, qui recommande le pack suivant
-- Sections : contenu d'un module (audio inclus), préparation DELF/TCF (en production), auteur, paiement, FAQ
+- **Module A0-1 gratuit** : formulaire (prénom, e-mail, case marketing décochée) ; le serveur envoie aussitôt le module avec un message de présentation de la méthode (`emails/module-gratuit.html` et `.txt`).
+- **Avis clients** : section masquée tant que `js/reviews.js` est vide ; le serveur demande un avis après chaque achat (`emails/demande-avis.html`). Seuls de vrais avis, publiés avec l'accord de l'élève.
+- Test de niveau tiré des bilans de la méthode, étape par étape de A0 à B1, qui recommande le pack par lequel commencer (`js/leveltest.js`, généré : `python tools/importer_test.py <atelier>/livraison/Pas-a-Pas-Level-Check.json`)
+- Sections : contenu d'un module (audio inclus), comparatif, sujets DELF et TCF Canada, séances, auteur, paiement, avis, FAQ
 
 ## Personnaliser
 
@@ -40,8 +46,10 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 | Disponibilités d'Olivier, délai de réservation, visio (JaaS) | `LIVE_CONFIG` en haut de `js/live.js` |
 | Adresse du serveur de paiement et de réservation | `SHOP.api` dans `js/app.js` |
 | Titres des modules | `js/modules.js`, **généré** : `python tools/importer_catalogue.py <atelier>/livraison/site/catalogue.json` après « Exporter pour le site » dans l'atelier |
-| E-mail, WhatsApp, lien du module gratuit A0-1 | objet `SHOP` en haut de `js/app.js` (les champs vides restent masqués) |
-| Questions du test | `TEST` dans `js/app.js` |
+| E-mail, WhatsApp | objet `SHOP` en haut de `js/app.js` (les champs vides restent masqués) |
+| Questions du test | `js/leveltest.js`, **généré** depuis l'atelier (`tools/importer_test.py`) |
+| Avis clients | `js/reviews.js` (vrais avis seulement) |
+| E-mails envoyés par le serveur | `emails/` |
 | Devises, taux indicatifs, pays, moyens de paiement | `CURRENCIES`, `COUNTRIES`, `PAY_METHODS` dans `js/app.js` |
 | Couleurs et typographies | variables `:root` de `css/style.css` |
 

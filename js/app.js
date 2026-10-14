@@ -2,7 +2,6 @@
 const SHOP = {
   email: "",          // dedicated contact address
   whatsapp: "",       // international format without "+", e.g. 2376XXXXXXXX
-  freeSampleUrl: "",  // link to the free module A0-1
   api: "",            // booking and payment server (Notch Pay), e.g. "https://api.pasapasfrench.com"
 };
 // ?demo in the address: try purchases and live lessons without paying (this browser only)
@@ -33,8 +32,8 @@ const CURRENCIES = {
 // Starting payment methods. Cameroon adds MTN MoMo and Orange Money.
 const COUNTRIES = ["Cameroon", "Nigeria", "Ghana", "Côte d'Ivoire", "Senegal", "United States", "Canada", "United Kingdom", "France", "Other country"];
 const PAY_METHODS = {
-  momo: { label: "MTN MoMo", phone: true, cameroonOnly: true },
-  om: { label: "Orange Money", phone: true, cameroonOnly: true },
+  momo: { label: "MTN MoMo", phone: true, local: "Cameroon" },
+  om: { label: "Orange Money", phone: true, local: "Cameroon" },
   card: { label: "Bank card (Visa, Mastercard)" },
   paypal: { label: "PayPal" },
 };
@@ -215,7 +214,9 @@ function renderCompare() {
     ["Works offline", "PDF and MP3 on any device", "Partly, in the app", "No"],
     ["Answer keys you keep", "Every exercise", "Instant marking, nothing to keep", "Depends on the tutor"],
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
-    ["Pay in FCFA with MTN MoMo or Orange Money", "Yes, in Cameroon", "Varies", "Varies"],
+    ["Exam practice papers", "DELF A1 to B2 and TCF Canada", "Rarely", "Depends on the tutor"],
+    ["Try before you buy", "Module 1 free, in full", "Free version or trial, then subscription", "Sometimes a trial lesson"],
+    ["Pay with MTN MoMo or Orange Money", "Yes, from any country", "Varies", "Varies"],
   ];
   $("#compareTable").innerHTML = `<table class="compare">
     <thead><tr><th scope="col"><span class="sr-only">Feature</span></th><th scope="col" class="us">Pas à Pas FRENCH</th><th scope="col">Language apps</th><th scope="col">Hourly tutors</th></tr></thead>
@@ -224,7 +225,13 @@ function renderCompare() {
 }
 
 function renderExams() {
-  $("#examSoon").innerHTML = EXAMS.map((e) => `<div class="pay-card exam-card">
+  $("#examSoon").innerHTML = EXAM_PACKS.map((p) => `<div class="pay-card exam-card">
+    <span class="tag">${p.level}</span>
+    <h3>${p.exam}</h3>
+    <p class="exam-levels">${p.contents}</p>
+    <p>${p.desc}</p>
+    <div class="exam-buy"><span class="price">${price(p)}</span><button class="btn btn-primary mini" data-buy="${p.id}">Buy</button></div>
+  </div>`).join("") + EXAMS_SOON.map((e) => `<div class="pay-card exam-card">
     <span class="tag soon">Coming soon</span>
     <h3>${e.name}</h3>
     <p class="exam-levels">${e.levels}</p>
@@ -240,7 +247,7 @@ function renderLive() {
   </div>`).join("");
 }
 
-function renderPrices() { renderLevelPanel(); renderMethod(); renderCompare(); renderLive(); }
+function renderPrices() { renderLevelPanel(); renderMethod(); renderCompare(); renderExams(); renderLive(); }
 
 // ====== Dialogs ======
 const modal = $("#modal");
@@ -259,7 +266,12 @@ function contactHTML() {
 }
 
 // Cameroon: MTN MoMo, Orange Money, card and PayPal. Elsewhere: card and PayPal.
-const methodsFor = (country) => Object.entries(PAY_METHODS).filter(([, m]) => country === "Cameroon" || !m.cameroonOnly);
+// Every method is offered in every country: a Cameroonian abroad, or family paying from
+// Cameroon, can use MoMo or Orange Money anywhere. The visitor's local methods come first.
+const methodsFor = (country) => Object.entries(PAY_METHODS)
+  .map(([k, m]) => [k, m, m.local === country ? 0 : m.local ? 2 : 1])
+  .sort((a, b) => a[2] - b[2])
+  .map(([k, m]) => [k, m.local && m.local !== country ? { ...m, label: `${m.label} (${m.local} number)` } : m]);
 
 let checkoutDraft = null;   // a live lesson being booked, set by live.js
 
@@ -451,15 +463,87 @@ document.addEventListener("submit", (e) => {
   submitTestStep(e.target);
 });
 
+// ====== Free module (A0 Module 1) ======
+// The server records the address and sends the module at once, with a short presentation
+// of the method (emails/module-gratuit.html). Further emails only with the visitor's consent.
+function openFree() {
+  openModal(`<form class="checkout" id="freeForm" novalidate>
+    <p class="eyebrow">Free · A0 Module 1${DEMO ? " · demo" : ""}</p>
+    <h2>Letters, Vowels and Introducing Yourself</h2>
+    <p>The full first module, free: the PDF with its MP3 audio, and the web edition to do online. It arrives in your inbox within a minute.</p>
+    <div class="form-grid">
+      <label for="frName">First name<input id="frName" name="name" autocomplete="given-name"></label>
+      <label for="frEmail">Email<input id="frEmail" name="email" type="email" required autocomplete="email"></label>
+    </div>
+    <label class="check"><input type="checkbox" name="marketing"> Also send me French tips and news from Pas à Pas FRENCH. Unsubscribe in one click.</label>
+    <p class="form-error" id="freeError" hidden></p>
+    <button class="btn btn-primary btn-block" id="freeBtn">Send me Module 1</button>
+    <p class="note">No card, nothing to pay.</p>
+  </form>`);
+}
+
+async function submitFree(form) {
+  const err = $("#freeError"), btn = $("#freeBtn");
+  if (!form.frEmail.value || !form.frEmail.checkValidity()) { err.textContent = "Enter a valid email address: the module is sent there."; err.hidden = false; return; }
+  const req = { email: form.frEmail.value.trim(), name: form.frName.value.trim(), marketing: form.marketing.checked,
+    country: state.country, currency: state.currency };
+  const sent = (note = "") => openModal(`<div class="checkout"><p class="eyebrow">Free · A0 Module 1${note}</p><h2>Check your inbox</h2>
+    <p>Module 1 is on its way to ${esc(req.email)}. If it is not there in a few minutes, look in the spam or promotions folder.</p>
+    <p>While you wait: find your level with the free test.</p>
+    <div class="hero-cta tight"><button class="btn btn-primary" data-test>Take the level test</button><button class="btn btn-ghost" data-modal-close>Close</button></div></div>`);
+  if (SHOP.api) {
+    btn.disabled = true; btn.textContent = "Sending…";
+    try {
+      const r = await fetch(`${SHOP.api}/free-module`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
+      if (!r.ok) throw new Error();
+      return sent();
+    } catch {
+      err.textContent = "The module could not be sent just now. Please try again in a moment."; err.hidden = false;
+      btn.disabled = false; btn.textContent = "Send me Module 1"; return;
+    }
+  }
+  if (DEMO) return sent(" · demo, nothing was sent");
+  const contact = contactHTML();
+  openModal(`<div class="checkout"><h2>Opening soon</h2><p>The free module will be sent automatically as soon as the shop opens.</p>
+    ${contact ? `<p>${contact}</p>` : ""}<button class="btn btn-ghost" data-modal-close>Close</button></div>`);
+}
+
+document.addEventListener("submit", (e) => {
+  if (e.target.id !== "freeForm") return;
+  e.preventDefault();
+  submitFree(e.target);
+});
+
+// ====== Reviews (js/reviews.js) ======
+function renderReviews() {
+  if (typeof REVIEWS === "undefined" || !REVIEWS.length) return;
+  $("#reviewList").innerHTML = REVIEWS.map((r) => `<figure class="review">
+    <div class="stars" aria-label="${r.rating} out of 5">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
+    <blockquote>${esc(r.text)}</blockquote>
+    <figcaption>${esc(r.name)}, ${esc(r.country)}${byId(r.product) ? ` · ${esc(byId(r.product).name)}` : ""}</figcaption>
+  </figure>`).join("");
+  $("#reviews").hidden = false;
+  const avg = REVIEWS.reduce((t, r) => t + r.rating, 0) / REVIEWS.length;
+  const ld = document.createElement("script");
+  ld.type = "application/ld+json";
+  ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Course", name: "Pas à Pas — The Complete Method (A0 to B1)",
+    provider: { "@type": "Person", name: "Olivier Djoukang" },
+    aggregateRating: { "@type": "AggregateRating", ratingValue: avg.toFixed(1), reviewCount: REVIEWS.length },
+    review: REVIEWS.map((r) => ({ "@type": "Review", author: { "@type": "Person", name: r.name }, datePublished: r.date,
+      reviewRating: { "@type": "Rating", ratingValue: r.rating }, reviewBody: r.text })) });
+  document.head.appendChild(ld);
+}
+
 // ====== Events ======
 document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-buy],[data-level],[data-modal-close],[data-test],[data-goto-level]");
+  const el = e.target.closest("[data-buy],[data-level],[data-modal-close],[data-test],[data-goto-level],[data-free]");
   if (!el) return;
   const d = el.dataset;
   if (d.buy) openBuy(d.buy);
   else if (d.level) { state.level = d.level; store.set("level", d.level); renderLevelTabs(); renderLevelPanel(); }
   else if ("modalClose" in d) modal.close();
   else if ("test" in d) { e.preventDefault(); openTest(); }
+  else if ("free" in d) { e.preventDefault(); openFree(); }
   else if (d.gotoLevel) {
     modal.close();
     state.level = d.gotoLevel; store.set("level", d.gotoLevel);
@@ -492,10 +576,7 @@ lookupCountry().then((code) => {
 });
 
 // ====== Start ======
-if (SHOP.freeSampleUrl) {
-  const a = $(".free-sample");
-  a.href = SHOP.freeSampleUrl; a.target = "_blank"; a.rel = "noopener"; a.hidden = false;
-}
+renderReviews();
 const contact = contactHTML();
 if (contact) { $("#contactLine").innerHTML = contact; $("#contactLine").hidden = false; }
 $("#year").textContent = new Date().getFullYear();
@@ -503,4 +584,3 @@ $("#currency").innerHTML = Object.entries(CURRENCIES).map(([k, c]) => `<option v
 $("#currency").value = state.currency;
 renderLevelTabs();
 renderPrices();
-renderExams();
