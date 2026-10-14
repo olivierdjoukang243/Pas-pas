@@ -151,6 +151,27 @@ Lu au clic sur « Join ». Il n'est servi que pour une séance payée, de 10 min
 ```
 Olivier reçoit un jeton modérateur pour le même salon (lien dans son e-mail de confirmation).
 
+## Protection contre la fraude
+
+### Les fichiers
+1. **Jamais de fichier public.** Les productions sont stockées hors du site (un stockage privé). Seul le module gratuit peut avoir un lien stable, et il est tatoué « Free sample ».
+2. **Tatouage à la livraison.** Après `payment.complete`, le serveur fait des copies au nom de l'acheteur (nom, e-mail, référence de commande) avec `tatouer.py` de l'atelier, ou la même logique. Il les inscrit au registre des licences, puis envoie les liens. Aucun fichier ne part sans tatouage.
+3. **Liens personnels.** Liens signés (HMAC), liés à la commande, valables 7 jours et 5 téléchargements, puis renouvelables sur demande de l'acheteur.
+4. **Alerte de partage.** Une même commande téléchargée depuis plus de 5 adresses IP, ou plus de 3 pays, en 24 h suspend les liens et prévient Olivier.
+5. **Éditions web.** Elles s'ouvrent par un lien personnel, et chaque page servie est tatouée au vol. Le jeton n'est valable que pour sa commande.
+6. **Sujets d'examen.** Un tirage différent par commande, dont la référence est enregistrée avec la commande.
+
+### Les paiements
+- **Prix et moyens.** Le prix est toujours recalculé côté serveur, et le moyen de paiement contrôlé selon le pays de résidence (voir `/checkout`).
+- **Confirmation.** Une commande n'est livrée qu'après le webhook signé du prestataire, relu chez lui. Le retour du navigateur ne suffit pas.
+- **Limites de débit.** Formulaires et paiements sont limités : quelques tentatives par adresse IP et par adresse e-mail.
+- **Litiges et rétrofacturations.** On garde la trace de la livraison (date, adresse IP du téléchargement, case « terms » acceptée), qui sert de preuve. Le marchand officiel (Paddle ou Lemon Squeezy) gère les rétrofacturations.
+
+### Les accès
+- **Secrets.** Clés des prestataires, jeton Gmail et clé JaaS restent dans des variables d'environnement du serveur, jamais dans Git.
+- **Liens d'Olivier.** Ses liens d'administration (`?olivier=…`) portent une clé à usage unique, longue et aléatoire.
+- **Si une copie circule.** Lancer `tracer.py` (atelier) sur la copie, puis faire la demande de retrait décrite dans `docs/protection.md`.
+
 ## Packs d'examen
 Les produits `delf-a1`, `delf-a2`, `delf-b1` et `delf-b2` (3 sujets chacun) et `tcf-canada`
 (4 sujets, de A1 à B2) sont des fichiers comme les autres. L'atelier les produit une fois avec

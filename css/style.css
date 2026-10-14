@@ -355,6 +355,12 @@ details p { margin: .7em 0 0; color: #3b3f4a; }
 .answer-list { display: grid; gap: .5em; }
 .answer-list .pm { display: flex; gap: .6em; align-items: center; }
 .session.request { background: #fdf6e7; }
+.residence-line { display: flex; flex-wrap: wrap; gap: .6em 1.2em; align-items: flex-end; background: #fff; border-radius: var(--radius); padding: 1em 1.2em; margin-bottom: 1rem; box-shadow: var(--shadow); }
+.residence-line label { display: grid; gap: .3em; font-weight: 600; }
+.residence-line small, .residence small { color: var(--gris); font-weight: 400; }
+.residence-line select { padding: .5em .6em; border: 2px solid var(--ligne); border-radius: 10px; font: inherit; max-width: 100%; }
+.residence-line span { color: var(--gris); font-size: .92rem; }
+.residence { margin: 0; }
 .exam-card .tag { background: #eef1fb; }
 .free-cta { display: flex; align-items: center; gap: .8em; flex-wrap: wrap; margin-top: .4em; }
 .free-cta span { color: var(--gris); font-size: .9rem; }

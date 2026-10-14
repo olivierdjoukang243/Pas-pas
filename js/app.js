@@ -110,11 +110,50 @@ const guess = guessLocale();
 // A currency the visitor picks by hand wins over detection, and is remembered.
 const state = {
   currency: store.get("currencyChoice", null) || guess.currency,
-  country: store.get("country", null) || guess.country,
+  country: store.get("countryChoice", null) || guess.country,   // detected, unless the visitor chose another
+  countryDetected: guess.country,
   level: store.get("level", "A0"),
 };
 if (!CURRENCIES[state.currency]) state.currency = guess.currency;
 if (!COUNTRIES.includes(state.country)) state.country = guess.country;
+const NAME_TO_CODE = Object.fromEntries(Object.entries(COUNTRY_NAMES).map(([c, n]) => [n, c]));
+// A country chosen by the visitor brings its currency, unless a currency was also picked by hand.
+if (store.get("countryChoice", null) && !store.get("currencyChoice", null)) state.currency = currencyFor(NAME_TO_CODE[state.country] || "");
+const countryChosen = () => !!store.get("countryChoice", null);
+
+// The country of residence is detected; the visitor can choose another one anywhere it is shown.
+// It decides the payment methods and, unless a currency was picked by hand, the currency.
+function setCountry(name, manual) {
+  if (!COUNTRIES.includes(name)) return;
+  state.country = name;
+  if (manual) store.set("countryChoice", name === state.countryDetected ? null : name);
+  if (!store.get("currencyChoice", null)) {
+    const cur = currencyFor(NAME_TO_CODE[name] || "");
+    if (CURRENCIES[cur] && cur !== state.currency) { state.currency = cur; $("#currency").value = cur; renderPrices(); }
+  }
+  renderResidence();
+  if ($("#checkoutForm")) { renderResidenceCheckout(); renderPayOptions(); }
+}
+
+const countryOptions = (selected) => COUNTRIES.map((c) => `<option ${c === selected ? "selected" : ""}>${esc(c)}</option>`).join("");
+const residenceNote = () => countryChosen() ? "chosen by you" : "detected automatically";
+
+function renderResidence() {
+  const box = $("#residenceLine");
+  if (!box) return;
+  box.innerHTML = `<label for="resCountry">Your country of residence <small>(${residenceNote()})</small>
+    <select id="resCountry">${countryOptions(state.country)}</select></label>
+    <span>Payment methods shown: ${methodsFor(state.country).map(([, m]) => m.label).join(", ")}.</span>`;
+}
+
+function renderResidenceCheckout() {
+  const box = $("#coResidence");
+  if (!box) return;
+  box.innerHTML = box.dataset.open ? `<label for="coCountry">Country of residence<select id="coCountry" name="country">${countryOptions(state.country)}</select></label>`
+    : `<input type="hidden" id="coCountry" name="country" value="${esc(state.country)}">
+      <p class="residence">Country of residence: <b>${esc(state.country)}</b> <small>(${residenceNote()})</small>
+      <button type="button" class="link-btn" data-change-country>Change</button></p>`;
+}
 if (!LEVELS.some((l) => l.code === state.level)) state.level = "A0";
 
 const $ = (sel) => document.querySelector(sel);
@@ -297,7 +336,7 @@ function openBuy(id, draft = null) {
     <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} your time · ${draft.minutes} min · ${draft.need}` : p.contents}</p>
     <div class="form-grid">
       <label for="coEmail">Email (to receive your ${p.kind === "live" ? "booking confirmation" : "files"})<input id="coEmail" name="email" type="email" required autocomplete="email" value="${draft ? draft.email : ""}"></label>
-      <label for="coCountry">Country of residence<select id="coCountry" name="country">${COUNTRIES.map((c) => `<option ${c === state.country ? "selected" : ""}>${c}</option>`).join("")}</select></label>
+      <div id="coResidence"></div>
     </div>
     <p class="eyebrow pm-title">Payment method</p>
     <div class="pay-methods" id="payMethods" role="radiogroup" aria-label="Payment method"></div>
@@ -310,6 +349,7 @@ function openBuy(id, draft = null) {
     <button class="btn btn-primary btn-block" id="payBtn"></button>
     <p class="note">${p.kind === "live" ? "Payment confirms the session and reserves the time for you." : "Sales are final: the files are delivered instantly. A faulty file is replaced."}</p>
   </form>`);
+  renderResidenceCheckout();
   renderPayOptions();
 }
 
@@ -343,7 +383,7 @@ function submitCheckout(form) {
   else if (m.phone && !CM_MOBILE.test(String(data.get("momo")).replace(/[\s.-]/g, ""))) msg = `Enter a Cameroon mobile number for ${m.label}: 9 digits starting with 6, e.g. 677 12 34 56.`;
   if (msg) { err.textContent = msg; err.hidden = false; return; }
 
-  state.country = data.get("country"); store.set("country", state.country);
+  if (data.get("country") !== state.country) setCountry(data.get("country"), true);
   const inFCFA = state.country === "Cameroon" || m.phone;
   const charged = inFCFA ? fmtXAF(p.xaf) : fmtUSD(p.usd);
   const order = { product: p.id, email: data.get("email"), country: state.country, method: data.get("pay"),
@@ -632,7 +672,7 @@ document.addEventListener("click", (e) => {
 });
 modal.addEventListener("click", (e) => { if (e.target === modal) modal.close(); });
 modal.addEventListener("change", (e) => {
-  if (e.target.id === "coCountry") renderPayOptions();
+  if (e.target.id === "coCountry") setCountry(e.target.value, true);
   else if (e.target.name === "pay") renderPayDetails();
 });
 modal.addEventListener("submit", (e) => {
@@ -647,14 +687,23 @@ $("#currency").addEventListener("change", (e) => {
 lookupCountry().then((code) => {
   if (!code) return;
   const loc = localeFor(code);
-  if (!store.get("country", null)) state.country = loc.country;
-  if (store.get("currencyChoice", null) || loc.currency === state.currency) return;
-  state.currency = loc.currency;
-  $("#currency").value = state.currency;
-  renderPrices();
+  state.countryDetected = loc.country;
+  if (countryChosen()) return renderResidence();
+  setCountry(loc.country, false);   // also sets the currency of that country, unless one was picked by hand
+});
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("[data-change-country]")) return;
+  $("#coResidence").dataset.open = "1";
+  renderResidenceCheckout();
+  $("#coCountry").focus();
+});
+document.addEventListener("change", (e) => {
+  if (e.target.id === "resCountry") setCountry(e.target.value, true);
 });
 
 // ====== Start ======
+renderResidence();
 loadReviews();
 { const t = new URLSearchParams(location.search).get("review"); if (t) openReview(t); }
 const contact = contactHTML();
