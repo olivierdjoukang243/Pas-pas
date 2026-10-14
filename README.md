@@ -24,7 +24,8 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 
 - Sélecteur de niveau A0 à C2 (B2 à C2 grisés « In preparation »), avec les packs, leurs descriptions et leurs prix
 - Bande « The Complete Method »
-- Bascule $ / FCFA, en FCFA par défaut pour les fuseaux horaires africains
+- Devises : dollar US et FCFA (XAF, XOF) au prix exact ; euro calculé depuis le FCFA (parité fixe 655,957) ; livre, dollar canadien, naira et cédi convertis depuis le dollar à des taux indicatifs, marqués « ≈ ». La devise est choisie d'après le fuseau horaire du visiteur.
+- Moyens de paiement de départ : carte bancaire (Visa, Mastercard) et PayPal partout ; MTN MoMo et Orange Money en plus pour le Cameroun (montant en FCFA, numéro vérifié). Le formulaire de paiement est en place, mais n'encaisse rien : il annonce « Online payment opens soon » et propose d'envoyer la commande sur WhatsApp quand le numéro est renseigné.
 - Test de niveau en 15 questions, qui recommande le pack suivant
 - Sections : contenu d'un module (audio inclus), préparation DELF/TCF (en production), auteur, paiement, FAQ
 
@@ -35,6 +36,7 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 | Produits, descriptions, prix, niveaux | `js/products.js` |
 | E-mail, WhatsApp, lien du module gratuit A0-1 | objet `SHOP` en haut de `js/app.js` (les champs vides restent masqués) |
 | Questions du test | `TEST` dans `js/app.js` |
+| Devises, taux indicatifs, pays, moyens de paiement | `CURRENCIES`, `COUNTRIES`, `PAY_METHODS` dans `js/app.js` |
 | Couleurs et typographies | variables `:root` de `css/style.css` |
 
 ## Mise en ligne
@@ -45,6 +47,7 @@ GitHub Pages, branche `main` : https://olivierdjoukang243.github.io/Pas-pas/
 
 Le bouton « Buy » ouvre pour l'instant une fenêtre « Online checkout opens soon » : aucun paiement n'est encaissé. Restent à fournir ou à construire :
 1. Le prestataire de paiement (piste principale : Notch Pay, carte et mobile money au Cameroun) et l'état du compte.
+   D'après les notes du projet, PayPal (comme Stripe) n'accepte pas un vendeur basé au Cameroun : à confirmer avant d'ouvrir les paiements, sinon retirer PayPal de `PAY_METHODS`.
 2. Un serveur de livraison : webhook de paiement, puis lien de téléchargement signé et limité dans le temps (PDF, MP3, mémo).
    Les éditions web se font en ligne sur le site : elles doivent être servies derrière un accès acheteur, pas en fichiers publics. GitHub Pages ne sait pas protéger un contenu payant.
 3. Le stockage privé des fichiers.
