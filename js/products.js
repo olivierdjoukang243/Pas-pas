@@ -1,4 +1,4 @@
-// Pas-à-Pas catalogue. Facts confirmed by Olivier on 14/10/2026: 11 products,
+// Pas à Pas catalogue. Facts confirmed by Olivier on 14/10/2026: 11 products,
 // 56 modules and 7 level checks from A0 to B1. Prices are set in both currencies
 // (they are not converted). Never add a module title, product or price that is not confirmed.
 
@@ -41,7 +41,7 @@ const PRODUCTS = [
     desc: "The second half of B1: argument and nuance. Concession and opposition, hypothesis, formal and informal registers, professional writing, debating an idea, and the connectors that hold a long answer together. Ends with the B1 level check, the level most exams and employers ask for." },
   { id: "b1-complete", level: "B1", kind: "level", name: "French B1 Complete — All 16 Modules", contents: "Parts 1 and 2 · 16 modules + 2 level checks", usd: 49, xaf: 26900,
     desc: "The complete B1 level, both parts, sixteen modules and two level checks. The level that lets you work, study and argue in French. Cheaper than buying the parts separately." },
-  { id: "complete-method", level: "A0–B1", kind: "method", name: "Pas-à-Pas — The Complete Method (A0 to B1)", contents: "56 modules + 7 level checks", usd: 129, xaf: 70800,
+  { id: "complete-method", level: "A0–B1", kind: "method", name: "Pas à Pas — The Complete Method (A0 to B1)", contents: "56 modules + 7 level checks", usd: 129, xaf: 70800,
     desc: "Everything: 56 modules and 7 level checks, from the alphabet to arguing a point in French. Four levels that share one method, one set of characters and one way of explaining, so nothing is ever re-taught differently halfway through. You keep the files for good, including the updates." },
 ];
 
