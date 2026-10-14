@@ -193,14 +193,13 @@ details p { margin: .7em 0 0; color: #3b3f4a; }
 .toast.show { transform: translate(-50%, 0); }
 .wa-float { position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: #25d366; display: grid; place-items: center; font-size: 1.6rem; text-decoration: none; box-shadow: 0 6px 20px rgba(0, 0, 0, .2); z-index: 35; }
 
-/* Pas-Pas French additions */
-.logo-sub { font-family: var(--sans); font-weight: 600; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--rouge); }
+/* Pas-à-Pas additions */
 .test-card { background: #fff; border-radius: 20px; padding: 1.6em; box-shadow: var(--shadow); border-top: 6px solid var(--rouge); display: flex; flex-direction: column; gap: .8em; }
 .test-card h2 { font-family: var(--serif); margin: 0; color: var(--bleu); font-size: 1.5rem; text-wrap: balance; }
 .test-card p { margin: 0; color: #3b3f4a; }
-.level-scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin: .4em 0; }
+.level-scale { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: .4em 0; }
 .level-scale span { text-align: center; font-weight: 700; font-size: .8rem; padding: .45em 0; border-radius: 6px; color: #fff; background: var(--bleu); }
-.level-scale span:nth-child(1) { opacity: .45; } .level-scale span:nth-child(2) { opacity: .6; } .level-scale span:nth-child(3) { opacity: .75; } .level-scale span:nth-child(4) { opacity: .88; }
+.level-scale span:nth-child(1) { opacity: .4; } .level-scale span:nth-child(2) { opacity: .5; } .level-scale span:nth-child(3) { opacity: .6; } .level-scale span:nth-child(4) { opacity: .7; } .level-scale span:nth-child(5) { opacity: .8; } .level-scale span:nth-child(6) { opacity: .9; }
 .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: -1.5rem; position: relative; }
 .steps > div { background: #fff; border-radius: var(--radius); padding: 1.2em; box-shadow: var(--shadow); }
 .steps b { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--rouge); color: #fff; font-size: .9rem; }
