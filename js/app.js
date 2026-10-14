@@ -153,6 +153,28 @@ function renderLevelTabs() {
     <b>${l.code}</b><span>${l.status === "prep" ? "In preparation" : l.name}</span></button>`).join("");
 }
 
+// Module titles come from the workshop export (js/modules.js), never typed here.
+function modulesOf(p) {
+  if (typeof MODULES === "undefined") return null;
+  if (MODULES[p.id]) return [{ offset: p.part === 2 ? 8 : 0, data: MODULES[p.id] }];
+  if (p.kind === "level") {
+    const base = p.id.replace("-complete", "");
+    const parts = [1, 2].map((n) => MODULES[`${base}-part${n}`]);
+    if (parts.every(Boolean)) return parts.map((data, i) => ({ offset: i * 8, data }));
+  }
+  return null;
+}
+
+function modulesHTML(p) {
+  const groups = modulesOf(p);
+  if (!groups) return "";
+  const count = groups.reduce((s, g) => s + g.data.modules.length, 0);
+  const lists = groups.map((g) => `<ol class="mod-list" start="${g.offset + 1}">
+      ${g.data.modules.map((m) => `<li>${m.titre}</li>`).join("")}
+    </ol>${g.data.bilan ? `<p class="mod-bilan">Level check · ${g.data.bilan.titre}</p>` : ""}`).join("");
+  return `<details class="mods"><summary>See the ${count} modules</summary>${lists}</details>`;
+}
+
 function productRow(p) {
   const saving = p.kind === "level" ? levelSaving(p.level) : null;
   return `<li class="prod">
@@ -160,6 +182,7 @@ function productRow(p) {
       <strong>${p.name}</strong>
       <small>${p.contents}${saving ? ` · <span class="ok">save ${amount(saving.usd, saving.xaf)} vs two parts</span>` : ""}</small>
       <p>${p.desc}</p>
+      ${modulesHTML(p)}
     </div>
     <div class="prod-buy">
       <span class="price">${price(p)}</span>
@@ -207,7 +230,15 @@ function renderExams() {
   </div>`).join("");
 }
 
-function renderPrices() { renderLevelPanel(); renderMethod(); }
+function renderLive() {
+  $("#liveGrid").innerHTML = LIVE.map((p) => `<div class="pay-card live-card">
+    <h3>${p.name}</h3>
+    <p>${p.desc}</p>
+    <span class="price">${price(p)}</span>
+  </div>`).join("");
+}
+
+function renderPrices() { renderLevelPanel(); renderMethod(); renderLive(); }
 
 // ====== Dialogs ======
 const modal = $("#modal");
@@ -235,7 +266,7 @@ function openBuy(id) {
     <h2>${p.name}</h2>
     <p>${p.contents}</p>
     <div class="form-grid">
-      <label for="coEmail">Email (to receive your files)<input id="coEmail" name="email" type="email" required autocomplete="email"></label>
+      <label for="coEmail">Email (to receive your ${p.kind === "live" ? "booking confirmation" : "files"})<input id="coEmail" name="email" type="email" required autocomplete="email"></label>
       <label for="coCountry">Country<select id="coCountry" name="country">${COUNTRIES.map((c) => `<option ${c === state.country ? "selected" : ""}>${c}</option>`).join("")}</select></label>
     </div>
     <p class="eyebrow pm-title">Payment method</p>
@@ -244,7 +275,7 @@ function openBuy(id) {
     <div class="totals" id="coTotals"></div>
     <p class="form-error" id="formError" hidden></p>
     <button class="btn btn-primary btn-block" id="payBtn"></button>
-    <p class="note">Sales are final: the files are delivered instantly and cannot be returned.</p>
+    <p class="note">${p.kind === "live" ? "Pay only once the content and the time are agreed with Olivier: payment confirms the session." : "Sales are final: the files are delivered instantly and cannot be returned."}</p>
   </form>`);
   renderPayOptions();
 }
@@ -288,6 +319,50 @@ function submitCheckout(form) {
     ${wa ? `<a class="btn btn-wa" href="${wa}" target="_blank" rel="noopener">Send this order on WhatsApp</a>` : ""}
     ${contact ? `<p>${contact}</p>` : ""}
     <button class="btn btn-ghost" data-modal-close>Close</button>
+  </div>`);
+}
+
+// ====== Live lessons: free exchange first, payment to confirm ======
+function openLiveRequest() {
+  openModal(`<form class="checkout" id="liveForm" novalidate>
+    <p class="eyebrow">Live lesson · step 1 of 2</p>
+    <h2>Tell me what you need</h2>
+    <p>Nothing to pay now. We first talk, free of charge, to agree on the content, the length and the time. You pay only to confirm the session.</p>
+    <div class="form-grid">
+      <label for="lvNeed" class="full">What would you like to work on?<select id="lvNeed" name="need">${LIVE_NEEDS.map((n) => `<option>${n}</option>`).join("")}</select></label>
+      <label for="lvLevel">Your level<select id="lvLevel" name="level"><option>I don't know yet</option>${LEVELS.map((l) => `<option>${l.code}</option>`).join("")}</select></label>
+      <label for="lvLength">Session<select id="lvLength" name="length">${LIVE.map((p) => `<option value="${p.id}">${p.name} · ${price(p)}</option>`).join("")}</select></label>
+      <label for="lvFormat">Format<select id="lvFormat" name="format"><option>Video call</option><option>In person, if possible</option></select></label>
+      <label for="lvWhen">Preferred days and times<input id="lvWhen" name="when" placeholder="e.g. weekday evenings"></label>
+      <label for="lvName">Your name<input id="lvName" name="name" required autocomplete="name"></label>
+      <label for="lvEmail">Email<input id="lvEmail" name="email" type="email" required autocomplete="email"></label>
+      <label for="lvMsg" class="full">Anything I should know? (optional)<textarea id="lvMsg" name="msg" rows="3"></textarea></label>
+    </div>
+    <p class="form-error" id="lvError" hidden></p>
+    <button class="btn btn-primary btn-block">Send my request</button>
+  </form>`);
+}
+
+function submitLiveRequest(form) {
+  const d = new FormData(form);
+  const err = $("#lvError");
+  if (!d.get("name").trim() || !form.lvEmail.value || !form.lvEmail.checkValidity()) {
+    err.textContent = "Enter your name and a valid email address, so I can answer you."; err.hidden = false; return;
+  }
+  const p = byId(d.get("length"));
+  let tz = "";
+  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { /* ignore */ }
+  const text = `Hello Olivier, I'd like a live lesson.\nNeed: ${d.get("need")}\nLevel: ${d.get("level")}\nSession: ${p.name} (${fmtUSD(p.usd)} / ${fmtXAF(p.xaf)})\nFormat: ${d.get("format")}\nPreferred times: ${d.get("when") || "-"} (${tz})\nName: ${d.get("name")}\nEmail: ${d.get("email")}${d.get("msg") ? `\nNote: ${d.get("msg")}` : ""}`;
+  const wa = SHOP.whatsapp ? whatsappLink(text) : "";
+  const mail = SHOP.email ? `mailto:${SHOP.email}?subject=${encodeURIComponent("Live lesson request")}&body=${encodeURIComponent(text)}` : "";
+  openModal(`<div class="checkout">
+    <p class="eyebrow">Live lesson · step 2 of 2</p>
+    <h2>${wa || mail ? "Send your request" : "Requests open soon"}</h2>
+    ${wa || mail ? `<p>Send it by WhatsApp or email. Olivier answers to agree on the content and the time with you, free of charge.</p>
+      <div class="hero-cta tight">${wa ? `<a class="btn btn-wa" href="${wa}" target="_blank" rel="noopener">Send on WhatsApp</a>` : ""}${mail ? `<a class="btn btn-ghost" href="${mail}">Send by email</a>` : ""}</div>`
+      : `<p>Live lessons can't be requested online yet. Your request has not been sent.</p>`}
+    <p class="note">Once the session is agreed, it is confirmed by paying ${price(p)}${price(p) !== fmtUSD(p.usd) ? ` (${fmtUSD(p.usd)})` : ""}.</p>
+    ${wa || mail ? `<button class="btn btn-primary" data-buy="${p.id}">I've agreed a session: pay to confirm</button>` : ""}
   </div>`);
 }
 
@@ -340,10 +415,11 @@ function testResult() {
 
 // ====== Events ======
 document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-buy],[data-level],[data-modal-close],[data-test],[data-answer],[data-goto-level]");
+  const el = e.target.closest("[data-buy],[data-level],[data-modal-close],[data-test],[data-answer],[data-goto-level],[data-live]");
   if (!el) return;
   const d = el.dataset;
   if (d.buy) openBuy(d.buy);
+  else if ("live" in d) openLiveRequest();
   else if (d.level) { state.level = d.level; store.set("level", d.level); renderLevelTabs(); renderLevelPanel(); }
   else if ("modalClose" in d) modal.close();
   else if ("test" in d) { e.preventDefault(); openTest(); }
@@ -364,7 +440,10 @@ modal.addEventListener("change", (e) => {
   if (e.target.id === "coCountry") renderPayOptions();
   else if (e.target.name === "pay") renderPayDetails();
 });
-modal.addEventListener("submit", (e) => { if (e.target.id === "checkoutForm") { e.preventDefault(); submitCheckout(e.target); } });
+modal.addEventListener("submit", (e) => {
+  if (e.target.id === "checkoutForm") { e.preventDefault(); submitCheckout(e.target); }
+  else if (e.target.id === "liveForm") { e.preventDefault(); submitLiveRequest(e.target); }
+});
 
 $("#currency").addEventListener("change", (e) => {
   state.currency = e.target.value; store.set("currencyChoice", state.currency);

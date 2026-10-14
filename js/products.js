@@ -51,3 +51,17 @@ const EXAMS = [
   { name: "DALF", levels: "C1 · C2", note: "The advanced diploma, for university and professional use." },
   { name: "TCF", levels: "Including TCF Canada", note: "The French language test used for studies, citizenship and immigration." },
 ];
+
+// Live lessons with the author, one to one. Booked in two steps: a free exchange
+// to agree on the content and the time, then payment to confirm the session.
+// FCFA prices follow the same rate as the course (about 547 FCFA per dollar).
+const LIVE = [
+  { id: "live-30", kind: "live", level: "Live", name: "Live lesson · 30 minutes", contents: "One to one with Olivier", usd: 9, xaf: 4900,
+    desc: "A short, focused session: one grammar point, a pronunciation problem, or a quick speaking practice before an exam or an interview." },
+  { id: "live-60", kind: "live", level: "Live", name: "Live lesson · 60 minutes", contents: "One to one with Olivier", usd: 15, xaf: 8200,
+    desc: "A full session to study a topic in depth, work on a module, practise speaking or prepare an exam task." },
+  { id: "live-pack5", kind: "live", level: "Live", name: "5 live lessons · 60 minutes each", contents: "One to one with Olivier · use within 3 months", usd: 65, xaf: 35700,
+    desc: "A short course built around your goal, with a plan agreed in the first session and a short written follow-up after each one." },
+];
+const LIVE_NEEDS = ["Study a grammar point or a module", "Practise speaking or pronunciation", "Conversation practice", "Prepare an exam (DELF, DALF, TCF)", "Something else"];
+PRODUCTS.push(...LIVE);

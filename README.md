@@ -22,10 +22,11 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 
 ## Fonctionnalités
 
-- Sélecteur de niveau A0 à C2 (B2 à C2 grisés « In preparation »), avec les packs, leurs descriptions et leurs prix
+- Sélecteur de niveau A0 à C2 (B2 à C2 grisés « In preparation »), avec les packs, leurs descriptions, leurs prix et la liste de leurs modules (titres réels, tirés des sources par l'atelier)
 - Bande « The Complete Method »
 - Devises : dollar US et FCFA (XAF, XOF) au prix exact ; euro calculé depuis le FCFA (parité fixe 655,957) ; livre, dollar canadien, naira et cédi convertis depuis le dollar à des taux indicatifs, marqués « ≈ ». La devise suit le pays du visiteur : d'abord la région du navigateur et le fuseau horaire, puis le pays de sa connexion via get.geojs.io (gratuit, sans clé). Un choix manuel du visiteur prime et est mémorisé. Cette consultation envoie l'adresse IP du visiteur à geojs : à mentionner dans la politique de confidentialité.
 - Moyens de paiement de départ : carte bancaire (Visa, Mastercard) et PayPal partout ; MTN MoMo et Orange Money en plus pour le Cameroun (montant en FCFA, numéro vérifié). Le formulaire de paiement est en place, mais n'encaisse rien : il annonce « Online payment opens soon » et propose d'envoyer la commande sur WhatsApp quand le numéro est renseigné.
+- **Séances en face à face** avec Olivier (visio, ou en présentiel si possible) : étudier un point, pratiquer, converser, préparer un examen. Parcours en deux temps : demande et échange gratuit par WhatsApp ou e-mail, puis paiement pour confirmer. Tarifs : 30 min 9 $ / 4 900 FCFA ; 60 min 15 $ / 8 200 FCFA ; 5 × 60 min 65 $ / 35 700 FCFA (à utiliser en 3 mois). Modifiables dans `LIVE` (`js/products.js`).
 - Test de niveau en 15 questions, qui recommande le pack suivant
 - Sections : contenu d'un module (audio inclus), préparation DELF/TCF (en production), auteur, paiement, FAQ
 
@@ -33,7 +34,8 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 
 | Quoi | Où |
 |---|---|
-| Produits, descriptions, prix, niveaux | `js/products.js` |
+| Produits, descriptions, prix, niveaux, séances en direct | `js/products.js` |
+| Titres des modules | `js/modules.js`, **généré** : `python tools/importer_catalogue.py <atelier>/livraison/site/catalogue.json` après « Exporter pour le site » dans l'atelier |
 | E-mail, WhatsApp, lien du module gratuit A0-1 | objet `SHOP` en haut de `js/app.js` (les champs vides restent masqués) |
 | Questions du test | `TEST` dans `js/app.js` |
 | Devises, taux indicatifs, pays, moyens de paiement | `CURRENCIES`, `COUNTRIES`, `PAY_METHODS` dans `js/app.js` |
@@ -53,5 +55,5 @@ Le bouton « Buy » ouvre pour l'instant une fenêtre « Online checkout opens s
 3. Le stockage privé des fichiers.
 4. Le nom de domaine, l'adresse e-mail dédiée et le numéro WhatsApp.
 5. Les pages légales : conditions de vente et confidentialité.
-6. Les titres des 56 modules (aucun titre n'est inventé sur le site ; seul le module A0-1, « Letters, Vowels and Introducing Yourself », est cité).
+6. ~~Les titres des 56 modules~~ : importés depuis l'atelier (`js/modules.js`).
 7. Les noms définitifs des fichiers à livrer, fixés au moment de la mise en ligne.
