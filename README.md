@@ -17,7 +17,7 @@ Site de vente de la méthode Pas-à-Pas : cours de français pour adultes anglop
 - Un niveau complet coûte 9 $ (4 900 FCFA) de moins que ses deux parties. La Complete Method coûte 37 $ (20 300 FCFA) de moins que les quatre niveaux. Le site calcule ces économies à partir des prix, sans les saisir à la main.
 - B2, C1 et C2 sont en préparation (B2 partie 1 commencé) : affichés, mais non vendus.
 - Sujets DELF et TCF : en production, rien en vente. Pas de DALF.
-- Formats livrés : PDF « édition vendue » avec corrigé, édition web interactive, mémo PDF. Pas encore d'audio, pas de vidéo. L'édition CLASSROOM n'est jamais vendue.
+- Formats livrés : PDF « édition vendue » avec corrigé, édition web interactive, mémo PDF et enregistrements audio de chaque module. Pas de vidéo. L'édition CLASSROOM n'est jamais vendue.
 - Ventes définitives, sans remboursement.
 
 ## Fonctionnalités
@@ -26,7 +26,7 @@ Site de vente de la méthode Pas-à-Pas : cours de français pour adultes anglop
 - Bande « The Complete Method »
 - Bascule $ / FCFA, en FCFA par défaut pour les fuseaux horaires africains
 - Test de niveau en 15 questions, qui recommande le pack suivant
-- Sections : contenu d'un module, préparation DELF/TCF (en production), auteur, paiement, FAQ
+- Sections : contenu d'un module (audio inclus), préparation DELF/TCF (en production), auteur, paiement, FAQ
 
 ## Personnaliser
 
