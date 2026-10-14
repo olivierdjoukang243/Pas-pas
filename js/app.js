@@ -8,25 +8,6 @@ const SHOP = {
 // ?demo in the address: try purchases and live lessons without paying (this browser only)
 const DEMO = /(^|[?&])demo(&|$)/.test(location.search);
 
-// Placement test: 3 questions per level. The level reached is the highest one passed in a row (2/3 or better).
-const TEST = [
-  { lvl: "A1", q: "Je ___ étudiant.", a: ["suis", "es", "est", "sommes"], ok: 0 },
-  { lvl: "A1", q: "« Comment tu t'appelles ? » means…", a: ["What's your name?", "How are you?", "Where do you live?", "How old are you?"], ok: 0 },
-  { lvl: "A1", q: "Choose the article: ___ maison est grande.", a: ["Le", "La", "Les", "Un"], ok: 1 },
-  { lvl: "A2", q: "Hier, nous ___ au marché.", a: ["allons", "sommes allés", "irons", "allions"], ok: 1 },
-  { lvl: "A2", q: "« Il y a deux ans » means…", a: ["two years ago", "in two years", "for two years", "two years later"], ok: 0 },
-  { lvl: "A2", q: "Je ne mange ___ de viande.", a: ["pas", "non", "aucun", "nul"], ok: 0 },
-  { lvl: "B1", q: "Il faut que tu ___ tes devoirs.", a: ["fais", "fasses", "feras", "faisais"], ok: 1 },
-  { lvl: "B1", q: "Si j'avais le temps, j'___ le français tous les jours.", a: ["étudie", "étudierai", "étudierais", "étudiais"], ok: 2 },
-  { lvl: "B1", q: "La personne ___ je t'ai parlé est arrivée.", a: ["que", "qui", "dont", "où"], ok: 2 },
-  { lvl: "B2", q: "Bien qu'il ___ malade, il est venu.", a: ["est", "soit", "était", "sera"], ok: 1 },
-  { lvl: "B2", q: "Il est parti tôt ___ éviter les embouteillages.", a: ["afin d'", "afin qu'", "pour qu'", "parce qu'"], ok: 0 },
-  { lvl: "B2", q: "« Actuellement » means…", a: ["currently", "actually", "eventually", "accurately"], ok: 0 },
-  { lvl: "C1", q: "Il a réussi, ___ les difficultés rencontrées.", a: ["malgré", "bien que", "quoique", "pourtant"], ok: 0 },
-  { lvl: "C1", q: "Quoi qu'il en ___, nous partirons demain.", a: ["soit", "est", "sera", "serait"], ok: 0 },
-  { lvl: "C1", q: "« Elle n'est pas sans savoir que… » means…", a: ["She is well aware that…", "She doesn't know that…", "She has no idea that…", "She wants to know whether…"], ok: 0 },
-];
-
 // ====== State ======
 const store = {
   get(key, fallback) { try { return JSON.parse(localStorage.getItem("pap_" + key)) ?? fallback; } catch { return fallback; } },
@@ -122,6 +103,7 @@ if (!LEVELS.some((l) => l.code === state.level)) state.level = "A0";
 
 const $ = (sel) => document.querySelector(sel);
 const byId = (id) => PRODUCTS.find((p) => p.id === id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const levelOf = (code) => LEVELS.find((l) => l.code === code);
 
 const fmtUSD = (n) => "$" + n.toLocaleString("en-US");
@@ -374,45 +356,71 @@ async function checkReturn() {
 }
 
 // ====== Placement test ======
-let testStep = 0, testAnswers = [];
-function openTest() { testStep = 0; testAnswers = []; renderTestStep(); }
+// The questions come from the level checks of the method (js/leveltest.js, exported by the atelier).
+// The test climbs step by step, from A0 to B1 Part 2, and stops at the first step that is too hard.
+const TEST_PER_STEP = 4;
+let testStep = 0, testDraw = [], testDone = [];
+const pick = (arr, n) => arr.map((x) => [Math.random(), x]).sort((a, b) => a[0] - b[0]).slice(0, n).map((x) => x[1]);
+const normalise = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+  .replace(/[\u2019\u02bc]/g, "'").toLowerCase().replace(/[.!?;:,]/g, "").replace(/\s+/g, " ").trim();
 
-function renderTestStep() {
-  const item = TEST[testStep];
-  openModal(`<div class="quiz">
-    <div class="quiz-head"><span class="eyebrow">Level test · question ${testStep + 1} of ${TEST.length}</span><span class="chip">${item.lvl}</span></div>
-    <div class="bar"><span style="width:${(testStep / TEST.length) * 100}%"></span></div>
-    <h2 lang="fr">${item.q}</h2>
-    <div class="quiz-options">${item.a.map((a, i) => `<button class="quiz-opt" data-answer="${i}">${a}</button>`).join("")}</div>
-    <button class="link-btn" data-answer="-1">I don't know</button>
-  </div>`);
+function drawStep(step) {
+  return pick(step.skills, TEST_PER_STEP).map((s) => {
+    const [ex, q] = pick(s.items, 2);
+    return { skill: s.skill, instruction: s.instruction, example: ex, q: q[0], answer: q[1] };
+  });
 }
 
-// What to buy next, from the level reached.
-const NEXT = {
-  A0: { pick: "a0-complete", text: "Start with A0 Complete: everything is explained in English from the very first word." },
-  A1: { pick: "a2-part1", text: "You have the basics of A1. Your next step is A2, starting with Part 1." },
-  A2: { pick: "b1-part1", text: "You are around A2. Your next step is B1, starting with Part 1." },
-  B1: { pick: "b1-part2", text: "You are around B1. B2 is in preparation; B1 Part 2 works on argument, nuance and formal writing in the meantime." },
-  B2: { pick: null, text: "You are beyond the levels on sale today (A0 to B1). B2, C1 and C2 are in preparation." },
-  C1: { pick: null, text: "You are beyond the levels on sale today (A0 to B1). B2, C1 and C2 are in preparation." },
-};
+function openTest() {
+  if (typeof LEVEL_TEST === "undefined") return;
+  testStep = 0; testDone = [];
+  testDraw = drawStep(LEVEL_TEST.steps[0]);
+  renderTestStep();
+}
 
-function testResult() {
-  let reached = "A0";
-  for (const lvl of ["A1", "A2", "B1", "B2", "C1"]) {
-    const score = TEST.filter((t, i) => t.lvl === lvl && testAnswers[i] === t.ok).length;
-    if (score >= 2) reached = lvl; else break;
-  }
-  const correct = TEST.filter((t, i) => testAnswers[i] === t.ok).length;
-  const next = NEXT[reached];
-  const p = next.pick && byId(next.pick);
+function renderTestStep() {
+  const steps = LEVEL_TEST.steps, step = steps[testStep];
+  openModal(`<form class="quiz" id="testForm" autocomplete="off">
+    <div class="quiz-head"><span class="eyebrow">Level test · step ${testStep + 1} of ${steps.length}</span><span class="chip">${step.name}</span></div>
+    <div class="bar"><span style="width:${(testStep / steps.length) * 100}%"></span></div>
+    ${testStep === 0 ? `<p class="quiz-note">Type the answer only. Accents and capitals are not marked. Leave it empty if you don't know.</p>` : ""}
+    ${testStep === 1 ? `<p class="quiz-note">From here, instructions are in French, as in the course. Read the example: it shows what to write.</p>` : ""}
+    ${testDraw.map((t, i) => `<div class="quiz-q" lang="fr">
+      <p class="quiz-inst">${esc(t.instruction)}</p>
+      <p class="quiz-ex"><b lang="en">Example</b> ${esc(t.example[0])} → <strong>${esc(t.example[1])}</strong></p>
+      <label for="tq${i}">${esc(t.q)}</label>
+      <input id="tq${i}" name="tq${i}" spellcheck="false" autocapitalize="off">
+    </div>`).join("")}
+    <button class="btn btn-primary btn-block" type="submit">${testStep + 1 < steps.length ? "Next step" : "See my level"}</button>
+  </form>`);
+  document.getElementById("tq0")?.focus();
+}
+
+function submitTestStep(form) {
+  const data = new FormData(form);
+  const wrong = testDraw.filter((t, i) => normalise(data.get("tq" + i)) !== normalise(t.answer));
+  const right = testDraw.length - wrong.length;
+  testDone.push({ step: LEVEL_TEST.steps[testStep], right, total: testDraw.length, wrong });
+  const passed = (100 * right) / testDraw.length >= LEVEL_TEST.pass;
+  if (passed && testStep + 1 < LEVEL_TEST.steps.length) {
+    testStep++;
+    testDraw = drawStep(LEVEL_TEST.steps[testStep]);
+    renderTestStep();
+  } else testResult(passed);
+}
+
+function testResult(finishedAll) {
+  const last = testDone[testDone.length - 1];
+  const passedSteps = testDone.slice(0, finishedAll ? undefined : -1).map((d) => d.step.name);
+  const p = finishedAll ? null : byId(last.step.product);
   if (p) { state.level = p.level; store.set("level", p.level); renderLevelTabs(); renderLevelPanel(); }
+  const live = byId("live-60");
   openModal(`<div class="quiz quiz-result">
-    <p class="eyebrow">Your result · ${correct}/${TEST.length} correct</p>
-    <h2>${reached === "A0" ? "Start at <em>A0</em>" : `You're around <em>${reached}</em>`}</h2>
-    <p>${next.text}</p>
-    ${p ? `<ul class="pick-list"><li><span>${p.name}</span><span><strong>${price(p)}</strong> <button class="btn btn-primary mini" data-buy="${p.id}">Buy</button></span></li></ul>` : ""}
+    <p class="eyebrow">Your result</p>
+    <h2>${finishedAll ? "You have reached the end of <em>B1</em>" : `Start with <em>${last.step.name}</em>`}</h2>
+    <p>${passedSteps.length ? `You passed ${passedSteps.join(", ")}. ` : ""}${finishedAll ? "B2, C1 and C2 are in preparation. Meanwhile, a live lesson with Olivier is the best next step." : `At this step you had ${last.right} of ${last.total} right.`}</p>
+    ${!finishedAll && last.wrong.length ? `<p class="quiz-note">This pack teaches, among others:</p><ul class="quiz-skills">${last.wrong.map((w) => `<li>${esc(w.skill)}</li>`).join("")}</ul>` : ""}
+    <ul class="pick-list">${(p ? [p] : [live]).map((x) => `<li><span>${x.name}</span><span><strong>${price(x)}</strong> <button class="btn btn-primary mini" ${x.kind === "live" ? `data-book="${x.id}"` : `data-buy="${x.id}"`}>${x.kind === "live" ? "Book" : "Buy"}</button></span></li>`).join("")}</ul>
     <div class="hero-cta tight">
       ${p ? `<button class="btn btn-ghost" data-goto-level="${p.level}">See all ${p.level} packs</button>` : ""}
       <button class="link-btn" data-test>Retake the test</button>
@@ -420,20 +428,21 @@ function testResult() {
   </div>`);
 }
 
+document.addEventListener("submit", (e) => {
+  if (e.target.id !== "testForm") return;
+  e.preventDefault();
+  submitTestStep(e.target);
+});
+
 // ====== Events ======
 document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-buy],[data-level],[data-modal-close],[data-test],[data-answer],[data-goto-level]");
+  const el = e.target.closest("[data-buy],[data-level],[data-modal-close],[data-test],[data-goto-level]");
   if (!el) return;
   const d = el.dataset;
   if (d.buy) openBuy(d.buy);
   else if (d.level) { state.level = d.level; store.set("level", d.level); renderLevelTabs(); renderLevelPanel(); }
   else if ("modalClose" in d) modal.close();
   else if ("test" in d) { e.preventDefault(); openTest(); }
-  else if (d.answer !== undefined) {
-    testAnswers[testStep] = +d.answer;
-    testStep++;
-    testStep < TEST.length ? renderTestStep() : testResult();
-  }
   else if (d.gotoLevel) {
     modal.close();
     state.level = d.gotoLevel; store.set("level", d.gotoLevel);

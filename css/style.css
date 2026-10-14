@@ -238,9 +238,15 @@ details p { margin: .7em 0 0; color: #3b3f4a; }
 .quiz h2 em { color: var(--rouge); font-style: normal; }
 .quiz .bar { height: 6px; background: var(--ligne); border-radius: 3px; overflow: hidden; }
 .quiz .bar span { display: block; height: 100%; background: var(--vert); }
-.quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: .6em; }
-.quiz-opt { padding: .9em 1em; border: 2px solid var(--ligne); border-radius: 12px; background: #fff; cursor: pointer; font-size: 1rem; text-align: left; color: var(--encre); }
-.quiz-opt:hover, .quiz-opt:focus-visible { border-color: var(--bleu); background: #eef1fb; }
+.quiz-note { margin: 0; color: var(--gris, #5b6472); font-size: .95rem; }
+.quiz-q { border: 1px solid var(--ligne); border-radius: 12px; padding: .9em 1em; display: grid; gap: .35em; }
+.quiz-inst { margin: 0; font-size: .92rem; color: #4a5361; }
+.quiz-ex { margin: 0; font-size: .9rem; color: #4a5361; }
+.quiz-ex b { color: var(--rouge); font-weight: 600; margin-right: .3em; }
+.quiz-q label { font-size: 1.1rem; font-weight: 600; color: var(--encre); }
+.quiz-q input { padding: .7em .8em; border: 2px solid var(--ligne); border-radius: 10px; font-size: 1rem; width: 100%; }
+.quiz-q input:focus { outline: none; border-color: var(--bleu); }
+.quiz-skills { margin: 0; padding-left: 1.2em; }
 .link-btn { align-self: flex-start; background: none; border: 0; color: var(--gris); text-decoration: underline; cursor: pointer; padding: .3em 0; }
 .pick-list { list-style: none; padding: 0; margin: 0; }
 .pick-list li { display: flex; justify-content: space-between; align-items: center; gap: 1em; padding: .7em 0; border-bottom: 1px solid var(--ligne); flex-wrap: wrap; }
@@ -408,7 +414,6 @@ details.mods { margin: .5em 0 0; padding: 0; background: none; box-shadow: none;
   .header-tools select { width: 100%; min-width: 0; font-size: .85rem; }
   .plans { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
-  .quiz-options { grid-template-columns: 1fr; }
   .modules, .prods { padding: .4em 1em; }
   .book-len { grid-template-columns: 1fr; }
   .session { grid-template-columns: 1fr auto; }
