@@ -56,32 +56,61 @@ const PAY_METHODS = {
 };
 const CM_MOBILE = /^(?:\+?237)?6\d{8}$/;
 
+// ====== Visitor's country ======
+// Country code → currency and checkout country. Euro-zone countries use EUR.
+const EURO = ["AT", "BE", "HR", "CY", "EE", "FI", "FR", "DE", "GR", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PT", "SK", "SI", "ES"];
+const COUNTRY_NAMES = { CM: "Cameroon", NG: "Nigeria", GH: "Ghana", CI: "Côte d'Ivoire", SN: "Senegal", US: "United States", CA: "Canada", GB: "United Kingdom", FR: "France" };
+function currencyFor(code) {
+  if (["CM", "GA", "GQ", "CG", "CF", "TD"].includes(code)) return "XAF";
+  if (["CI", "SN", "BJ", "BF", "ML", "NE", "TG", "GW"].includes(code)) return "XOF";
+  if (code === "NG") return "NGN";
+  if (code === "GH") return "GHS";
+  if (code === "GB") return "GBP";
+  if (code === "CA") return "CAD";
+  if (EURO.includes(code)) return "EUR";
+  return "USD";
+}
+const localeFor = (code) => ({ code, currency: currencyFor(code), country: COUNTRY_NAMES[code] || "Other country" });
+
+// First guess, available instantly: the browser's region (en-CM, fr-CA…), then its time zone.
+// Time zones are a weak signal: Windows often sets Cameroon to "West Central Africa" (Africa/Lagos).
 function guessLocale() {
+  try {
+    for (const lang of navigator.languages || [navigator.language]) {
+      const region = (lang.split("-")[1] || "").toUpperCase();
+      if (/^[A-Z]{2}$/.test(region) && region !== "US" && region !== "GB" && region !== "FR") return localeFor(region);
+    }
+  } catch { /* ignore */ }
   let tz = "";
   try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch { /* ignore */ }
-  const xaf = ["Douala", "Libreville", "Malabo", "Brazzaville", "Bangui", "Ndjamena"];
-  const xof = ["Abidjan", "Dakar", "Lome", "Porto-Novo", "Bamako", "Ouagadougou", "Niamey", "Bissau"];
-  const city = tz.split("/")[1] || "";
-  if (tz === "Africa/Douala") return { currency: "XAF", country: "Cameroon" };
-  if (tz.startsWith("Africa/") && xaf.includes(city)) return { currency: "XAF", country: "Other country" };
-  if (tz === "Africa/Abidjan") return { currency: "XOF", country: "Côte d'Ivoire" };
-  if (tz === "Africa/Dakar") return { currency: "XOF", country: "Senegal" };
-  if (tz.startsWith("Africa/") && xof.includes(city)) return { currency: "XOF", country: "Other country" };
-  if (tz === "Africa/Lagos") return { currency: "NGN", country: "Nigeria" };
-  if (tz === "Africa/Accra") return { currency: "GHS", country: "Ghana" };
-  if (tz.startsWith("Africa/")) return { currency: "XAF", country: "Other country" };
-  if (tz === "Europe/London") return { currency: "GBP", country: "United Kingdom" };
-  if (tz === "Europe/Paris") return { currency: "EUR", country: "France" };
-  if (tz.startsWith("Europe/")) return { currency: "EUR", country: "Other country" };
-  if (/^America\/(Toronto|Vancouver|Montreal|Edmonton|Winnipeg|Halifax|Regina|St_Johns)/.test(tz)) return { currency: "CAD", country: "Canada" };
-  if (tz.startsWith("America/")) return { currency: "USD", country: "United States" };
-  return { currency: "USD", country: "Other country" };
+  const byZone = { "Africa/Douala": "CM", "Africa/Libreville": "GA", "Africa/Malabo": "GQ", "Africa/Brazzaville": "CG", "Africa/Bangui": "CF", "Africa/Ndjamena": "TD",
+    "Africa/Abidjan": "CI", "Africa/Dakar": "SN", "Africa/Lome": "TG", "Africa/Porto-Novo": "BJ", "Africa/Bamako": "ML", "Africa/Ouagadougou": "BF", "Africa/Niamey": "NE",
+    "Africa/Accra": "GH", "Europe/London": "GB", "Europe/Paris": "FR" };
+  if (byZone[tz]) return localeFor(byZone[tz]);
+  if (tz === "Africa/Lagos") return { code: "", currency: "XAF", country: "Other country" }; // Nigeria or Central Africa: settled by the IP lookup
+  if (tz.startsWith("Africa/")) return { code: "", currency: "XAF", country: "Other country" };
+  if (tz.startsWith("Europe/")) return { code: "", currency: "EUR", country: "Other country" };
+  if (/^America\/(Toronto|Vancouver|Montreal|Edmonton|Winnipeg|Halifax|Regina|St_Johns)/.test(tz)) return localeFor("CA");
+  if (tz.startsWith("America/")) return localeFor("US");
+  return { code: "", currency: "USD", country: "Other country" };
+}
+
+// Then the reliable answer: the country of the visitor's connection (free lookup, no key).
+async function lookupCountry() {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 3500);
+  try {
+    const res = await fetch("https://get.geojs.io/v1/ip/country.json", { signal: ctrl.signal });
+    const data = await res.json();
+    return /^[A-Z]{2}$/.test(data.country) ? data.country : "";
+  } catch { return ""; } finally { clearTimeout(timer); }
 }
 const guess = guessLocale();
 
+// A currency the visitor picks by hand wins over detection, and is remembered.
 const state = {
-  currency: store.get("currency", guess.currency),
-  country: store.get("country", guess.country),
+  currency: store.get("currencyChoice", null) || guess.currency,
+  country: store.get("country", null) || guess.country,
   level: store.get("level", "A0"),
 };
 if (!CURRENCIES[state.currency]) state.currency = guess.currency;
@@ -170,7 +199,12 @@ function renderMethod() {
 }
 
 function renderExams() {
-  $("#examSoon").innerHTML = EXAMS_IN_PRODUCTION.map((e) => `<div class="pay-card"><h3>${e}</h3><p>Practice papers in production. Not on sale yet.</p></div>`).join("");
+  $("#examSoon").innerHTML = EXAMS.map((e) => `<div class="pay-card exam-card">
+    <span class="tag soon">Coming soon</span>
+    <h3>${e.name}</h3>
+    <p class="exam-levels">${e.levels}</p>
+    <p>${e.note}</p>
+  </div>`).join("");
 }
 
 function renderPrices() { renderLevelPanel(); renderMethod(); }
@@ -333,7 +367,17 @@ modal.addEventListener("change", (e) => {
 modal.addEventListener("submit", (e) => { if (e.target.id === "checkoutForm") { e.preventDefault(); submitCheckout(e.target); } });
 
 $("#currency").addEventListener("change", (e) => {
-  state.currency = e.target.value; store.set("currency", state.currency);
+  state.currency = e.target.value; store.set("currencyChoice", state.currency);
+  renderPrices();
+});
+
+lookupCountry().then((code) => {
+  if (!code) return;
+  const loc = localeFor(code);
+  if (!store.get("country", null)) state.country = loc.country;
+  if (store.get("currencyChoice", null) || loc.currency === state.currency) return;
+  state.currency = loc.currency;
+  $("#currency").value = state.currency;
   renderPrices();
 });
 

@@ -45,5 +45,9 @@ const PRODUCTS = [
     desc: "Everything: 56 modules and 7 level checks, from the alphabet to arguing a point in French. Four levels that share one method, one set of characters and one way of explaining, so nothing is ever re-taught differently halfway through. You keep the files for good, including the updates." },
 ];
 
-// Exam preparation: in production, nothing on sale. No DALF (exam banks stop at B2).
-const EXAMS_IN_PRODUCTION = ["DELF", "TCF"];
+// Exam papers: the workshop can produce DELF, DALF and TCF papers. Nothing is priced or on sale yet.
+const EXAMS = [
+  { name: "DELF", levels: "A1 · A2 · B1 · B2", note: "The French diploma for levels A1 to B2, valid for life." },
+  { name: "DALF", levels: "C1 · C2", note: "The advanced diploma, for university and professional use." },
+  { name: "TCF", levels: "Including TCF Canada", note: "The French language test used for studies, citizenship and immigration." },
+];

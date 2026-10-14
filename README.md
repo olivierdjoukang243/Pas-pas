@@ -16,7 +16,7 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 
 - Un niveau complet coûte 9 $ (4 900 FCFA) de moins que ses deux parties. La Complete Method coûte 37 $ (20 300 FCFA) de moins que les quatre niveaux. Le site calcule ces économies à partir des prix, sans les saisir à la main.
 - B2, C1 et C2 sont en préparation (B2 partie 1 commencé) : affichés, mais non vendus.
-- Sujets DELF et TCF : en production, rien en vente. Pas de DALF.
+- Sujets d'examen DELF (A1–B2), DALF (C1–C2) et TCF (dont TCF Canada) : l'atelier sait les produire (sujet, correcteur, feuille de réponses, édition web notée, audio intégré au web et joint au PDF). Affichés « Coming soon », sans prix tant qu'ils ne sont pas fixés.
 - Formats livrés : PDF « édition vendue » avec corrigé, accompagné de l'audio en MP3 et d'un mémo PDF ; édition web interactive, à faire en ligne sur le site, avec l'audio intégré à la page. Pas de vidéo. L'édition CLASSROOM n'est jamais vendue.
 - Ventes définitives, sans remboursement.
 
@@ -24,7 +24,7 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 
 - Sélecteur de niveau A0 à C2 (B2 à C2 grisés « In preparation »), avec les packs, leurs descriptions et leurs prix
 - Bande « The Complete Method »
-- Devises : dollar US et FCFA (XAF, XOF) au prix exact ; euro calculé depuis le FCFA (parité fixe 655,957) ; livre, dollar canadien, naira et cédi convertis depuis le dollar à des taux indicatifs, marqués « ≈ ». La devise est choisie d'après le fuseau horaire du visiteur.
+- Devises : dollar US et FCFA (XAF, XOF) au prix exact ; euro calculé depuis le FCFA (parité fixe 655,957) ; livre, dollar canadien, naira et cédi convertis depuis le dollar à des taux indicatifs, marqués « ≈ ». La devise suit le pays du visiteur : d'abord la région du navigateur et le fuseau horaire, puis le pays de sa connexion via get.geojs.io (gratuit, sans clé). Un choix manuel du visiteur prime et est mémorisé. Cette consultation envoie l'adresse IP du visiteur à geojs : à mentionner dans la politique de confidentialité.
 - Moyens de paiement de départ : carte bancaire (Visa, Mastercard) et PayPal partout ; MTN MoMo et Orange Money en plus pour le Cameroun (montant en FCFA, numéro vérifié). Le formulaire de paiement est en place, mais n'encaisse rien : il annonce « Online payment opens soon » et propose d'envoyer la commande sur WhatsApp quand le numéro est renseigné.
 - Test de niveau en 15 questions, qui recommande le pack suivant
 - Sections : contenu d'un module (audio inclus), préparation DELF/TCF (en production), auteur, paiement, FAQ
