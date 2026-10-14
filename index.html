@@ -4,25 +4,25 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pas-à-Pas French — Learn French step by step</title>
-  <meta name="description" content="French courses from A0 to C2, module by module, explained in English. DELF, DALF and TCF exam papers and practice tests. Pay by card or PayPal worldwide, MTN MoMo or Orange Money in Cameroon.">
+  <meta name="description" content="56 French modules and 7 level checks from A0 to B1, written for English speakers by a qualified French teacher. Grammar explained in English, full answer keys, print-ready PDF and interactive web edition.">
   <meta property="og:title" content="Pas-à-Pas French — Learn French step by step">
-  <meta property="og:description" content="French from A0 to C2, module by module. DELF, DALF & TCF exam papers. Sold worldwide.">
+  <meta property="og:description" content="56 modules and 7 level checks from A0 to B1, written for English speakers.">
   <meta property="og:type" content="website">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231d2f6f'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>Pà</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"EducationalOrganization","name":"Pas-à-Pas French","description":"French courses from A0 to C2 and DELF, DALF and TCF exam preparation for English speakers","knowsLanguage":["en","fr"]}
+  {"@context":"https://schema.org","@type":"Course","name":"Pas-à-Pas — The Complete Method (A0 to B1)","description":"56 French modules and 7 level checks for English speakers, from absolute beginner to independent speaker.","inLanguage":"en","provider":{"@type":"Person","name":"Olivier Djoukang"}}
   </script>
 </head>
 <body>
 
 <div class="topbar">
   <div class="container topbar-inner">
-    <span>🌍 Sold worldwide · instant access</span>
-    <span class="hide-sm">🎁 10% off your first order: <strong>WELCOME10</strong></span>
-    <span class="hide-sm">🇨🇲 Cameroon: MTN MoMo &amp; Orange Money</span>
+    <span>Grammar explained in English</span>
+    <span class="hide-sm">Full answer keys in every module</span>
+    <span class="hide-sm">A0 to B1 available · B2 in preparation</span>
   </div>
 </div>
 
@@ -32,21 +32,19 @@
       <span class="logo-flag" aria-hidden="true"><i></i><i></i><i></i></span>
       Pas-à-Pas <span class="logo-sub">French</span>
     </a>
-    <div class="search">
-      <input id="search" type="search" placeholder="Search: B1, DELF, subjunctive, TCF Canada…" aria-label="Search products">
-    </div>
     <div class="header-tools">
-      <label class="select-wrap" title="Currency">
-        <select id="currency" aria-label="Currency"></select>
-      </label>
-      <button class="icon-btn" id="cartBtn" aria-label="Cart">🛒<span class="badge" id="cartCount">0</span></button>
+      <div class="seg" id="currencySwitch" role="group" aria-label="Currency">
+        <button data-currency="USD">$ USD</button>
+        <button data-currency="XAF">FCFA</button>
+      </div>
     </div>
   </div>
   <nav class="container nav" aria-label="Sections">
-    <a href="#courses">Courses A0–C2</a>
-    <a href="#exams">DELF · DALF · TCF</a>
-    <a href="#practice">Practice tests</a>
-    <a href="#pay">Payment</a>
+    <a href="#levels">Levels</a>
+    <a href="#inside">What's inside</a>
+    <a href="#exams">DELF · TCF</a>
+    <a href="#author">The author</a>
+    <a href="#faq">FAQ</a>
     <a href="#" data-test>Free level test</a>
   </nav>
 </header>
@@ -55,176 +53,131 @@
   <section class="hero">
     <div class="container hero-inner">
       <div>
-        <p class="eyebrow">French for English speakers · A0 to C2</p>
+        <p class="eyebrow">French for English speakers</p>
         <h1>Learn French <em>pas à pas</em>,<br>one module at a time.</h1>
-        <p class="lead">Seven levels, from your very first word (A0) to full mastery (C2). Each level is split into short modules you can buy one by one. Prepare for DELF, DALF and TCF with exam papers in the official format.</p>
+        <p class="lead">56 modules and 7 level checks, from your very first word (A0) to arguing a point in French (B1). Buy one part, a whole level, or the complete method, and keep the files for good.</p>
         <div class="hero-cta">
           <button class="btn btn-primary" data-test>Take the free level test</button>
-          <a href="#courses" class="btn btn-ghost">See the levels</a>
+          <a href="#levels" class="btn btn-ghost">See the levels</a>
+          <a href="#" class="btn btn-ghost free-sample" hidden>Free sample: Module A0-1</a>
         </div>
         <ul class="hero-proof">
-          <li><strong>7 levels</strong>A0 → C2</li>
-          <li><strong><span data-module-count>38</span> modules</strong>buy one or a full level</li>
-          <li><strong>3 exams</strong>DELF, DALF, TCF</li>
+          <li><strong>56</strong>modules</li>
+          <li><strong>7</strong>level checks</li>
+          <li><strong>A0 → B1</strong>B2 in preparation</li>
         </ul>
       </div>
       <aside class="test-card" aria-labelledby="testCardTitle">
         <p class="eyebrow">3-minute test</p>
         <h2 id="testCardTitle">Where should you start?</h2>
-        <p>15 questions from beginner to advanced. You get your level and the modules and exam papers that fit it.</p>
-        <div class="level-scale" aria-hidden="true"><span>A0</span><span>A1</span><span>A2</span><span>B1</span><span>B2</span><span>C1</span><span>C2</span></div>
+        <p>15 questions from beginner to advanced. You get your level and the product that fits it.</p>
+        <div class="level-scale" aria-hidden="true"><span>A0</span><span>A1</span><span>A2</span><span>B1</span><span class="off">B2</span><span class="off">C1</span><span class="off">C2</span></div>
         <button class="btn btn-primary btn-block" data-test>Start the test</button>
       </aside>
     </div>
   </section>
 
   <section class="steps container" aria-label="How it works">
-    <div><b>1</b><h3>Find your level</h3><p>Take the free test or choose from A0 to C2.</p></div>
-    <div><b>2</b><h3>Pick modules</h3><p>Buy one module, or the full level and save 30%.</p></div>
-    <div><b>3</b><h3>Pay your way</h3><p>Card or PayPal worldwide; MoMo or OM in Cameroon.</p></div>
-    <div><b>4</b><h3>Train for the exam</h3><p>Practice tests by level, then DELF, DALF or TCF papers.</p></div>
+    <div><b>1</b><h3>Find your level</h3><p>Take the free test, or start at A0 if French is new to you.</p></div>
+    <div><b>2</b><h3>Choose your pack</h3><p>One part of 8 modules, a full level, or the complete method.</p></div>
+    <div><b>3</b><h3>Work module by module</h3><p>Grammar in English, exercises with answer keys, a test out of 20.</p></div>
+    <div><b>4</b><h3>Check your level</h3><p>Each pack ends with a level check that names what to revise.</p></div>
   </section>
 
-  <section id="results" class="container block" hidden>
-    <div class="block-head"><h2 class="section-title">Search results</h2><button class="link-btn" id="clearSearch">Clear search</button></div>
-    <p class="result-count" id="resultCount"></p>
-    <div class="grid" id="resultGrid"></div>
-  </section>
-
-  <section id="courses" class="container block">
+  <section id="levels" class="container block">
     <div class="block-head">
       <div>
-        <p class="eyebrow">Courses</p>
-        <h2 class="section-title">Seven levels, built from modules</h2>
+        <p class="eyebrow">Levels</p>
+        <h2 class="section-title">Four levels on sale, three in preparation</h2>
+        <p class="sub">Each level from A1 to B1 has two parts of 8 modules. A0 is a single pack of 8 modules.</p>
       </div>
     </div>
     <div class="level-tabs" id="levelTabs" role="tablist" aria-label="Levels"></div>
     <div class="level-panel" id="levelPanel" role="tabpanel"></div>
   </section>
 
-  <section id="exams" class="block-band">
+  <section class="container block">
+    <div class="method" id="methodBand"></div>
+  </section>
+
+  <section id="inside" class="block-band">
     <div class="container block">
-      <div class="block-head">
-        <div>
-          <p class="eyebrow">Exam papers</p>
-          <h2 class="section-title">DELF, DALF &amp; TCF</h2>
-          <p class="sub">Complete mock papers in the official format: timed sections, audio, answer keys and marking grids.</p>
-        </div>
-        <div class="seg" id="examFilter" role="group" aria-label="Filter exams">
-          <button data-family="" class="active">All</button>
-          <button data-family="DELF">DELF</button>
-          <button data-family="DALF">DALF</button>
-          <button data-family="TCF">TCF</button>
+      <div class="block-head"><div><p class="eyebrow">What's inside</p><h2 class="section-title">Every module includes</h2></div></div>
+      <div class="inside-grid">
+        <ul class="ticks inside-list">
+          <li>Grammar explained in English, two points at most per module</li>
+          <li>A themed vocabulary list with English glosses</li>
+          <li>9 or more exercises, with a full answer key</li>
+          <li>A dialogue and a dictation passage, with audio</li>
+          <li>Two role-plays and homework</li>
+          <li>A graded test out of 20</li>
+          <li>A one-page memo card</li>
+        </ul>
+        <div class="inside-side">
+          <div class="pay-card">
+            <h3>Delivered as</h3>
+            <p>A print-ready PDF with the answer key, an interactive web edition you fill in on screen with self-checking answers, a one-page memo PDF, and the audio recordings.</p>
+          </div>
+          <div class="pay-card">
+            <h3>Recurring characters</h3>
+            <p>Léa, Thomas and Amina follow you from level to level, so every new point arrives in a familiar story.</p>
+          </div>
+          <div class="pay-card">
+            <h3>Audio</h3>
+            <p>Every module comes with its audio recordings, so you hear the dialogue and work on the listening and dictation sections.</p>
+          </div>
         </div>
       </div>
-      <div class="grid" id="examGrid"></div>
     </div>
   </section>
 
-  <section id="practice" class="container block">
-    <div class="block-head">
+  <section id="exams" class="container block">
+    <div class="block-head"><div><p class="eyebrow">Exam preparation</p><h2 class="section-title">DELF and TCF papers are in production</h2>
+      <p class="sub">Practice papers for the DELF and the TCF are being written. They are not on sale yet.</p></div></div>
+    <div class="exam-soon" id="examSoon"></div>
+  </section>
+
+  <section id="author" class="container block">
+    <div class="author">
+      <div class="author-mark" aria-hidden="true">OD</div>
       <div>
-        <p class="eyebrow">Practice tests</p>
-        <h2 class="section-title">Simple training papers for every level</h2>
-        <p class="sub">Ten short tests per level to check your progress between modules, before you attempt a full exam paper.</p>
+        <p class="eyebrow">The author</p>
+        <h2 class="section-title">Olivier Djoukang</h2>
+        <p>A qualified teacher of French since 2011, teaching adults and children in person and online. Online alone, more than 7,800 lessons since 2023 to over 300 learners, almost all of them English speakers.</p>
+        <p>Every text, dialogue, exercise and test in Pas-à-Pas was written from scratch. Nothing is adapted from an existing textbook.</p>
       </div>
     </div>
-    <div class="grid grid-7" id="practiceGrid"></div>
   </section>
 
   <section id="pay" class="container block">
-    <div class="block-head"><div><p class="eyebrow">Payment</p><h2 class="section-title">Pay from anywhere</h2></div></div>
-    <div class="pay-grid">
-      <div class="pay-card">
-        <h3>🌍 International</h3>
-        <p>Pay by bank card (Visa, Mastercard) or PayPal, in your own currency.</p>
-        <div class="chips"><span class="chip">Visa</span><span class="chip">Mastercard</span><span class="chip">PayPal</span></div>
-      </div>
-      <div class="pay-card pay-cm">
-        <h3>🇨🇲 Cameroon</h3>
-        <p>Pay in FCFA from your phone. You confirm the payment with your PIN.</p>
-        <div class="chips"><span class="chip chip-momo">MTN MoMo</span><span class="chip chip-om">Orange Money</span></div>
-      </div>
-      <div class="pay-card">
-        <h3>💬 WhatsApp</h3>
-        <p>Prefer to talk first? Send your cart on WhatsApp and we reply with payment details.</p>
-        <a class="btn btn-wa mini" id="waPay" href="#" target="_blank" rel="noopener">Chat on WhatsApp</a>
-      </div>
-    </div>
+    <div class="block-head"><div><p class="eyebrow">Payment</p><h2 class="section-title">Online checkout opens soon</h2>
+      <p class="sub">Card payment worldwide and MTN MoMo or Orange Money in Cameroon are planned. Prices are fixed in US dollars and in FCFA.</p></div></div>
+    <p class="contact-line" id="contactLine" hidden></p>
   </section>
 
-  <section class="container compare">
-    <h2 class="section-title">Why Pas-à-Pas French?</h2>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th></th><th class="us">Pas-à-Pas French</th><th>Free gamified apps</th><th>Subscription apps</th><th>Tutor marketplaces</th></tr></thead>
-        <tbody>
-          <tr><td>Full path from A0 to C2</td><td class="us">✔ 7 levels, <span data-module-count>38</span> modules</td><td>Up to B1/B2</td><td>Up to B2</td><td>Depends on tutor</td></tr>
-          <tr><td>Rules explained in English</td><td class="us">✔ every lesson</td><td>Rarely</td><td>Partly</td><td>Depends on tutor</td></tr>
-          <tr><td>DELF, DALF &amp; TCF papers</td><td class="us">✔ with marking grids</td><td>✘</td><td>✘</td><td>Some tutors</td></tr>
-          <tr><td>Pay once, keep forever</td><td class="us">✔ per module or level</td><td>Ads or subscription</td><td>Monthly fee</td><td>Pay per hour</td></tr>
-          <tr><td>MTN MoMo &amp; Orange Money</td><td class="us">✔ Cameroon</td><td>✘</td><td>✘</td><td>✘</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="container promise">
-    <h2 class="section-title">Our promise</h2>
-    <div class="promise-grid">
-      <div><h3>7-day refund</h3><p>Wrong level? Write to us within 7 days and we refund you or swap the module.</p></div>
-      <div><h3>Lifetime access</h3><p>Buy once and keep your files. Updates to your modules are free.</p></div>
-      <div><h3>Upgrade anytime</h3><p>Bought some modules first? Pay only the difference for the full level.</p></div>
-    </div>
-  </section>
-
-  <section class="container faq">
+  <section id="faq" class="container faq">
     <h2 class="section-title">Questions</h2>
-    <details><summary>What is level A0?</summary><p>A0 is for complete beginners who have never studied French. It prepares you for A1, the first official CEFR level.</p></details>
-    <details><summary>Can I buy a single module?</summary><p>Yes. Every level is split into modules sold separately. The full level costs 30% less than buying all its modules one by one.</p></details>
-    <details><summary>Are these the official DELF, DALF and TCF exams?</summary><p>No. They are original mock papers written in the official format, with the same sections, timings and marking criteria, so you can train under real conditions.</p></details>
-    <details><summary>How do I pay with MTN MoMo or Orange Money?</summary><p>At checkout, choose Cameroon as your country, then MTN MoMo or Orange Money, and enter your number. A payment request arrives on your phone; confirm it with your PIN.</p></details>
-    <details><summary>How do I receive my products?</summary><p>Right after payment you get your access links by email and on WhatsApp. Videos stream online; PDFs and MP3s download and work offline.</p></details>
-  </section>
-
-  <section class="newsletter">
-    <div class="container newsletter-inner">
-      <div><h2>One free French lesson a week</h2><p>Plus 10% off your first order.</p></div>
-      <form id="newsletter" class="nl-form">
-        <input id="nlEmail" type="email" required placeholder="you@email.com" aria-label="Email address">
-        <button class="btn btn-primary">Subscribe</button>
-      </form>
-    </div>
+    <details><summary>Which level should I start with?</summary><p>Take the free level test above. If French is new to you, start with A0 Complete.</p></details>
+    <details><summary>What format are the files?</summary><p>A print-ready PDF, an interactive web edition you can fill in on screen with self-checking answers, a one-page memo and the audio recordings. No app or subscription needed.</p></details>
+    <details><summary>Is there audio?</summary><p>Yes. Every module comes with its audio recordings for the dialogue, the listening and the dictation sections.</p></details>
+    <details><summary>Do I need a teacher?</summary><p>No. Each pack includes the full answer key, a self-marking grid and a revision plan. It also works alongside lessons with any tutor.</p></details>
+    <details><summary>Is a full level cheaper than its two parts?</summary><p>Yes. A complete level costs $9 (4,900 FCFA) less than its two parts. The Complete Method costs $37 (20,300 FCFA) less than the four levels bought separately.</p></details>
+    <details><summary>Can I get a refund?</summary><p>The files are delivered instantly and cannot be returned, so sales are final. If you are unsure which level to start with, take the level test or write before buying.</p></details>
+    <details><summary>What about B2, C1 and C2?</summary><p>They are in preparation. B2 Part 1 is being written. Nothing above B1 is on sale yet.</p></details>
   </section>
 </main>
 
 <footer class="footer">
   <div class="container footer-grid">
     <div><a class="logo" href="#"><span class="logo-flag" aria-hidden="true"><i></i><i></i><i></i></span>Pas-à-Pas <span class="logo-sub">French</span></a><p>Learn French step by step, explained in English.</p></div>
-    <div><h4>Shop</h4><ul><li><a href="#courses">Courses A0–C2</a></li><li><a href="#exams">Exam papers</a></li><li><a href="#practice">Practice tests</a></li></ul></div>
-    <div><h4>Help</h4><ul><li><a href="#" data-test>Free level test</a></li><li><a href="#pay">Payment</a></li><li><a href="#" id="waFooter">WhatsApp</a></li></ul></div>
-    <div><h4>Legal</h4><ul><li><a href="#">Terms of sale</a></li><li><a href="#">Privacy</a></li><li><a href="#">Refund policy</a></li></ul></div>
+    <div><h4>Levels</h4><ul><li><a href="#levels" data-level="A0">A0 Discovery</a></li><li><a href="#levels" data-level="A1">A1 Beginner</a></li><li><a href="#levels" data-level="A2">A2 Elementary</a></li><li><a href="#levels" data-level="B1">B1 Intermediate</a></li></ul></div>
+    <div><h4>Help</h4><ul><li><a href="#" data-test>Free level test</a></li><li><a href="#faq">FAQ</a></li><li><a href="#pay">Payment</a></li></ul></div>
+    <div><h4>Legal</h4><ul><li>Sales are final</li></ul></div>
   </div>
-  <p class="container legal">DELF, DALF and TCF are diplomas and tests of France Éducation international. Pas-à-Pas French is an independent preparation provider; our papers are original practice material. © <span id="year"></span> Pas-à-Pas French.</p>
+  <p class="container legal">DELF and TCF are diplomas and tests of France Éducation international. Pas-à-Pas French is an independent course. © <span id="year"></span> Pas-à-Pas French · Olivier Djoukang.</p>
 </footer>
 
-<a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">💬</a>
-
-<div class="overlay" id="overlay" hidden></div>
-<aside class="drawer" id="cart" aria-label="Cart" aria-hidden="true">
-  <div class="drawer-head"><h2>Your cart</h2><button class="icon-btn" data-close aria-label="Close">✕</button></div>
-  <ul class="cart-list" id="cartList"></ul>
-  <div class="drawer-foot">
-    <form class="promo" id="promoForm"><input id="promoInput" placeholder="Promo code" aria-label="Promo code"><button class="btn btn-ghost">Apply</button></form>
-    <div class="totals" id="totals"></div>
-    <button class="btn btn-primary btn-block" id="checkoutBtn">Checkout</button>
-    <button class="btn btn-wa btn-block" id="waOrder">Order on WhatsApp</button>
-  </div>
-</aside>
-
 <dialog id="modal" class="modal"><div id="modalBody"></div></dialog>
-
-<div class="toast" id="toast" role="status"></div>
 
 <script src="js/products.js"></script>
 <script src="js/app.js"></script>
