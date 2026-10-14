@@ -56,11 +56,14 @@ Mis à jour le 14/10/2026 d'après les faits confirmés (voir le README).
 | Test de niveau gratuit | Oui : questions tirées des 7 bilans de la méthode, étape par étape de A0 à B1, avec le produit par lequel commencer |
 | Aperçu avant achat | A0 Module 1 complet offert, envoyé par e-mail avec un message de présentation ; liste des 56 modules |
 | Prix clairs, dans la devise du visiteur | Oui : devise selon le pays, $ et FCFA fixes, économies calculées |
-| Paiement local | Oui : carte, PayPal, MTN MoMo et Orange Money dans tous les pays (MoMo/OM avec un numéro camerounais), ceux du pays d'abord (actif avec le serveur Notch Pay) |
+| Paiement local | Oui : seulement les moyens du pays de résidence (carte et PayPal partout, MTN MoMo et Orange Money au Cameroun), actifs avec le serveur Notch Pay |
 | Cours avec un professeur | Oui : séances en visio dans le site, réservation sur les disponibilités, minuteur, packs |
 | Comparatif avec les alternatives | Oui : tableau « How it compares » (catégories, pas de marques) |
 | Préparation aux examens | DELF A1 à B2 et TCF Canada en vente ; DALF « Coming soon » |
-| Avis clients | Section prête, masquée tant qu'elle est vide ; demande d'avis envoyée après chaque achat ; premier avis réel publié après la première vente |
+| Avis clients | Publication automatique des avis d'acheteurs vérifiés, quelle que soit la note, avec un filtre de forme ; la section apparaît au premier avis |
+| Cours avec un professeur : choix de l'heure | L'élève propose 6 heures sur 3 jours, Olivier coche, l'élève choisit et paie |
+| Politiques claires | Page `policies.html` : vente, remboursement, licence, séances, avis, confidentialité |
+| Enseignants d'autres plateformes | Bienvenus, pour leur usage personnel (licence) |
 | Garantie de remboursement | Non (ventes définitives) ; compensé par le test, l'aperçu et l'échange avant achat |
 
 ### Ce qui reste

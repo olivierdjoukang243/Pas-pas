@@ -143,6 +143,12 @@ details p { margin: .7em 0 0; color: #3b3f4a; }
 .footer h4 { color: #fff; margin: 0 0 .7em; }
 .footer ul { list-style: none; padding: 0; margin: 0; } .footer li { margin-bottom: .4em; }
 .footer a { text-decoration: none; } .footer a:hover { color: #fff; }
+.policies { max-width: 820px; padding: 2rem 0 4rem; }
+.policies h2 { font-family: var(--serif); color: var(--bleu); font-size: 1.35rem; margin: 2rem 0 .6rem; }
+.policies section { scroll-margin-top: 1rem; }
+.policies ul { padding-left: 1.2em; } .policies li { margin-bottom: .5em; }
+.policy-toc { display: flex; flex-wrap: wrap; gap: .4em; margin: 1rem 0; }
+.policy-toc a { background: #eef1fb; color: var(--bleu); border-radius: 999px; padding: .3em .8em; font-size: .88rem; text-decoration: none; }
 .legal { font-size: .78rem; margin-top: 2rem; padding-top: 1.2rem; border-top: 1px solid #2a3360; }
 
 /* Tiroirs / modale */
@@ -342,6 +348,13 @@ details p { margin: .7em 0 0; color: #3b3f4a; }
 .inside-list { background: #fff; border-radius: var(--radius); padding: 1.4em 1.6em; box-shadow: var(--shadow); margin: 0; display: flex; flex-direction: column; gap: .55em; }
 .inside-side { display: flex; flex-direction: column; gap: 1rem; }
 .exam-soon { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.proposed { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4em; }
+.proposed li { background: #eef1fb; color: var(--bleu); border-radius: 999px; padding: .2em .4em .2em .8em; font-size: .88rem; display: flex; align-items: center; gap: .2em; }
+.proposed .link-btn { padding: 0 .3em; }
+.note.ok { color: var(--vert); font-weight: 600; }
+.answer-list { display: grid; gap: .5em; }
+.answer-list .pm { display: flex; gap: .6em; align-items: center; }
+.session.request { background: #fdf6e7; }
 .exam-card .tag { background: #eef1fb; }
 .free-cta { display: flex; align-items: center; gap: .8em; flex-wrap: wrap; margin-top: .4em; }
 .free-cta span { color: var(--gris); font-size: .9rem; }
@@ -351,6 +364,14 @@ details p { margin: .7em 0 0; color: #3b3f4a; }
 .review { margin: 0; background: #fff; border-radius: var(--radius); padding: 1.3em; box-shadow: var(--shadow); display: grid; gap: .5em; }
 .review .stars { color: var(--or); letter-spacing: .1em; }
 .review blockquote { margin: 0; }
+.review .verified { color: var(--vert); font-weight: 600; }
+.review-reply { margin: 0; padding: .6em .8em; background: #eef1fb; border-radius: 10px; font-size: .92rem; }
+.star-pick { display: flex; gap: .2em; flex-direction: row; }
+.star-pick label { cursor: pointer; font-size: 2rem; color: #d9d2c4; line-height: 1; }
+.star-pick input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.star-pick label:has(~ label input:checked), .star-pick label:has(input:checked) { color: var(--or); }
+.star-pick input:focus-visible + span { outline: 2px solid var(--bleu); border-radius: 4px; }
+textarea { font: inherit; padding: .7em .8em; border: 2px solid var(--ligne); border-radius: 10px; width: 100%; resize: vertical; }
 .review figcaption { color: var(--gris); font-size: .9rem; }
 .exam-buy { margin-top: auto; display: flex; align-items: center; gap: .8em; flex-wrap: wrap; }
 .exam-card h3 { font-family: var(--serif); font-size: 1.6rem; }

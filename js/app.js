@@ -1,9 +1,3 @@
-// ====== Shop settings: fill in once confirmed. Empty values stay hidden on the page. ======
-const SHOP = {
-  email: "",          // dedicated contact address
-  whatsapp: "",       // international format without "+", e.g. 2376XXXXXXXX
-  api: "",            // booking and payment server (Notch Pay), e.g. "https://api.pasapasfrench.com"
-};
 // ?demo in the address: try purchases and live lessons without paying (this browser only)
 const DEMO = /(^|[?&])demo(&|$)/.test(location.search);
 
@@ -31,9 +25,11 @@ const CURRENCIES = {
 
 // Starting payment methods. Cameroon adds MTN MoMo and Orange Money.
 const COUNTRIES = ["Cameroon", "Nigeria", "Ghana", "Côte d'Ivoire", "Senegal", "United States", "Canada", "United Kingdom", "France", "Other country"];
+// Each method lists the countries of residence where it is available; no list = every country.
+// The checkout only shows the methods of the buyer's country of residence.
 const PAY_METHODS = {
-  momo: { label: "MTN MoMo", phone: true, local: "Cameroon" },
-  om: { label: "Orange Money", phone: true, local: "Cameroon" },
+  momo: { label: "MTN MoMo", phone: true, countries: ["Cameroon"] },
+  om: { label: "Orange Money", phone: true, countries: ["Cameroon"] },
   card: { label: "Bank card (Visa, Mastercard)" },
   paypal: { label: "PayPal" },
 };
@@ -216,7 +212,7 @@ function renderCompare() {
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
     ["Exam practice papers", "DELF A1 to B2 and TCF Canada", "Rarely", "Depends on the tutor"],
     ["Try before you buy", "Module 1 free, in full", "Free version or trial, then subscription", "Sometimes a trial lesson"],
-    ["Pay with MTN MoMo or Orange Money", "Yes, from any country", "Varies", "Varies"],
+    ["Pay the way your country pays", "Card and PayPal everywhere, MTN MoMo and Orange Money in Cameroon", "Card or app store", "Varies"],
   ];
   $("#compareTable").innerHTML = `<table class="compare">
     <thead><tr><th scope="col"><span class="sr-only">Feature</span></th><th scope="col" class="us">Pas à Pas FRENCH</th><th scope="col">Language apps</th><th scope="col">Hourly tutors</th></tr></thead>
@@ -266,12 +262,7 @@ function contactHTML() {
 }
 
 // Cameroon: MTN MoMo, Orange Money, card and PayPal. Elsewhere: card and PayPal.
-// Every method is offered in every country: a Cameroonian abroad, or family paying from
-// Cameroon, can use MoMo or Orange Money anywhere. The visitor's local methods come first.
-const methodsFor = (country) => Object.entries(PAY_METHODS)
-  .map(([k, m]) => [k, m, m.local === country ? 0 : m.local ? 2 : 1])
-  .sort((a, b) => a[2] - b[2])
-  .map(([k, m]) => [k, m.local && m.local !== country ? { ...m, label: `${m.label} (${m.local} number)` } : m]);
+const methodsFor = (country) => Object.entries(PAY_METHODS).filter(([, m]) => !m.countries || m.countries.includes(country));
 
 let checkoutDraft = null;   // a live lesson being booked, set by live.js
 
@@ -284,15 +275,18 @@ function openBuy(id, draft = null) {
     <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} your time · ${draft.minutes} min · ${draft.need}` : p.contents}</p>
     <div class="form-grid">
       <label for="coEmail">Email (to receive your ${p.kind === "live" ? "booking confirmation" : "files"})<input id="coEmail" name="email" type="email" required autocomplete="email" value="${draft ? draft.email : ""}"></label>
-      <label for="coCountry">Country<select id="coCountry" name="country">${COUNTRIES.map((c) => `<option ${c === state.country ? "selected" : ""}>${c}</option>`).join("")}</select></label>
+      <label for="coCountry">Country of residence<select id="coCountry" name="country">${COUNTRIES.map((c) => `<option ${c === state.country ? "selected" : ""}>${c}</option>`).join("")}</select></label>
     </div>
     <p class="eyebrow pm-title">Payment method</p>
     <div class="pay-methods" id="payMethods" role="radiogroup" aria-label="Payment method"></div>
     <div id="payDetails"></div>
     <div class="totals" id="coTotals"></div>
+    <label class="check"><input type="checkbox" name="terms" id="coTerms"> ${p.kind === "live"
+      ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a> (free rescheduling up to 24 h before).`
+      : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I ask for immediate delivery of the files and understand that I then lose my right of withdrawal.`}</label>
     <p class="form-error" id="formError" hidden></p>
     <button class="btn btn-primary btn-block" id="payBtn"></button>
-    <p class="note">${p.kind === "live" ? "Payment confirms the session and reserves the time for you." : "Sales are final: the files are delivered instantly and cannot be returned."}</p>
+    <p class="note">${p.kind === "live" ? "Payment confirms the session and reserves the time for you." : "Sales are final: the files are delivered instantly. A faulty file is replaced."}</p>
   </form>`);
   renderPayOptions();
 }
@@ -323,6 +317,7 @@ function submitCheckout(form) {
   const err = $("#formError");
   let msg = "";
   if (!form.coEmail.value || !form.coEmail.checkValidity()) msg = "Enter a valid email address: your files are sent there.";
+  else if (!form.coTerms.checked) msg = "Please accept the terms of sale to continue.";
   else if (m.phone && !CM_MOBILE.test(String(data.get("momo")).replace(/[\s.-]/g, ""))) msg = `Enter a Cameroon mobile number for ${m.label}: 9 digits starting with 6, e.g. 677 12 34 56.`;
   if (msg) { err.textContent = msg; err.hidden = false; return; }
 
@@ -478,7 +473,7 @@ function openFree() {
     <label class="check"><input type="checkbox" name="marketing"> Also send me French tips and news from Pas à Pas FRENCH. Unsubscribe in one click.</label>
     <p class="form-error" id="freeError" hidden></p>
     <button class="btn btn-primary btn-block" id="freeBtn">Send me Module 1</button>
-    <p class="note">No card, nothing to pay.</p>
+    <p class="note">No card, nothing to pay. Your address is used as described in our <a href="policies.html#privacy" target="_blank">privacy policy</a>.</p>
   </form>`);
 }
 
@@ -514,25 +509,87 @@ document.addEventListener("submit", (e) => {
   submitFree(e.target);
 });
 
-// ====== Reviews (js/reviews.js) ======
+// ====== Reviews ======
+// Published automatically: the server checks that the link comes from a real order, runs the
+// filter in js/review-filter.js, and publishes at once, whatever the rating. js/reviews.js
+// can hold reviews collected elsewhere (with the author's agreement); both lists are shown.
+let reviewList = typeof REVIEWS !== "undefined" ? [...REVIEWS] : [];
+
+async function loadReviews() {
+  if (SHOP.api) {
+    try { reviewList = [...reviewList, ...((await (await fetch(`${SHOP.api}/reviews`)).json()).reviews || [])]; } catch { /* keep the local list */ }
+  } else if (DEMO) reviewList = [...reviewList, ...store.get("demoReviews", [])];
+  renderReviews();
+}
+
 function renderReviews() {
-  if (typeof REVIEWS === "undefined" || !REVIEWS.length) return;
-  $("#reviewList").innerHTML = REVIEWS.map((r) => `<figure class="review">
+  if (!reviewList.length) { $("#reviews").hidden = true; return; }
+  const list = [...reviewList].sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  const avg = list.reduce((t, r) => t + r.rating, 0) / list.length;
+  $("#reviewSummary").textContent = `${avg.toFixed(1)} out of 5 · ${list.length} review${list.length > 1 ? "s" : ""} from verified buyers, all published, good or bad.`;
+  $("#reviewList").innerHTML = list.map((r) => `<figure class="review">
     <div class="stars" aria-label="${r.rating} out of 5">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
     <blockquote>${esc(r.text)}</blockquote>
-    <figcaption>${esc(r.name)}, ${esc(r.country)}${byId(r.product) ? ` · ${esc(byId(r.product).name)}` : ""}</figcaption>
+    <figcaption>${esc(r.name)}${r.country ? `, ${esc(r.country)}` : ""}${byId(r.product) ? ` · ${esc(byId(r.product).name)}` : ""} · <span class="verified">Verified purchase</span></figcaption>
+    ${r.reply ? `<p class="review-reply"><b>Olivier:</b> ${esc(r.reply)}</p>` : ""}
   </figure>`).join("");
   $("#reviews").hidden = false;
-  const avg = REVIEWS.reduce((t, r) => t + r.rating, 0) / REVIEWS.length;
+  document.getElementById("reviewLd")?.remove();
   const ld = document.createElement("script");
-  ld.type = "application/ld+json";
+  ld.type = "application/ld+json"; ld.id = "reviewLd";
   ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Course", name: "Pas à Pas — The Complete Method (A0 to B1)",
     provider: { "@type": "Person", name: "Olivier Djoukang" },
-    aggregateRating: { "@type": "AggregateRating", ratingValue: avg.toFixed(1), reviewCount: REVIEWS.length },
-    review: REVIEWS.map((r) => ({ "@type": "Review", author: { "@type": "Person", name: r.name }, datePublished: r.date,
+    aggregateRating: { "@type": "AggregateRating", ratingValue: avg.toFixed(1), reviewCount: list.length },
+    review: list.map((r) => ({ "@type": "Review", author: { "@type": "Person", name: r.name }, datePublished: r.date,
       reviewRating: { "@type": "Rating", ratingValue: r.rating }, reviewBody: r.text })) });
   document.head.appendChild(ld);
 }
+
+// The link in the review email: ?review=<token>. The token ties the review to one order.
+function openReview(token) {
+  openModal(`<form class="checkout" id="reviewForm" data-token="${esc(token)}" novalidate>
+    <p class="eyebrow">Your review${DEMO ? " · demo" : ""}</p>
+    <h2>How is your French going?</h2>
+    <div class="star-pick" role="radiogroup" aria-label="Rating">${[1, 2, 3, 4, 5].map((n) => `<label><input type="radio" name="rating" value="${n}"><span aria-hidden="true">★</span><span class="sr-only">${n} star${n > 1 ? "s" : ""}</span></label>`).join("")}</div>
+    <label for="rvText">Your review<textarea id="rvText" name="text" rows="5" maxlength="1200" placeholder="What you liked, what was hard, what you can do now."></textarea></label>
+    <div class="form-grid">
+      <label for="rvName">First name<input id="rvName" name="name" autocomplete="given-name"></label>
+      <label for="rvCountry">Country<input id="rvCountry" name="country" autocomplete="country-name" value="${esc(state.country === "Other country" ? "" : state.country)}"></label>
+    </div>
+    <label class="check"><input type="checkbox" name="consent"> I agree that my review is published on this site with my first name and country.</label>
+    <p class="form-error" id="rvError" hidden></p>
+    <button class="btn btn-primary btn-block">Publish my review</button>
+    <p class="note">Every review is published, good or bad. It is only held back for insults, links or contact details: <a href="policies.html#reviews" target="_blank">review rules</a>.</p>
+  </form>`);
+}
+
+async function submitReview(form) {
+  const d = new FormData(form);
+  const r = { token: form.dataset.token, rating: Number(d.get("rating")), text: String(d.get("text") || "").trim(),
+    name: String(d.get("name") || "").trim(), country: String(d.get("country") || "").trim(), consent: !!d.get("consent") };
+  const problems = reviewProblems(r);
+  const err = $("#rvError");
+  if (problems.length) { err.innerHTML = problems.map(esc).join("<br>"); err.hidden = false; return; }
+  if (SHOP.api) {
+    try {
+      const res = await fetch(`${SHOP.api}/reviews`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(r) });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) { err.innerHTML = esc(out.error || "Your review could not be published."); err.hidden = false; return; }
+    } catch { err.textContent = "Your review could not be sent just now. Please try again."; err.hidden = false; return; }
+  } else if (DEMO) {
+    store.set("demoReviews", [...store.get("demoReviews", []), { ...r, token: undefined, date: new Date().toISOString().slice(0, 10) }]);
+  }
+  history.replaceState(null, "", location.pathname + location.hash);
+  openModal(`<div class="checkout"><h2>Thank you</h2><p>Your review is published.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
+  reviewList = typeof REVIEWS !== "undefined" ? [...REVIEWS] : [];
+  loadReviews();
+}
+
+document.addEventListener("submit", (e) => {
+  if (e.target.id !== "reviewForm") return;
+  e.preventDefault();
+  submitReview(e.target);
+});
 
 // ====== Events ======
 document.addEventListener("click", (e) => {
@@ -576,7 +633,8 @@ lookupCountry().then((code) => {
 });
 
 // ====== Start ======
-renderReviews();
+loadReviews();
+{ const t = new URLSearchParams(location.search).get("review"); if (t) openReview(t); }
 const contact = contactHTML();
 if (contact) { $("#contactLine").innerHTML = contact; $("#contactLine").hidden = false; }
 $("#year").textContent = new Date().getFullYear();

@@ -29,12 +29,19 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 - Sélecteur de niveau A0 à C2 (B2 à C2 grisés « In preparation »), avec les packs, leurs descriptions, leurs prix et la liste de leurs modules (titres réels, tirés des sources par l'atelier)
 - Bande « The Complete Method »
 - Devises : dollar US et FCFA (XAF, XOF) au prix exact ; euro calculé depuis le FCFA (parité fixe 655,957) ; livre, dollar canadien, naira et cédi convertis depuis le dollar à des taux indicatifs, marqués « ≈ ». La devise suit le pays du visiteur : d'abord la région du navigateur et le fuseau horaire, puis le pays de sa connexion via get.geojs.io (gratuit, sans clé). Un choix manuel du visiteur prime et est mémorisé. Cette consultation envoie l'adresse IP du visiteur à geojs : à mentionner dans la politique de confidentialité.
-- Moyens de paiement : carte bancaire (Visa, Mastercard), PayPal, MTN MoMo et Orange Money **dans tous les pays** ; ceux du pays du visiteur viennent en premier. MoMo et Orange Money demandent un numéro camerounais (diaspora, ou un proche qui paie) et sont encaissés en FCFA. Le formulaire de paiement est en place, mais n'encaisse rien : il annonce « Online payment opens soon » et propose d'envoyer la commande sur WhatsApp quand le numéro est renseigné.
-- **Séances en visio dans le site** (`js/live.js`) : l'élève choisit une séance (30 min 9 $ / 4 900 FCFA ; 60 min 15 $ / 8 200 FCFA ; 5 × 60 min 65 $ / 35 700 FCFA) et une heure parmi les disponibilités d'Olivier (`LIVE_CONFIG.weekly`, en heure de Douala, affichées dans le fuseau du visiteur), puis paie avec les moyens de son pays. « My live lessons » affiche un compte à rebours ; le bouton **Join** s'active 10 min avant ; la salle vidéo s'ouvre dans la page avec un minuteur (temps restant, alerte à 5 min). Un pack donne 4 réservations de plus sans repayer. Échange gratuit possible avant de réserver (WhatsApp ou e-mail).
+- Moyens de paiement : **seulement ceux du pays de résidence** de l'acheteur (champ « Country of residence », prérempli d'après le pays détecté) : carte bancaire (Visa, Mastercard) et PayPal partout ; MTN MoMo et Orange Money au Cameroun (montant en FCFA, numéro vérifié). Le serveur applique la même règle. Le formulaire de paiement est en place, mais n'encaisse rien : il annonce « Online payment opens soon » et propose d'envoyer la commande sur WhatsApp quand le numéro est renseigné.
+- **Séances en visio dans le site** (`js/live.js`) : 30 min 9 $ / 4 900 FCFA ; 60 min 15 $ / 8 200 FCFA ; 5 × 60 min 65 $ / 35 700 FCFA. Les disponibilités d'Olivier suivent celles de l'élève :
+  1. l'élève propose **au moins 6 heures sur au moins 3 jours** (entre 06:00 et 22:00, heure de Douala, affichées dans son fuseau) ;
+  2. Olivier reçoit un e-mail et **coche les heures qui lui conviennent** (`?olivier=<id>&key=…`) ;
+  3. l'élève reçoit un e-mail, choisit une de ces heures et paie (`?lesson=<id>&key=…`) ;
+  4. « My live lessons » affiche le compte à rebours ; **Join** s'active 10 min avant ; la salle vidéo s'ouvre dans la page avec un minuteur (temps restant, alerte à 5 min).
+  Un pack donne 4 séances de plus sans repayer. Échange gratuit possible avant de réserver.
 - **Paiement par le site** : avec `SHOP.api` renseigné, « Pay » ouvre la page Notch Pay (carte, MTN MoMo, Orange Money) et le site confirme au retour. Contrat du serveur : [`docs/serveur.md`](docs/serveur.md).
 - **Mode démo** : ajouter `?demo` à l'adresse pour essayer achats et séances sans payer (réservations gardées dans ce navigateur).
 - **Module A0-1 gratuit** : formulaire (prénom, e-mail, case marketing décochée) ; le serveur envoie aussitôt le module avec un message de présentation de la méthode (`emails/module-gratuit.html` et `.txt`).
-- **Avis clients** : section masquée tant que `js/reviews.js` est vide ; le serveur demande un avis après chaque achat (`emails/demande-avis.html`). Seuls de vrais avis, publiés avec l'accord de l'élève.
+- **Avis clients, sans intervention** : après chaque achat, l'acheteur reçoit un lien personnel (`?review=<jeton>`). Son avis est publié aussitôt, **quelle que soit la note**, s'il passe le filtre automatique de `js/review-filter.js` (insultes, liens, coordonnées, majuscules, longueur). Retenir les avis négatifs est interdit (règle de la FTC aux États-Unis, directive Omnibus dans l'UE) et contraire aux règles de Google. La section reste masquée tant qu'aucun avis n'existe.
+- **Politiques du site** (`policies.html`) : vendeur, conditions de vente, remboursement et rétractation, licence (enseignants d'autres plateformes : usage personnel), séances, sujets d'examen, avis, confidentialité, cookies, droit applicable. Une case « terms » obligatoire au paiement.
+- **E-mails** : envoyés par Gmail depuis l'alias de la boutique ; modèles dans `emails/`.
 - Test de niveau tiré des bilans de la méthode, étape par étape de A0 à B1, qui recommande le pack par lequel commencer (`js/leveltest.js`, généré : `python tools/importer_test.py <atelier>/livraison/Pas-a-Pas-Level-Check.json`)
 - Sections : contenu d'un module (audio inclus), comparatif, sujets DELF et TCF Canada, séances, auteur, paiement, avis, FAQ
 
@@ -43,12 +50,12 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 | Quoi | Où |
 |---|---|
 | Produits, descriptions, prix, niveaux, séances en direct | `js/products.js` |
-| Disponibilités d'Olivier, délai de réservation, visio (JaaS) | `LIVE_CONFIG` en haut de `js/live.js` |
-| Adresse du serveur de paiement et de réservation | `SHOP.api` dans `js/app.js` |
+| Heures possibles des séances, minimum de 6 heures sur 3 jours, délais, visio (JaaS) | `LIVE_CONFIG` en haut de `js/live.js` |
+| Textes des politiques | `policies.html` |
 | Titres des modules | `js/modules.js`, **généré** : `python tools/importer_catalogue.py <atelier>/livraison/site/catalogue.json` après « Exporter pour le site » dans l'atelier |
-| E-mail, WhatsApp | objet `SHOP` en haut de `js/app.js` (les champs vides restent masqués) |
+| E-mail (alias Gmail), WhatsApp, adresse du serveur, identité du vendeur | `js/shop.js` (les champs vides restent masqués) |
 | Questions du test | `js/leveltest.js`, **généré** depuis l'atelier (`tools/importer_test.py`) |
-| Avis clients | `js/reviews.js` (vrais avis seulement) |
+| Avis clients | automatiques (serveur) ; filtre dans `js/review-filter.js` ; avis recueillis ailleurs dans `js/reviews.js` |
 | E-mails envoyés par le serveur | `emails/` |
 | Devises, taux indicatifs, pays, moyens de paiement | `CURRENCIES`, `COUNTRIES`, `PAY_METHODS` dans `js/app.js` |
 | Couleurs et typographies | variables `:root` de `css/style.css` |

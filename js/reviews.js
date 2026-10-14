@@ -1,6 +1,6 @@
-// Real reviews only, published with the learner's agreement, starting after the first sale.
-// The section stays hidden while this list is empty. One entry per review:
+// Reviews collected outside the site, with the author's agreement (optional).
+// Reviews left on the site through the link in the review email are published by the server
+// automatically (GET /reviews) and do not need to be added here.
 //   { name: "First name", country: "Country", product: "a0-complete", rating: 5, date: "2026-11-02",
 //     text: "The review, exactly as written by the learner." }
-// The server asks every buyer for a review a few days after the purchase (docs/serveur.md).
 const REVIEWS = [];
