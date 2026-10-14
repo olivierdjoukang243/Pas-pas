@@ -1,84 +1,49 @@
-// Catalogue. Base prices in euros; the page converts them to the visitor's currency.
-// Titles, module lists and prices are examples: replace them with your real content.
+// Pas-à-Pas catalogue. Facts confirmed by Olivier on 14/10/2026: 11 products,
+// 56 modules and 7 level checks from A0 to B1. Prices are set in both currencies
+// (they are not converted). Never add a module title, product or price that is not confirmed.
 
-const LEVELS = ["A0", "A1", "A2", "B1", "B2", "C1", "C2"];
-
-// Each level is a course made of modules. Modules sell one by one, or the whole level at a discount.
-const LEVEL_COURSES = {
-  A0: { name: "Discovery", hue: 190, modulePrice: 5, lessons: 5,
-    can: "Never studied French? Start here: the sounds of French, greetings and your first 200 words.",
-    modules: ["Sounds & the alphabet", "Greetings & introductions", "Numbers, dates & time", "Survival phrases"] },
-  A1: { name: "Beginner", hue: 210, modulePrice: 7, lessons: 6,
-    can: "Introduce yourself, ask simple questions and handle everyday situations.",
-    modules: ["Être, avoir & articles", "Family & describing people", "Daily routine (present tense)", "Food & shopping", "Town & directions", "Plans & the near future"] },
-  A2: { name: "Elementary", hue: 225, modulePrice: 7, lessons: 6,
-    can: "Talk about past events, travel and handle routine tasks at work or school.",
-    modules: ["The passé composé", "Imparfait or passé composé?", "Travel & transport", "Health & the body", "Object pronouns", "Comparisons & the future"] },
-  B1: { name: "Intermediate", hue: 245, modulePrice: 9, lessons: 7,
-    can: "Give opinions, tell stories and work or study in French with some support.",
-    modules: ["Expressing opinions", "Subjunctive essentials", "Conditional & hypotheses", "Relative pronouns: qui, que, dont, où", "Work & studies", "Letters & short essays"] },
-  B2: { name: "Upper-intermediate", hue: 265, modulePrice: 9, lessons: 7,
-    can: "Argue a point, follow the news and write clear, structured texts.",
-    modules: ["Argument & connectors", "Advanced subjunctive", "Reported speech", "Passive voice & nominalisation", "Media & current affairs", "Formal writing & synthesis"] },
-  C1: { name: "Advanced", hue: 330, modulePrice: 12, lessons: 8,
-    can: "Use French flexibly for academic and professional purposes, with nuance.",
-    modules: ["Nuance & register", "Complex sentence structures", "Academic writing", "Presentations & debate", "Idioms & culture"] },
-  C2: { name: "Mastery", hue: 350, modulePrice: 12, lessons: 8,
-    can: "Understand virtually everything and express yourself with precision and style.",
-    modules: ["Style & rhetoric", "Literary texts", "Professional & legal French", "Synthesis & critical review", "Mastering spoken French"] },
-};
-const LEVEL_DISCOUNT = 0.30; // whole level vs. buying every module
-
-// Exam papers in the official format (original mock papers, not copies of official exams).
-const EXAMS = [
-  { code: "DELF A1", family: "DELF", levels: ["A1"], price: 15, sets: 4 },
-  { code: "DELF A2", family: "DELF", levels: ["A2"], price: 15, sets: 4 },
-  { code: "DELF B1", family: "DELF", levels: ["B1"], price: 19, sets: 4, best: true },
-  { code: "DELF B2", family: "DELF", levels: ["B2"], price: 19, sets: 4, best: true },
-  { code: "DALF C1", family: "DALF", levels: ["C1"], price: 25, sets: 3 },
-  { code: "DALF C2", family: "DALF", levels: ["C2"], price: 25, sets: 3 },
-  { code: "TCF Tout public", family: "TCF", levels: ["A1", "A2", "B1", "B2", "C1", "C2"], price: 22, sets: 4 },
-  { code: "TCF Canada", family: "TCF", levels: ["A1", "A2", "B1", "B2", "C1", "C2"], price: 25, sets: 4, best: true },
+const LEVELS = [
+  { code: "A0", name: "Discovery", hue: 190, status: "open" },
+  { code: "A1", name: "Beginner", hue: 210, status: "open" },
+  { code: "A2", name: "Elementary", hue: 228, status: "open" },
+  { code: "B1", name: "Intermediate", hue: 248, status: "open" },
+  { code: "B2", name: "Upper-intermediate", hue: 272, status: "prep", note: "Part 1 is being written. Not on sale yet." },
+  { code: "C1", name: "Advanced", hue: 330, status: "prep", note: "In preparation. Not on sale yet." },
+  { code: "C2", name: "Mastery", hue: 350, status: "prep", note: "In preparation. Not on sale yet." },
 ];
-const EXAM_HUES = { DELF: 205, DALF: 280, TCF: 4 };
-const EXAM_NOTES = {
-  DELF: "Listening, reading, writing and speaking, timed like the real exam, with marking grids out of 100.",
-  DALF: "Long listening and reading documents, synthesis and argued essay, with model answers.",
-  TCF: "Multiple-choice listening, reading and language sections, plus writing and speaking tasks, with a score-to-level table.",
+
+const LEVEL_INTRO = {
+  A0: "From the alphabet to a first conversation. Instructions are in English.",
+  A1: "From single sentences to real exchanges. Instructions in French, grammar still explained in English.",
+  A2: "Where you stop translating in your head.",
+  B1: "Where French becomes yours. Objectives and section openers are in French too.",
 };
 
-const PRACTICE_PRICES = { A0: 4, A1: 6, A2: 6, B1: 8, B2: 8, C1: 10, C2: 10 };
+// kind: "part" (8 modules + level check), "level" (both parts), "method" (everything).
+const PRODUCTS = [
+  { id: "a0-complete", level: "A0", kind: "level", name: "French A0 — Complete Beginner Course", contents: "8 modules + level check", usd: 19, xaf: 10400,
+    desc: "Start French from zero. Eight modules that take you from the alphabet to holding a first conversation: introducing yourself, numbers, describing people and places, asking questions, present tense, telling the time, ordering in a café, and talking about your day. Every trap that catches English speakers is handled where it appears: tu and vous, silent endings, je suis Paul instead of je m'appelle Paul. Ends with a level check that tells you whether to move on to A1 or revise." },
+  { id: "a1-part1", level: "A1", kind: "part", part: 1, name: "French A1 Part 1 — Modules 1 to 8", contents: "Modules 1–8 + level check", usd: 29, xaf: 15900,
+    desc: "The first half of A1. You move from single sentences to real exchanges: past events with the passé composé, future plans, expressing opinions and preferences, shopping and quantities, giving directions, and describing your home and daily routine. Ends with a level check before Part 2." },
+  { id: "a1-part2", level: "A1", kind: "part", part: 2, name: "French A1 Part 2 — Modules 9 to 16", contents: "Modules 9–16 + level check", usd: 29, xaf: 15900,
+    desc: "The second half of A1, where French starts to sound natural. Reflexive verbs, the imperative, comparisons, weather and seasons, health and the body, travel and transport, plus the pronouns that let you stop repeating nouns. Ends with the A1 level check: you will know whether you are ready for A2." },
+  { id: "a1-complete", level: "A1", kind: "level", name: "French A1 Complete — All 16 Modules", contents: "Parts 1 and 2 · 16 modules + 2 level checks", usd: 49, xaf: 26900,
+    desc: "Both halves of A1 in one purchase, and cheaper than buying them separately. Sixteen modules and two level checks, from your first past tense to the pronouns that make you sound less like a textbook." },
+  { id: "a2-part1", level: "A2", kind: "part", part: 1, name: "French A2 Part 1 — Modules 1 to 8", contents: "Modules 1–8 + level check", usd: 29, xaf: 15900,
+    desc: "Past participle agreement, double pronouns, the plus-que-parfait, qui and que, où and dont, si + imparfait, and the subjunctive: how it is formed and what triggers it. Ends with a level check before Part 2." },
+  { id: "a2-part2", level: "A2", kind: "part", part: 2, name: "French A2 Part 2 — Modules 9 to 16", contents: "Modules 9–16 + level check", usd: 29, xaf: 15900,
+    desc: "The gérondif, demonstratives and possessives, cause and consequence, purpose and opposition, reported speech in the present and the past, the passive voice and the futur antérieur. Ends with the A2 level check." },
+  { id: "a2-complete", level: "A2", kind: "level", name: "French A2 Complete — All 16 Modules", contents: "Parts 1 and 2 · 16 modules + 2 level checks", usd: 49, xaf: 26900,
+    desc: "The whole A2 level in one purchase: sixteen modules and two level checks. Cheaper than buying the two parts separately." },
+  { id: "b1-part1", level: "B1", kind: "part", part: 1, name: "French B1 Part 1 — Modules 1 to 8", contents: "Modules 1–8 + level check", usd: 29, xaf: 15900,
+    desc: "Compound relative pronouns, past conditional, past subjunctive, present participle, se faire + infinitive, emphasis, indefinites, and the passé simple for reading. From B1 the objectives and section openers are in French too; the page \"Ce qui change au B1\" explains the shift." },
+  { id: "b1-part2", level: "B1", kind: "part", part: 2, name: "French B1 Part 2 — Modules 9 to 16", contents: "Modules 9–16 + level check", usd: 29, xaf: 15900,
+    desc: "The second half of B1: argument and nuance. Concession and opposition, hypothesis, formal and informal registers, professional writing, debating an idea, and the connectors that hold a long answer together. Ends with the B1 level check, the level most exams and employers ask for." },
+  { id: "b1-complete", level: "B1", kind: "level", name: "French B1 Complete — All 16 Modules", contents: "Parts 1 and 2 · 16 modules + 2 level checks", usd: 49, xaf: 26900,
+    desc: "The complete B1 level, both parts, sixteen modules and two level checks. The level that lets you work, study and argue in French. Cheaper than buying the parts separately." },
+  { id: "complete-method", level: "A0–B1", kind: "method", name: "Pas-à-Pas — The Complete Method (A0 to B1)", contents: "56 modules + 7 level checks", usd: 129, xaf: 70800,
+    desc: "Everything: 56 modules and 7 level checks, from the alphabet to arguing a point in French. Four levels that share one method, one set of characters and one way of explaining, so nothing is ever re-taught differently halfway through. You keep the files for good, including the updates." },
+];
 
-// ---- Build one flat product list from the definitions above ----
-const PRODUCTS = [];
-for (const lvl of LEVELS) {
-  const c = LEVEL_COURSES[lvl];
-  const full = c.modulePrice * c.modules.length;
-  PRODUCTS.push({
-    id: `level-${lvl}`, type: "level", level: lvl, hue: c.hue,
-    name: `${lvl} ${c.name}: full level`, price: Math.round(full * (1 - LEVEL_DISCOUNT)), old: full,
-    size: `${c.modules.length} modules · ${c.modules.length * c.lessons} lessons`, desc: c.can,
-  });
-  c.modules.forEach((title, i) => PRODUCTS.push({
-    id: `mod-${lvl}-${i + 1}`, type: "module", level: lvl, hue: c.hue, num: i + 1,
-    name: `${lvl} · Module ${i + 1}: ${title}`, short: title, price: c.modulePrice,
-    size: `${c.lessons} lessons · video, PDF, audio & quiz`,
-    desc: `Module ${i + 1} of the ${lvl} ${c.name} course. ${c.lessons} lessons explained in English, with exercises and a final quiz.`,
-  }));
-}
-for (const e of EXAMS) {
-  PRODUCTS.push({
-    id: `exam-${e.code.toLowerCase().replace(/\s+/g, "-")}`, type: "exam", family: e.family, levels: e.levels,
-    level: e.levels[0], hue: EXAM_HUES[e.family], best: e.best,
-    name: `${e.code} exam papers`, price: e.price,
-    size: `${e.sets} complete papers · audio · answer keys`, desc: EXAM_NOTES[e.family],
-  });
-}
-for (const lvl of LEVELS) {
-  PRODUCTS.push({
-    id: `practice-${lvl}`, type: "practice", level: lvl, hue: LEVEL_COURSES[lvl].hue,
-    name: `${lvl} practice tests`, price: PRACTICE_PRICES[lvl],
-    size: "10 short tests · answers explained",
-    desc: `Simple training papers for level ${lvl}: 20-minute tests mixing listening, reading, grammar and vocabulary, each with explained answers in English.`,
-  });
-}
+// Exam preparation: in production, nothing on sale. No DALF (exam banks stop at B2).
+const EXAMS_IN_PRODUCTION = ["DELF", "TCF"];

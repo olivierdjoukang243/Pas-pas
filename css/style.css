@@ -300,6 +300,38 @@ details p { margin: .7em 0 0; color: #3b3f4a; }
 #payDetails input { padding: .7em .9em; border: 1.5px solid var(--ligne); border-radius: 10px; color: var(--encre); }
 .checkout select { width: 100%; }
 
+/* Real catalogue: packs, method band, author */
+.level-scale span.off { background: var(--gris); opacity: .35; }
+.level-tabs button.prep { background: var(--creme); border-style: dashed; }
+.level-tabs button.prep b { color: var(--gris); }
+.level-tabs button.prep[aria-selected="true"] { background: var(--gris); border-color: var(--gris); }
+.lp-empty { padding: 1.4em 1.6em; display: flex; gap: 1em; align-items: center; flex-wrap: wrap; justify-content: space-between; }
+.lp-empty p { margin: 0; color: #3b3f4a; }
+.prods { list-style: none; margin: 0; padding: .4em 1.6em; }
+.prod { display: grid; grid-template-columns: 1fr auto; gap: 1.2em; padding: 1.1em 0; border-bottom: 1px solid var(--ligne); align-items: start; }
+.prod:last-child { border-bottom: 0; }
+.prod-body { min-width: 0; display: flex; flex-direction: column; gap: .2em; }
+.prod-body small { color: var(--gris); }
+.prod-body p { margin: .3em 0 0; color: #3b3f4a; max-width: 68ch; font-size: .93rem; }
+.prod-buy { display: flex; flex-direction: column; align-items: flex-end; gap: .4em; }
+.prod-buy .price { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.method { display: grid; grid-template-columns: 1fr auto; gap: 2em; align-items: center; padding: 2em; border-radius: 20px; color: #fff; background: linear-gradient(140deg, var(--bleu), #2b1c5e); }
+.method h2 { font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 0 0 .3em; }
+.method p { margin: 0 0 .6em; max-width: 68ch; opacity: .92; }
+.method .eyebrow { color: #ffb4bc; }
+.method-meta span { color: #b9f0cd; font-weight: 600; }
+.method-buy { display: flex; flex-direction: column; align-items: flex-start; gap: .6em; }
+.method-buy .price { color: #fff; font-size: 2rem; white-space: nowrap; }
+.inside-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+.inside-list { background: #fff; border-radius: var(--radius); padding: 1.4em 1.6em; box-shadow: var(--shadow); margin: 0; display: flex; flex-direction: column; gap: .55em; }
+.inside-side { display: flex; flex-direction: column; gap: 1rem; }
+.exam-soon { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; max-width: 640px; }
+.author { display: grid; grid-template-columns: auto 1fr; gap: 1.6em; align-items: start; background: #fff; border-radius: 20px; padding: 2em; box-shadow: var(--shadow); }
+.author p { max-width: 68ch; color: #3b3f4a; }
+.author-mark { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; background: var(--bleu); color: #fff; font-family: var(--serif); font-size: 1.8rem; font-weight: 700; }
+.contact-line { margin: 0; }
+.header-inner { justify-content: space-between; }
+
 /* Responsive */
 @media (max-width: 960px) {
   .hero-inner, .builder-inner, .box-inner { grid-template-columns: 1fr; }
@@ -307,6 +339,7 @@ details p { margin: .7em 0 0; color: #3b3f4a; }
   .promise-grid, .pay-grid { grid-template-columns: 1fr; }
   .level-tabs { grid-template-columns: repeat(4, 1fr); }
   .footer-grid { grid-template-columns: 1fr 1fr; }
+  .inside-grid, .method { grid-template-columns: 1fr; }
   .pd { grid-template-columns: 1fr; }
 }
 @media (max-width: 680px) {
@@ -314,13 +347,16 @@ details p { margin: .7em 0 0; color: #3b3f4a; }
   .topbar-inner { justify-content: center; }
   .header-inner { flex-wrap: wrap; }
   .search { order: 3; flex-basis: 100%; }
-  .header-tools { order: 2; flex-basis: 100%; justify-content: space-between; gap: .3em; }
+  .header-tools { gap: .3em; }
   .header-tools .select-wrap { flex: 1; min-width: 0; }
   .header-tools select { width: 100%; min-width: 0; font-size: .85rem; }
   .plans { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .quiz-options { grid-template-columns: 1fr; }
-  .modules { padding: .4em 1em; }
+  .modules, .prods { padding: .4em 1em; }
+  .prod { grid-template-columns: 1fr; }
+  .prod-buy { flex-direction: row; align-items: center; justify-content: space-between; }
+  .exam-soon, .author { grid-template-columns: 1fr; }
   .modules li { grid-template-columns: 32px 1fr auto; }
   .modules li .btn { grid-column: 2 / -1; justify-self: start; }
   .lp-code { font-size: 2.4rem; }

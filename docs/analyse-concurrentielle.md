@@ -21,25 +21,25 @@
 
 ## 3. Notre positionnement : « Pas-à-Pas French »
 
-| Levier | Ce que fait le site |
+Mis à jour le 14/10/2026 d'après les faits confirmés (voir le README).
+
+| Levier | Ce que fait la méthode |
 |---|---|
-| Parcours complet A0 → C2 | 7 niveaux découpés en 38 modules ; achat au module ou au niveau complet (−30 %) |
-| Expliqué en anglais | Interface et cours en anglais, pour un public anglophone international |
-| Examens | Sujets au format officiel DELF (A1–B2), DALF (C1–C2), TCF Tout public et TCF Canada |
-| Entraînement | Sujets d'entraînement simples pour chaque niveau, entre les modules |
-| Test de niveau gratuit | 15 questions, niveau A0 à C1 et module recommandé : il sert à capter des prospects |
-| Paiement | International : carte et PayPal. Cameroun : MTN MoMo et Orange Money en FCFA |
-| Achat unique, accès à vie | Pas d'abonnement obligatoire ; passage au niveau complet en payant la différence |
+| Parcours structuré A0 → B1 | 56 modules et 7 bilans, en paquets de 8 modules ; B2 à C2 en préparation |
+| Expliqué en anglais | Grammaire en anglais ; consignes en français à partir de l'A1 |
+| Corrigés complets | 9 exercices ou plus par module, test sur 20, bilan de niveau qui nomme ce qu'il faut réviser |
+| Écrit de zéro | Aucun contenu adapté d'un manuel existant ; personnages récurrents Léa, Thomas et Amina |
+| Achat unique | Pas d'abonnement ; niveau complet et méthode complète moins chers que les parties |
+| Prix en $ et en FCFA | Deux grilles fixes, FCFA par défaut en Afrique |
+| Examens | Sujets DELF et TCF en production (pas de DALF) |
 
 ## 4. À faire avant le lancement
 
-- Remplacer le catalogue d'exemple (`js/products.js`) par vos vrais produits, contenus et prix.
-- Mettre votre numéro WhatsApp dans `js/app.js`.
-- Brancher un vrai paiement : CinetPay, Campay ou NotchPay pour MTN MoMo et Orange Money au Cameroun ; Stripe ou PayPal à l'international.
-- Mettre à jour les taux de change NGN, GHS, USD, CAD et GBP (le FCFA a une parité fixe).
-- Ne publier que de **vrais** avis clients, une fois les premières ventes faites.
-- Mentions légales, conditions de vente et politique de remboursement.
-- DELF, DALF et TCF appartiennent à France Éducation international : vendre des **sujets originaux** au format officiel, jamais des copies des épreuves officielles, et rester « préparation indépendante » (mention déjà en pied de page).
+- Choisir le prestataire de paiement (Notch Pay en piste principale) et construire la livraison automatique.
+- Fournir le domaine, l'adresse e-mail dédiée, le numéro WhatsApp et les titres des 56 modules.
+- Rédiger les conditions de vente (ventes définitives) et la politique de confidentialité.
+- Ne publier que de vrais avis clients, une fois les premières ventes faites.
+- DELF et TCF appartiennent à France Éducation international : vendre des sujets originaux au format officiel, jamais des copies des épreuves.
 
 ### Sources
 - https://www.italki.com/en/blog/best-online-platform-to-learn-french
