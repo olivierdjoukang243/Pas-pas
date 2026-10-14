@@ -19,7 +19,7 @@
 5. **L'immigration au Canada** : la demande TCF/TEF Canada est forte, mais les simulations avec correspondance NCLC sont rares et chères.
 6. **Aucun retour humain** dans les applications sur l'oral et l'écrit, alors que ce sont les épreuves qui font échouer.
 
-## 3. Notre positionnement : « Pas-à-Pas »
+## 3. Notre positionnement : « Pas-à-Pas French »
 
 | Levier | Ce que fait le site |
 |---|---|
