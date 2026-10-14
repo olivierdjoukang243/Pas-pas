@@ -3,7 +3,10 @@ const SHOP = {
   email: "",          // dedicated contact address
   whatsapp: "",       // international format without "+", e.g. 2376XXXXXXXX
   freeSampleUrl: "",  // link to the free module A0-1
+  api: "",            // booking and payment server (Notch Pay), e.g. "https://api.pasapasfrench.com"
 };
+// ?demo in the address: try purchases and live lessons without paying (this browser only)
+const DEMO = /(^|[?&])demo(&|$)/.test(location.search);
 
 // Placement test: 3 questions per level. The level reached is the highest one passed in a row (2/3 or better).
 const TEST = [
@@ -259,14 +262,17 @@ function contactHTML() {
 // Cameroon: MTN MoMo, Orange Money, card and PayPal. Elsewhere: card and PayPal.
 const methodsFor = (country) => Object.entries(PAY_METHODS).filter(([, m]) => country === "Cameroon" || !m.cameroonOnly);
 
-function openBuy(id) {
+let checkoutDraft = null;   // a live lesson being booked, set by live.js
+
+function openBuy(id, draft = null) {
   const p = byId(id);
+  checkoutDraft = draft;
   openModal(`<form class="checkout" id="checkoutForm" data-product="${p.id}" novalidate>
-    <p class="eyebrow">${p.level === "A0–B1" ? "A0 to B1" : p.level}</p>
+    <p class="eyebrow">${p.level === "A0–B1" ? "A0 to B1" : p.level}${DEMO ? " · demo" : ""}</p>
     <h2>${p.name}</h2>
-    <p>${p.contents}</p>
+    <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} your time · ${draft.minutes} min · ${draft.need}` : p.contents}</p>
     <div class="form-grid">
-      <label for="coEmail">Email (to receive your ${p.kind === "live" ? "booking confirmation" : "files"})<input id="coEmail" name="email" type="email" required autocomplete="email"></label>
+      <label for="coEmail">Email (to receive your ${p.kind === "live" ? "booking confirmation" : "files"})<input id="coEmail" name="email" type="email" required autocomplete="email" value="${draft ? draft.email : ""}"></label>
       <label for="coCountry">Country<select id="coCountry" name="country">${COUNTRIES.map((c) => `<option ${c === state.country ? "selected" : ""}>${c}</option>`).join("")}</select></label>
     </div>
     <p class="eyebrow pm-title">Payment method</p>
@@ -275,7 +281,7 @@ function openBuy(id) {
     <div class="totals" id="coTotals"></div>
     <p class="form-error" id="formError" hidden></p>
     <button class="btn btn-primary btn-block" id="payBtn"></button>
-    <p class="note">${p.kind === "live" ? "Pay only once the content and the time are agreed with Olivier: payment confirms the session." : "Sales are final: the files are delivered instantly and cannot be returned."}</p>
+    <p class="note">${p.kind === "live" ? "Payment confirms the session and reserves the time for you." : "Sales are final: the files are delivered instantly and cannot be returned."}</p>
   </form>`);
   renderPayOptions();
 }
@@ -310,7 +316,20 @@ function submitCheckout(form) {
   if (msg) { err.textContent = msg; err.hidden = false; return; }
 
   state.country = data.get("country"); store.set("country", state.country);
-  const charged = state.country === "Cameroon" || m.phone ? fmtXAF(p.xaf) : fmtUSD(p.usd);
+  const inFCFA = state.country === "Cameroon" || m.phone;
+  const charged = inFCFA ? fmtXAF(p.xaf) : fmtUSD(p.usd);
+  const order = { product: p.id, email: data.get("email"), country: state.country, method: data.get("pay"),
+    phone: m.phone ? String(data.get("momo")).replace(/[\s.-]/g, "") : "",
+    currency: inFCFA ? "XAF" : "USD", amount: inFCFA ? p.xaf : p.usd, booking: checkoutDraft };
+
+  // Live payment: the server creates the Notch Pay transaction and sends back its page.
+  if (SHOP.api) return payOnline(order);
+  // Demo: nothing is charged; a live lesson is booked in this browser only.
+  if (DEMO) {
+    if (checkoutDraft) return bookedScreen(confirmBooking(checkoutDraft, "demo"));
+    return openModal(`<div class="checkout"><p class="eyebrow">Demo · nothing was charged</p><h2>Payment accepted</h2>
+      <p>In the live shop, ${p.name} would now be sent to ${order.email}.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
+  }
   const contact = contactHTML();
   const wa = SHOP.whatsapp ? whatsappLink(`Hello, I'd like to buy "${p.name}" (${charged}), paying by ${m.label}. My email: ${data.get("email")}`) : "";
   openModal(`<div class="checkout">
@@ -322,48 +341,36 @@ function submitCheckout(form) {
   </div>`);
 }
 
-// ====== Live lessons: free exchange first, payment to confirm ======
-function openLiveRequest() {
-  openModal(`<form class="checkout" id="liveForm" novalidate>
-    <p class="eyebrow">Live lesson · step 1 of 2</p>
-    <h2>Tell me what you need</h2>
-    <p>Nothing to pay now. We first talk, free of charge, to agree on the content, the length and the time. You pay only to confirm the session.</p>
-    <div class="form-grid">
-      <label for="lvNeed" class="full">What would you like to work on?<select id="lvNeed" name="need">${LIVE_NEEDS.map((n) => `<option>${n}</option>`).join("")}</select></label>
-      <label for="lvLevel">Your level<select id="lvLevel" name="level"><option>I don't know yet</option>${LEVELS.map((l) => `<option>${l.code}</option>`).join("")}</select></label>
-      <label for="lvLength">Session<select id="lvLength" name="length">${LIVE.map((p) => `<option value="${p.id}">${p.name} · ${price(p)}</option>`).join("")}</select></label>
-      <label for="lvFormat">Format<select id="lvFormat" name="format"><option>Video call</option><option>In person, if possible</option></select></label>
-      <label for="lvWhen">Preferred days and times<input id="lvWhen" name="when" placeholder="e.g. weekday evenings"></label>
-      <label for="lvName">Your name<input id="lvName" name="name" required autocomplete="name"></label>
-      <label for="lvEmail">Email<input id="lvEmail" name="email" type="email" required autocomplete="email"></label>
-      <label for="lvMsg" class="full">Anything I should know? (optional)<textarea id="lvMsg" name="msg" rows="3"></textarea></label>
-    </div>
-    <p class="form-error" id="lvError" hidden></p>
-    <button class="btn btn-primary btn-block">Send my request</button>
-  </form>`);
+async function payOnline(order) {
+  const btn = $("#payBtn"), err = $("#formError");
+  btn.disabled = true; btn.textContent = "Opening the secure payment page…";
+  try {
+    const r = await fetch(`${SHOP.api}/checkout`, { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...order, return_url: location.href.split(/[?#]/)[0] }) });
+    const d = await r.json();
+    if (!r.ok || !d.authorization_url) throw new Error(d.error || "no payment page");
+    location.href = d.authorization_url;
+  } catch (e) {
+    err.textContent = "The payment page could not be opened. Nothing was charged. Please try again in a moment.";
+    err.hidden = false; btn.disabled = false; renderPayDetails();
+  }
 }
 
-function submitLiveRequest(form) {
-  const d = new FormData(form);
-  const err = $("#lvError");
-  if (!d.get("name").trim() || !form.lvEmail.value || !form.lvEmail.checkValidity()) {
-    err.textContent = "Enter your name and a valid email address, so I can answer you."; err.hidden = false; return;
+// Back from the payment page: the server tells whether the payment is complete.
+async function checkReturn() {
+  const ref = new URLSearchParams(location.search).get("paid");
+  if (!ref || !SHOP.api) return;
+  history.replaceState(null, "", location.pathname + location.hash);
+  try {
+    const d = await (await fetch(`${SHOP.api}/payments/${encodeURIComponent(ref)}`)).json();
+    if (d.status !== "complete") {
+      return openModal(`<div class="checkout"><h2>Payment not completed</h2><p>Nothing was charged. You can try again.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
+    }
+    if (d.booking) return bookedScreen(confirmBooking(d.booking, "paid", ref));
+    openModal(`<div class="checkout"><h2>Thank you</h2><p>Payment received. Your files are on their way to ${d.email}.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
+  } catch {
+    openModal(`<div class="checkout"><h2>Checking your payment…</h2><p>We could not confirm it yet. You will receive an email as soon as it is confirmed.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
   }
-  const p = byId(d.get("length"));
-  let tz = "";
-  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { /* ignore */ }
-  const text = `Hello Olivier, I'd like a live lesson.\nNeed: ${d.get("need")}\nLevel: ${d.get("level")}\nSession: ${p.name} (${fmtUSD(p.usd)} / ${fmtXAF(p.xaf)})\nFormat: ${d.get("format")}\nPreferred times: ${d.get("when") || "-"} (${tz})\nName: ${d.get("name")}\nEmail: ${d.get("email")}${d.get("msg") ? `\nNote: ${d.get("msg")}` : ""}`;
-  const wa = SHOP.whatsapp ? whatsappLink(text) : "";
-  const mail = SHOP.email ? `mailto:${SHOP.email}?subject=${encodeURIComponent("Live lesson request")}&body=${encodeURIComponent(text)}` : "";
-  openModal(`<div class="checkout">
-    <p class="eyebrow">Live lesson · step 2 of 2</p>
-    <h2>${wa || mail ? "Send your request" : "Requests open soon"}</h2>
-    ${wa || mail ? `<p>Send it by WhatsApp or email. Olivier answers to agree on the content and the time with you, free of charge.</p>
-      <div class="hero-cta tight">${wa ? `<a class="btn btn-wa" href="${wa}" target="_blank" rel="noopener">Send on WhatsApp</a>` : ""}${mail ? `<a class="btn btn-ghost" href="${mail}">Send by email</a>` : ""}</div>`
-      : `<p>Live lessons can't be requested online yet. Your request has not been sent.</p>`}
-    <p class="note">Once the session is agreed, it is confirmed by paying ${price(p)}${price(p) !== fmtUSD(p.usd) ? ` (${fmtUSD(p.usd)})` : ""}.</p>
-    ${wa || mail ? `<button class="btn btn-primary" data-buy="${p.id}">I've agreed a session: pay to confirm</button>` : ""}
-  </div>`);
 }
 
 // ====== Placement test ======
@@ -415,11 +422,10 @@ function testResult() {
 
 // ====== Events ======
 document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-buy],[data-level],[data-modal-close],[data-test],[data-answer],[data-goto-level],[data-live]");
+  const el = e.target.closest("[data-buy],[data-level],[data-modal-close],[data-test],[data-answer],[data-goto-level]");
   if (!el) return;
   const d = el.dataset;
   if (d.buy) openBuy(d.buy);
-  else if ("live" in d) openLiveRequest();
   else if (d.level) { state.level = d.level; store.set("level", d.level); renderLevelTabs(); renderLevelPanel(); }
   else if ("modalClose" in d) modal.close();
   else if ("test" in d) { e.preventDefault(); openTest(); }
@@ -442,7 +448,6 @@ modal.addEventListener("change", (e) => {
 });
 modal.addEventListener("submit", (e) => {
   if (e.target.id === "checkoutForm") { e.preventDefault(); submitCheckout(e.target); }
-  else if (e.target.id === "liveForm") { e.preventDefault(); submitLiveRequest(e.target); }
 });
 
 $("#currency").addEventListener("change", (e) => {

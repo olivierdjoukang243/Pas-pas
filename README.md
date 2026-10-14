@@ -26,7 +26,9 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 - Bande « The Complete Method »
 - Devises : dollar US et FCFA (XAF, XOF) au prix exact ; euro calculé depuis le FCFA (parité fixe 655,957) ; livre, dollar canadien, naira et cédi convertis depuis le dollar à des taux indicatifs, marqués « ≈ ». La devise suit le pays du visiteur : d'abord la région du navigateur et le fuseau horaire, puis le pays de sa connexion via get.geojs.io (gratuit, sans clé). Un choix manuel du visiteur prime et est mémorisé. Cette consultation envoie l'adresse IP du visiteur à geojs : à mentionner dans la politique de confidentialité.
 - Moyens de paiement de départ : carte bancaire (Visa, Mastercard) et PayPal partout ; MTN MoMo et Orange Money en plus pour le Cameroun (montant en FCFA, numéro vérifié). Le formulaire de paiement est en place, mais n'encaisse rien : il annonce « Online payment opens soon » et propose d'envoyer la commande sur WhatsApp quand le numéro est renseigné.
-- **Séances en face à face** avec Olivier (visio, ou en présentiel si possible) : étudier un point, pratiquer, converser, préparer un examen. Parcours en deux temps : demande et échange gratuit par WhatsApp ou e-mail, puis paiement pour confirmer. Tarifs : 30 min 9 $ / 4 900 FCFA ; 60 min 15 $ / 8 200 FCFA ; 5 × 60 min 65 $ / 35 700 FCFA (à utiliser en 3 mois). Modifiables dans `LIVE` (`js/products.js`).
+- **Séances en visio dans le site** (`js/live.js`) : l'élève choisit une séance (30 min 9 $ / 4 900 FCFA ; 60 min 15 $ / 8 200 FCFA ; 5 × 60 min 65 $ / 35 700 FCFA) et une heure parmi les disponibilités d'Olivier (`LIVE_CONFIG.weekly`, en heure de Douala, affichées dans le fuseau du visiteur), puis paie avec les moyens de son pays. « My live lessons » affiche un compte à rebours ; le bouton **Join** s'active 10 min avant ; la salle vidéo s'ouvre dans la page avec un minuteur (temps restant, alerte à 5 min). Un pack donne 4 réservations de plus sans repayer. Échange gratuit possible avant de réserver (WhatsApp ou e-mail).
+- **Paiement par le site** : avec `SHOP.api` renseigné, « Pay » ouvre la page Notch Pay (carte, MTN MoMo, Orange Money) et le site confirme au retour. Contrat du serveur : [`docs/serveur.md`](docs/serveur.md).
+- **Mode démo** : ajouter `?demo` à l'adresse pour essayer achats et séances sans payer (réservations gardées dans ce navigateur).
 - Test de niveau en 15 questions, qui recommande le pack suivant
 - Sections : contenu d'un module (audio inclus), préparation DELF/TCF (en production), auteur, paiement, FAQ
 
@@ -35,6 +37,8 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 | Quoi | Où |
 |---|---|
 | Produits, descriptions, prix, niveaux, séances en direct | `js/products.js` |
+| Disponibilités d'Olivier, délai de réservation, visio (JaaS) | `LIVE_CONFIG` en haut de `js/live.js` |
+| Adresse du serveur de paiement et de réservation | `SHOP.api` dans `js/app.js` |
 | Titres des modules | `js/modules.js`, **généré** : `python tools/importer_catalogue.py <atelier>/livraison/site/catalogue.json` après « Exporter pour le site » dans l'atelier |
 | E-mail, WhatsApp, lien du module gratuit A0-1 | objet `SHOP` en haut de `js/app.js` (les champs vides restent masqués) |
 | Questions du test | `TEST` dans `js/app.js` |
@@ -48,7 +52,8 @@ GitHub Pages, branche `main` : https://olivierdjoukang243.github.io/Pas-pas/
 ## Ce qui manque pour vendre
 
 Le bouton « Buy » ouvre pour l'instant une fenêtre « Online checkout opens soon » : aucun paiement n'est encaissé. Restent à fournir ou à construire :
-1. Le prestataire de paiement (piste principale : Notch Pay, carte et mobile money au Cameroun) et l'état du compte.
+1. Le compte Notch Pay (carte et mobile money au Cameroun) et le serveur décrit dans [`docs/serveur.md`](docs/serveur.md), puis renseigner `SHOP.api`. Le compte JaaS pour la visio, puis `LIVE_CONFIG.video.appId`.
+   Les disponibilités de `LIVE_CONFIG.weekly` sont un **exemple** (lun.–ven. 18 h–21 h, sam. 9 h–13 h, heure de Douala) : à confirmer.
    D'après les notes du projet, PayPal (comme Stripe) n'accepte pas un vendeur basé au Cameroun : à confirmer avant d'ouvrir les paiements, sinon retirer PayPal de `PAY_METHODS`.
 2. Un serveur de livraison : webhook de paiement, puis lien de téléchargement signé et limité dans le temps (PDF, MP3, mémo).
    Les éditions web se font en ligne sur le site : elles doivent être servies derrière un accès acheteur, pas en fichiers publics. GitHub Pages ne sait pas protéger un contenu payant.

@@ -359,6 +359,33 @@ details.mods { margin: .5em 0 0; padding: 0; background: none; box-shadow: none;
 .live-card .price { margin-top: auto; }
 .checkout textarea { padding: .7em .9em; border: 1.5px solid var(--ligne); border-radius: 10px; font: inherit; color: var(--encre); resize: vertical; }
 
+.chips-row { display: flex; flex-wrap: wrap; gap: .4em; margin: .5em 0; }
+.slot { border: 1.5px solid var(--ligne); background: #fff; border-radius: 999px; padding: .45em .9em; cursor: pointer; font: inherit; font-size: .88rem; color: var(--encre); }
+.slot:hover { border-color: var(--bleu); }
+.slot.on { background: var(--bleu); border-color: var(--bleu); color: #fff; }
+.book-len { grid-template-columns: repeat(3, 1fr); }
+.book-len b { color: var(--bleu); }
+.my-sessions { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.2em 1.4em; margin-bottom: 1.2rem; border-left: 5px solid var(--vert); }
+.my-sessions h3 { margin: 0 0 .6em; color: var(--bleu); }
+.session { display: grid; grid-template-columns: 1fr auto auto; gap: 1em; align-items: center; padding: .7em 0; border-top: 1px solid var(--ligne); }
+.session div { display: flex; flex-direction: column; }
+.session small { color: var(--gris); }
+.countdown { font-variant-numeric: tabular-nums; color: var(--bleu); font-weight: 600; }
+.session .btn:disabled { opacity: .45; cursor: not-allowed; }
+.modal.modal-room { width: min(1100px, calc(100% - 24px)); max-height: 94vh; }
+.room { padding: 1.2em; display: flex; flex-direction: column; gap: .7em; }
+.room-top { display: flex; align-items: center; justify-content: space-between; gap: 1em; padding-right: 2.5em; flex-wrap: wrap; }
+.room-top .eyebrow { margin: 0; }
+.room-timer { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 1.3rem; color: var(--bleu); }
+.room-timer.warn { color: #b26b00; }
+.room-timer.over { color: var(--rouge); }
+.room-bar { height: 6px; background: var(--ligne); border-radius: 3px; overflow: hidden; }
+.room-bar span { display: block; height: 100%; width: 0; background: var(--vert); transition: width 1s linear; }
+.room-video { position: relative; aspect-ratio: 16 / 9; max-width: 100%; background: #0f1530; border-radius: 12px; overflow: hidden; display: grid; place-items: center; }
+.room-video iframe { width: 100%; height: 100%; border: 0; }
+.room-video video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+.room-msg { position: absolute; bottom: 0; left: 0; right: 0; margin: 0; padding: .8em 1em; color: #fff; background: rgba(0,0,0,.55); font-size: .9rem; }
+
 /* Responsive */
 @media (max-width: 960px) {
   .hero-inner, .builder-inner, .box-inner { grid-template-columns: 1fr; }
@@ -383,6 +410,9 @@ details.mods { margin: .5em 0 0; padding: 0; background: none; box-shadow: none;
   .form-grid { grid-template-columns: 1fr; }
   .quiz-options { grid-template-columns: 1fr; }
   .modules, .prods { padding: .4em 1em; }
+  .book-len { grid-template-columns: 1fr; }
+  .session { grid-template-columns: 1fr auto; }
+  .session .countdown { grid-column: 1 / -1; order: 3; }
   .prod { grid-template-columns: 1fr; }
   .prod-buy { flex-direction: row; align-items: center; justify-content: space-between; }
   .exam-soon, .author { grid-template-columns: 1fr; }
