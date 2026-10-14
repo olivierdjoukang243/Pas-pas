@@ -1,4 +1,4 @@
-# Pas-Pas French — learn French step by step
+# Pas-à-Pas — learn French step by step
 
 Boutique en ligne internationale (HTML/CSS/JS, sans compilation) qui vend des outils numériques pour apprendre le français aux **anglophones** : cours de A0 à C2 découpés en modules, sujets DELF, DALF et TCF, et sujets d'entraînement par niveau. Le site est en anglais.
 
