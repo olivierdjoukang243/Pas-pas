@@ -31,7 +31,7 @@ Mis à jour le 14/10/2026 d'après les faits confirmés (voir le README).
 | Écrit de zéro | Aucun contenu adapté d'un manuel existant ; personnages récurrents Léa, Thomas et Amina |
 | Achat unique | Pas d'abonnement ; niveau complet et méthode complète moins chers que les parties |
 | Prix en $ et en FCFA | Deux grilles fixes, FCFA par défaut en Afrique |
-| Examens | Sujets DELF et TCF en production (pas de DALF) |
+| Examens | Sujets DELF, DALF et TCF produits par l'atelier, en vente prochainement |
 
 ## 4. À faire avant le lancement
 
@@ -48,3 +48,25 @@ Mis à jour le 14/10/2026 d'après les faits confirmés (voir le README).
 - https://preply.com/en/online/tutors-tcf
 - https://www.frenchwithchadi.com/online-vip-courses
 - https://frenchclassesonlinevoila.com/?p=1667
+
+## 5. Où en est le site face à la concurrence (14/10/2026)
+
+| Ce que font les meilleurs | Pas à Pas FRENCH |
+|---|---|
+| Test de niveau gratuit | Oui : questions tirées des 7 bilans de la méthode, étape par étape de A0 à B1, avec le produit par lequel commencer |
+| Aperçu avant achat | A0 Module 1 complet offert, envoyé par e-mail avec un message de présentation ; liste des 56 modules |
+| Prix clairs, dans la devise du visiteur | Oui : devise selon le pays, $ et FCFA fixes, économies calculées |
+| Paiement local | Oui : seulement les moyens du pays de résidence (carte et PayPal partout, MTN MoMo et Orange Money au Cameroun), actifs avec le serveur Notch Pay |
+| Cours avec un professeur | Oui : séances en visio dans le site, réservation sur les disponibilités, minuteur, packs |
+| Comparatif avec les alternatives | Oui : tableau « How it compares » (catégories, pas de marques) |
+| Préparation aux examens | DELF A1 à B2 et TCF Canada en vente ; DALF « Coming soon » |
+| Avis clients | Publication automatique des avis d'acheteurs vérifiés, quelle que soit la note, avec un filtre de forme ; la section apparaît au premier avis |
+| Cours avec un professeur : choix de l'heure | L'élève propose 6 heures sur 3 jours, Olivier coche, l'élève choisit et paie |
+| Politiques claires | Page `policies.html` : vente, remboursement, licence, séances, avis, confidentialité |
+| Enseignants d'autres plateformes | Bienvenus, pour leur usage personnel (licence) |
+| Garantie de remboursement | Non (ventes définitives) ; compensé par le test, l'aperçu et l'échange avant achat |
+
+### Ce qui reste
+1. **Les premiers avis réels** : à ajouter dans `js/reviews.js` dès la première vente, avec l'accord de l'élève.
+2. **Un nom de domaine et une adresse e-mail** propres, à l'hébergement (prévu par Olivier).
+3. **Le serveur** (paiement Notch Pay, e-mails Brevo, visio JaaS) : tout est décrit dans `docs/serveur.md`.
