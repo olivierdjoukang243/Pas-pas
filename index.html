@@ -33,10 +33,9 @@
       Pas à Pas <span class="logo-sub">French</span>
     </a>
     <div class="header-tools">
-      <div class="seg" id="currencySwitch" role="group" aria-label="Currency">
-        <button data-currency="USD">$ USD</button>
-        <button data-currency="XAF">FCFA</button>
-      </div>
+      <label class="select-wrap" title="Currency">
+        <select id="currency" aria-label="Currency"></select>
+      </label>
     </div>
   </div>
   <nav class="container nav" aria-label="Sections">
@@ -167,8 +166,24 @@
   </section>
 
   <section id="pay" class="container block">
-    <div class="block-head"><div><p class="eyebrow">Payment</p><h2 class="section-title">Online checkout opens soon</h2>
-      <p class="sub">Card payment worldwide and MTN MoMo or Orange Money in Cameroon are planned. Prices are fixed in US dollars and in FCFA.</p></div></div>
+    <div class="block-head"><div><p class="eyebrow">Payment</p><h2 class="section-title">Pay from anywhere</h2>
+      <p class="sub">Prices are fixed in US dollars and in FCFA; other currencies are shown as an indication. Online payment opens soon.</p></div></div>
+    <div class="pay-grid">
+      <div class="pay-card">
+        <h3>Worldwide</h3>
+        <p>Bank card (Visa, Mastercard) or PayPal, charged in US dollars.</p>
+        <div class="chips"><span class="chip">Visa</span><span class="chip">Mastercard</span><span class="chip">PayPal</span></div>
+      </div>
+      <div class="pay-card pay-cm">
+        <h3>Cameroon</h3>
+        <p>MTN MoMo or Orange Money, charged in FCFA. You confirm the payment on your phone.</p>
+        <div class="chips"><span class="chip chip-momo">MTN MoMo</span><span class="chip chip-om">Orange Money</span></div>
+      </div>
+      <div class="pay-card">
+        <h3>Currencies</h3>
+        <p>US dollar, FCFA (XAF and XOF), euro, pound, Canadian dollar, naira and cedi.</p>
+      </div>
+    </div>
     <p class="contact-line" id="contactLine" hidden></p>
   </section>
 
@@ -179,6 +194,7 @@
     <details><summary>Is there audio?</summary><p>Yes. The listening dialogue and the dictation of every module are recorded: as MP3 files with the PDF edition, and built into the page in the web edition.</p></details>
     <details><summary>Do I need a teacher?</summary><p>No. Each pack includes the full answer key, a self-marking grid and a revision plan. It also works alongside lessons with any tutor.</p></details>
     <details><summary>Is a full level cheaper than its two parts?</summary><p>Yes. A complete level costs $9 (4,900 FCFA) less than its two parts. The Complete Method costs $37 (20,300 FCFA) less than the four levels bought separately.</p></details>
+    <details><summary>How can I pay?</summary><p>Worldwide by bank card (Visa, Mastercard) or PayPal, charged in US dollars. In Cameroon, also by MTN MoMo or Orange Money, charged in FCFA. Online payment opens soon.</p></details>
     <details><summary>Can I get a refund?</summary><p>The files are delivered instantly and cannot be returned, so sales are final. If you are unsure which level to start with, take the level test or write before buying.</p></details>
     <details><summary>What about B2, C1 and C2?</summary><p>They are in preparation. B2 Part 1 is being written. Nothing above B1 is on sale yet.</p></details>
   </section>
