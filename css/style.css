@@ -445,7 +445,9 @@ details.mods { margin: .5em 0 0; padding: 0; background: none; box-shadow: none;
   .hero-inner, .builder-inner, .box-inner { grid-template-columns: 1fr; }
   .steps { grid-template-columns: repeat(2, 1fr); }
   .promise-grid, .pay-grid { grid-template-columns: 1fr; }
-  .level-tabs { grid-template-columns: repeat(4, 1fr); }
+  .level-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .level-tabs button { min-width: 0; padding: .6em .2em; }
+  .level-tabs span { font-size: .64rem; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .inside-grid, .method, .sample, .live-steps { grid-template-columns: 1fr; }
   .mod-list { columns: 1; }
