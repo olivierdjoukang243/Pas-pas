@@ -206,6 +206,23 @@ function renderMethod() {
     </div>`;
 }
 
+// Categories, not brands: what each kind of tool usually offers.
+function renderCompare() {
+  const rows = [
+    ["How you pay", `One payment, from ${price(byId("a0-complete"))}. The files are yours`, "Monthly or yearly subscription", "Per hour, every time"],
+    ["Grammar explained in English", "Yes, in every module", "Short tips, mostly practice", "Depends on the tutor"],
+    ["Step-by-step path with level checks", "56 modules, 7 level checks, A0 to B1", "Yes, inside the app", "Depends on the tutor"],
+    ["Works offline", "PDF and MP3 on any device", "Partly, in the app", "No"],
+    ["Answer keys you keep", "Every exercise", "Instant marking, nothing to keep", "Depends on the tutor"],
+    ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
+    ["Pay in FCFA with MTN MoMo or Orange Money", "Yes, in Cameroon", "Varies", "Varies"],
+  ];
+  $("#compareTable").innerHTML = `<table class="compare">
+    <thead><tr><th scope="col"><span class="sr-only">Feature</span></th><th scope="col" class="us">Pas à Pas FRENCH</th><th scope="col">Language apps</th><th scope="col">Hourly tutors</th></tr></thead>
+    <tbody>${rows.map(([k, a, b, c]) => `<tr><th scope="row">${k}</th><td class="us">${a}</td><td>${b}</td><td>${c}</td></tr>`).join("")}</tbody>
+  </table>`;
+}
+
 function renderExams() {
   $("#examSoon").innerHTML = EXAMS.map((e) => `<div class="pay-card exam-card">
     <span class="tag soon">Coming soon</span>
@@ -223,7 +240,7 @@ function renderLive() {
   </div>`).join("");
 }
 
-function renderPrices() { renderLevelPanel(); renderMethod(); renderLive(); }
+function renderPrices() { renderLevelPanel(); renderMethod(); renderCompare(); renderLive(); }
 
 // ====== Dialogs ======
 const modal = $("#modal");

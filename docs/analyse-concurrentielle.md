@@ -48,3 +48,23 @@ Mis à jour le 14/10/2026 d'après les faits confirmés (voir le README).
 - https://preply.com/en/online/tutors-tcf
 - https://www.frenchwithchadi.com/online-vip-courses
 - https://frenchclassesonlinevoila.com/?p=1667
+
+## 5. Où en est le site face à la concurrence (14/10/2026)
+
+| Ce que font les meilleurs | Pas à Pas FRENCH |
+|---|---|
+| Test de niveau gratuit | Oui : questions tirées des 7 bilans de la méthode, étape par étape de A0 à B1, avec le produit par lequel commencer |
+| Aperçu avant achat | « Look inside A0 Module 1 » et la liste des 56 modules ; pas encore de module d'essai téléchargeable |
+| Prix clairs, dans la devise du visiteur | Oui : devise selon le pays, $ et FCFA fixes, économies calculées |
+| Paiement local | Oui : MTN MoMo et Orange Money au Cameroun, carte et PayPal ailleurs (actif avec le serveur Notch Pay) |
+| Cours avec un professeur | Oui : séances en visio dans le site, réservation sur les disponibilités, minuteur, packs |
+| Comparatif avec les alternatives | Oui : tableau « How it compares » (catégories, pas de marques) |
+| Préparation aux examens | DELF, DALF, TCF annoncés « Coming soon » |
+| Avis clients | Aucun pour l'instant : à publier seulement après les premières ventes |
+| Garantie de remboursement | Non (ventes définitives) ; compensé par le test, l'aperçu et l'échange avant achat |
+
+### Ce qui ferait encore la différence
+1. **Un module d'essai gratuit** (A0 Module 1, édition web) contre une adresse e-mail : c'est le premier levier de conversion des concurrents, et il construit la liste de clients.
+2. **Les premiers avis réels** (5 à 10), avec prénom et pays.
+3. **Un nom de domaine et une adresse e-mail** propres, à l'hébergement.
+4. **Les sujets DELF et TCF Canada** en vente : la demande liée à l'immigration au Canada est la plus forte du marché.
