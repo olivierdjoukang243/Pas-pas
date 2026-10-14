@@ -31,7 +31,7 @@ Mis à jour le 14/10/2026 d'après les faits confirmés (voir le README).
 | Écrit de zéro | Aucun contenu adapté d'un manuel existant ; personnages récurrents Léa, Thomas et Amina |
 | Achat unique | Pas d'abonnement ; niveau complet et méthode complète moins chers que les parties |
 | Prix en $ et en FCFA | Deux grilles fixes, FCFA par défaut en Afrique |
-| Examens | Sujets DELF et TCF en production (pas de DALF) |
+| Examens | Sujets DELF, DALF et TCF produits par l'atelier, en vente prochainement |
 
 ## 4. À faire avant le lancement
 
