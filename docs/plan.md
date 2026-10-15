@@ -18,9 +18,10 @@ l'information, je fais le reste.
 | # | Étape | Qui | Résultat attendu |
 |---|---|---|---|
 | 1.1 | Dans `C:\projets\PasAPas` : `git pull` et `pip install pypdf reportlab cryptography` | Olivier | ✅ Fait le 15/10 (`9c6f3ea`) |
-| 1.2 | Intégrer les illustrations dans les sources A0 et A1 : `python images.py --sources "Sources A0" --images ./illustrations --integrer --ecrire`, puis la même commande avec `"Sources A1"` | Olivier | A0 et A1 Partie 1 n'ont plus aucun « Illustration à fournir » |
+| 1.2 | Intégrer les illustrations dans les sources A0 et A1 : `python images.py --sources "Sources A0" --images ./illustrations --integrer --ecrire`, puis la même commande avec `"Sources A1"` | Olivier | ✅ Fait le 15/10 : 9 sources A0 et 9 sources A1 Partie 1 illustrées ; les 33 images de A1 Partie 2 restent à fournir |
 | 1.3 | Produire le catalogue : `python tout.py --catalogue --vers ./livraison > livraison\catalogue.log 2>&1` (environ une heure) | Olivier | « TERMINÉ » ; le rapport m'est envoyé |
-| 1.4 | Traiter les « à revoir » de A0 et A1 Partie 1 | Ensemble | Ces deux produits sont prêts à vendre |
+| 1.4 | Panneau → **« Finir les éditions web »** : il grave l'audio dans les pages et allège les images, qui passent de 1 à 3 Mo à environ 200 Ko | Olivier | Les éditions web ont leur audio et sont légères |
+| 1.4 b | Traiter les « à revoir » de A0 et A1 Partie 1 | Ensemble | Ces deux produits sont prêts à vendre |
 | 1.5 | Décider de ce qu'on vend au lancement : les produits sans illustrations (A1 Partie 2, A2, B1, niveaux complets, méthode complète) attendent leurs images, ou sortent sans | Olivier | Liste des produits du lancement |
 | 1.6 | Audio des sujets d'examen : 50 pistes (plan et coût, puis génération) si elles ne sont pas déjà faites | Olivier | Les 50 MP3 sont dans `audio/` |
 | 1.7 | Produire les packs DELF A1 à B2 et TCF Canada (commandes du LISEZ-MOI de l'atelier) | Olivier | 5 dossiers dans `livraison/packs/` |
