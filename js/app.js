@@ -418,7 +418,7 @@ function renderCompare() {
     ["Works offline", "PDF and MP3 on any device", "Partly, in the app", "No"],
     ["Answer keys you keep", "Every exercise", "Instant marking, nothing to keep", "Depends on the tutor"],
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
-    ["Exam practice papers", "DELF A1 to B2 and TCF Canada, in preparation", "Rarely", "Depends on the tutor"],
+    ["Exam practice papers", "DELF, DALF and TCF Canada, in preparation", "Rarely", "Depends on the tutor"],
     ["Try before you buy", "Module 1 free, in full", "Free version or trial, then subscription", "Sometimes a trial lesson"],
     ["Pay the way your country pays", "Card and PayPal everywhere, plus the local methods of your country", "Card or app store", "Varies"],
   ];
@@ -437,7 +437,7 @@ function examFormat(f) {
 function formatHTML(x) {
   if (!x) return "";
   return `<details class="exam-format"><summary>Paper format</summary>
-    <table>${x.papers.map((p) => `<tr><th>${p.name}<span>${p.time}${p.prep ? ` · ${p.prep} preparation` : ""}${p.marks ? ` · /${p.marks}` : ""}</span></th><td>${p.detail}</td></tr>`).join("")}</table>
+    <table>${x.papers.map((p) => `<tr><th>${p.name}<span>${p.time}${p.marks ? ` · /${p.marks}` : ""}${p.prep ? `<br>preparation ${p.prep}` : ""}</span></th><td>${p.detail}</td></tr>`).join("")}</table>
     <p>${x.written ? `Written papers: ${x.written} in one sitting. ` : ""}${x.pass}.</p>
     ${x.nclc ? `<p class="nclc-target"><strong>${x.nclc.target}</strong></p>
     <div class="nclc-wrap"><table class="nclc"><tr><th>NCLC</th>${x.nclc.rows.map((r) => `<th>${r.name}</th>`).join("")}</tr>
