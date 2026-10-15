@@ -1,5 +1,5 @@
 // ====== Live lessons: request, Olivier's answer, payment, countdown, video room ======
-// 1. The learner proposes at least 6 start times over at least 3 days, in their own time zone.
+// 1. The learner proposes at least 3 start times (at most 3 a day; 6 over 3 days advised), in their own time zone.
 // 2. Olivier ticks the times that suit him (link in his email: ?olivier=<id>&key=<key>).
 // 3. The learner gets an email (?lesson=<id>&key=<key>), picks one of those times and pays.
 //    A pack session needs no payment. Payment confirms the session.
@@ -14,8 +14,8 @@ const LIVE_CONFIG = {
   step: 30,                     // minutes between two possible start times
   noticeHours: 24,              // earliest start: 24 h ahead
   horizonDays: 21,              // latest start: 3 weeks ahead
-  minTimes: 6,                  // the learner proposes at least 6 times…
-  minDays: 3,                   // …spread over at least 3 days
+  minTimes: 3,                  // the request can be sent from 3 proposed times…
+  goodTimes: 6, goodDays: 3,    // …but 6 over 3 days give Olivier the best chance, and the page says so
   maxPerDay: 3,                 // at most 3 times a day, so the times are really spread out
   joinEarly: 10,                // the Join button opens 10 minutes before the start
   video: { appId: "" },         // JaaS (8x8) app id, e.g. "vpaas-magic-cookie-…"; needs SHOP.api for the token
@@ -30,7 +30,9 @@ const pad = (n) => String(n).padStart(2, "0");
 const hm = (s) => { const [h, m] = s.split(":").map(Number); return h * 60 + m; };
 // The site is in English: days in English ("Fri 16 Oct"), times in the visitor's usual clock (13:00 or 1:00 PM).
 const localDay = (ms) => new Date(ms).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
-const localTime = (ms) => new Date(ms).toLocaleTimeString(navigator.language || "en-GB", { hour: "2-digit", minute: "2-digit" });
+// The browser's own language decides 13:00 or 1:00 PM; an unusual tag (e.g. "en-US@posix") falls back to 24 h.
+const TIME_LOCALE = (() => { try { new Date().toLocaleTimeString(navigator.language); return navigator.language; } catch { return "en-GB"; } })();
+const localTime = (ms) => new Date(ms).toLocaleTimeString(TIME_LOCALE, { hour: "2-digit", minute: "2-digit" });
 function visitorZone() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return "your time"; } }
 // What the visitor reads: "GMT+1", not a system name such as "Etc/GMT-1"
 function zoneLabel() {
@@ -118,12 +120,19 @@ function blockedReason(t, minutes) {
 
 function bookingStatus(n, nd) {
   const C = LIVE_CONFIG;
-  if (n >= C.minTimes && nd >= C.minDays) return { ok: true, text: `${n} times over ${nd} days · ready to send` };
-  const needT = Math.max(0, C.minTimes - n), needD = Math.max(0, C.minDays - nd);
-  const parts = [];
-  if (needT) parts.push(`${needT} more time${needT > 1 ? "s" : ""}`);
-  if (needD) parts.push(`${needD} more day${needD > 1 ? "s" : ""}`);
-  return { ok: false, text: `${n} time${n === 1 ? "" : "s"} over ${nd} day${nd === 1 ? "" : "s"} · still needed: ${parts.join(" and ")}` };
+  const got = `${n} time${n === 1 ? "" : "s"} over ${nd} day${nd === 1 ? "" : "s"}`;
+  if (n < C.minTimes) return { ok: false, text: `${got} · choose ${C.minTimes - n} more to send your request` };
+  if (n >= C.goodTimes && nd >= C.goodDays) return { ok: true, text: `${got} · ready to send` };
+  return { ok: true, text: `${got} · you can send now; ${C.goodTimes} times over ${C.goodDays} days give Olivier the best chance to find one` };
+}
+
+// The next day after `day` that still has room, or null.
+function nextOpenDay(days, day, minutes) {
+  const all = candidateTimes(minutes, takenFromServer);
+  for (const d of days.slice(days.indexOf(day) + 1)) {
+    if (perDay(booking.times, d) < LIVE_CONFIG.maxPerDay && all.some((t) => localDay(t) === d && !blockedReason(t, minutes))) return d;
+  }
+  return null;
 }
 
 function renderBooking() {
@@ -141,7 +150,7 @@ function renderBooking() {
   $("#bookForm").innerHTML = `
     <p class="eyebrow">${booking.credit ? "Book with your pack" : "Book a live lesson"}${DEMO ? " · demo" : ""}</p>
     <h2>When are you free?</h2>
-    <p>Propose at least <strong>${LIVE_CONFIG.minTimes} start times over ${LIVE_CONFIG.minDays} different days</strong>, at most ${LIVE_CONFIG.maxPerDay} a day. Olivier ticks the ones that suit him, then you choose one and ${booking.credit ? "confirm it" : "pay to confirm it"}.</p>
+    <p>Propose at least <strong>${LIVE_CONFIG.minTimes} start times</strong>, at most ${LIVE_CONFIG.maxPerDay} a day; ${LIVE_CONFIG.goodTimes} times over ${LIVE_CONFIG.goodDays} different days give the best chance. Olivier ticks the ones that suit him, then you choose one and ${booking.credit ? "confirm it" : "pay to confirm it"}.</p>
     ${booking.credit ? `<p class="note">Session ${booking.credit.used + 1} of ${booking.credit.total} of your pack: no payment needed.</p>` : `
     <div class="pay-methods book-len" role="radiogroup" aria-label="Session">
       ${LIVE.map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> ${x.name}<br><b>${price(x)}</b></label>`).join("")}
@@ -153,11 +162,19 @@ function renderBooking() {
     <p class="eyebrow pm-title">Your free times · your local time (${zoneLabel()})</p>
     <p class="note">Each time is the start of a ${minutes}-minute lesson. Times that would overlap a lesson you chose are greyed out.</p>
     <div class="chips-row" role="group" aria-label="Day">${days.map((d) => {
-      const k = booking.times.filter((t) => localDay(t) === d).length;
-      return `<button type="button" class="slot ${d === booking.day ? "on" : ""}" data-day="${d}">${d}${k ? ` · ${k}/${LIVE_CONFIG.maxPerDay}` : ""}</button>`; }).join("")}</div>
+      const k = perDay(booking.times, d), full = k >= LIVE_CONFIG.maxPerDay;
+      const cls = d === booking.day ? "on" : full ? "day-full" : k ? "day-has" : "";
+      return `<button type="button" class="slot ${cls}" data-day="${d}" ${k ? `title="${k} time${k > 1 ? "s" : ""} chosen on this day"` : ""}>${d}${k ? ` · ${k}/${LIVE_CONFIG.maxPerDay}` : ""}</button>`; }).join("")}</div>
     <div class="chips-row" role="group" aria-label="Start times">${times.map((t) => {
       const why = blockedReason(t, minutes), on = booking.times.includes(t);
       return `<button type="button" class="slot ${on ? "on" : ""}" aria-pressed="${on}" data-slot="${t}" ${why ? `disabled title="${esc(why)}"` : ""}>${localTime(t)}</button>`; }).join("")}</div>
+    ${(() => {
+      if (booking.dismissFull === booking.day || perDay(booking.times, booking.day) < LIVE_CONFIG.maxPerDay) return "";
+      const next = nextOpenDay(days, booking.day, minutes);
+      return `<div class="day-full-msg" role="status"><p><b>${booking.day} is full</b> (${LIVE_CONFIG.maxPerDay} times). ${next ? `Choose another day to keep proposing times.` : "No other day has room left."}</p>
+        <div class="day-full-actions">${next ? `<button type="button" class="btn btn-primary mini" data-day="${next}">Continue on ${next}</button>` : ""}
+        <button type="button" class="btn btn-ghost mini" data-dismiss-full>${ready ? "I'm done, keep my times" : "Close"}</button></div></div>`;
+    })()}
     <p class="note ${ready ? "ok" : ""}" role="status">${status.text}</p>
     ${chosen.length ? `<ul class="proposed">${chosen.map((t) => `<li>${localDay(t)}, ${localTime(t)}–${localTime(t + minutes * MIN)} <button type="button" class="link-btn" data-slot="${t}" aria-label="Remove">✕</button></li>`).join("")}</ul>` : ""}
     <div class="form-grid">
@@ -182,7 +199,7 @@ async function submitBooking(form) {
   booking.name = String(d.get("name") || "").trim();
   booking.email = String(d.get("email") || "").trim();
   const err = $("#bkError");
-  if (booking.times.length < LIVE_CONFIG.minTimes || daysOf(booking.times) < LIVE_CONFIG.minDays) { err.textContent = `Propose at least ${LIVE_CONFIG.minTimes} times over ${LIVE_CONFIG.minDays} days.`; err.hidden = false; return; }
+  if (booking.times.length < LIVE_CONFIG.minTimes) { err.textContent = `Propose at least ${LIVE_CONFIG.minTimes} times.`; err.hidden = false; return; }
   if (!booking.name || !form.bkEmail.checkValidity() || !booking.email) { err.textContent = "Enter your name and a valid email address."; err.hidden = false; return; }
   const req = { product: booking.product, need: booking.need, level: booking.level, minutes: LIVE_MINUTES[booking.product],
     name: booking.name, email: booking.email, zone: visitorZone(), proposed: [...booking.times].sort((a, b) => a - b),
@@ -443,11 +460,12 @@ function leaveRoom() {
 
 // ---- events ---------------------------------------------------------------
 document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-book],[data-day],[data-slot],[data-join],[data-leave],[data-book-credit],[data-choose],[data-answer-demo]");
+  const el = e.target.closest("[data-book],[data-day],[data-slot],[data-join],[data-leave],[data-book-credit],[data-choose],[data-answer-demo],[data-dismiss-full]");
   if (!el) return;
   const d = el.dataset;
   if ("book" in d) openBooking(d.book || null);
   else if (d.day) { booking.day = d.day; renderBooking(); }
+  else if ("dismissFull" in d) { booking.dismissFull = booking.day; renderBooking(); }
   else if (d.slot) {
     const t = Number(d.slot);
     if (booking.times.includes(t)) booking.times = booking.times.filter((x) => x !== t);

@@ -34,7 +34,7 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 - Pays de résidence **détecté automatiquement** (connexion, puis navigateur), affiché dans la section Payment et à la caisse, avec la possibilité d'en choisir un autre (choix mémorisé ; il entraîne la devise du pays, sauf devise choisie à la main).
 - Moyens de paiement : **seulement ceux du pays de résidence** de l'acheteur : carte bancaire (Visa, Mastercard) et PayPal partout ; MTN MoMo et Orange Money au Cameroun (montant en FCFA, numéro vérifié). Le serveur applique la même règle. Le formulaire de paiement est en place, mais n'encaisse rien : il annonce « Online payment opens soon » et propose d'envoyer la commande sur WhatsApp quand le numéro est renseigné.
 - **Séances en visio dans le site** (`js/live.js`) : 30 min 9 $ / 4 900 FCFA ; 60 min 15 $ / 8 200 FCFA ; 5 × 60 min 65 $ / 35 700 FCFA. Les disponibilités d'Olivier suivent celles de l'élève :
-  1. l'élève propose **au moins 6 heures sur au moins 3 jours** (entre 06:00 et 22:00, heure de Douala, affichées dans son fuseau) ;
+  1. l'élève propose **au moins 3 heures**, 3 au plus par jour, sans chevauchement selon la durée (6 sur 3 jours conseillées), entre 06:00 et 22:00 heure de Douala, affichées dans son fuseau ;
   2. Olivier reçoit un e-mail et **coche les heures qui lui conviennent** (`?olivier=<id>&key=…`) ;
   3. l'élève reçoit un e-mail, choisit une de ces heures et paie (`?lesson=<id>&key=…`) ;
   4. « My live lessons » affiche le compte à rebours ; **Join** s'active 10 min avant ; la salle vidéo s'ouvre dans la page avec un minuteur (temps restant, alerte à 5 min).
@@ -54,7 +54,7 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 | Quoi | Où |
 |---|---|
 | Produits, descriptions, prix, niveaux, séances en direct | `js/products.js` |
-| Heures possibles des séances, minimum de 6 heures sur 3 jours, délais, visio (JaaS) | `LIVE_CONFIG` en haut de `js/live.js` |
+| Heures possibles des séances, minimum de 3 heures, 3 par jour au plus, délais, visio (JaaS) | `LIVE_CONFIG` en haut de `js/live.js` |
 | Textes des politiques | `policies.html` |
 | Titres des modules | `js/modules.js`, **généré** : `python tools/importer_catalogue.py <atelier>/livraison/site/catalogue.json` après « Exporter pour le site » dans l'atelier |
 | E-mail (alias Gmail), WhatsApp, adresse du serveur, identité du vendeur | `js/shop.js` (les champs vides restent masqués) |

@@ -417,6 +417,11 @@ details.mods { margin: .5em 0 0; padding: 0; background: none; box-shadow: none;
 .slot { border: 1.5px solid var(--ligne); background: #fff; border-radius: 999px; padding: .45em .9em; cursor: pointer; font: inherit; font-size: .88rem; color: var(--encre); }
 .slot:hover { border-color: var(--bleu); }
 .slot.on { background: var(--bleu); border-color: var(--bleu); color: #fff; }
+.slot.day-has { background: #e7f6ec; border-color: var(--vert); color: #14603a; }
+.slot.day-full { background: var(--vert); border-color: var(--vert); color: #fff; }
+.day-full-msg { background: #fdf6e7; border: 1.5px solid var(--or); border-radius: 12px; padding: .8em 1em; display: grid; gap: .6em; }
+.day-full-msg p { margin: 0; }
+.day-full-actions { display: flex; flex-wrap: wrap; gap: .5em; }
 .slot:disabled { opacity: .35; cursor: not-allowed; text-decoration: line-through; border-style: dashed; }
 .slot:disabled:hover { border-color: var(--ligne); }
 .book-len { grid-template-columns: repeat(3, 1fr); }
