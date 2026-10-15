@@ -125,34 +125,153 @@ const countryChosen = () => !!store.get("countryChoice", null);
 // It decides the payment methods and, unless a currency was picked by hand, the currency.
 function setCountry(name, manual) {
   if (!COUNTRIES.includes(name)) return;
+  const before = state.currency;
   state.country = name;
-  if (manual) store.set("countryChoice", name === state.countryDetected ? null : name);
+  if (manual) {
+    store.set("countryChoice", name === state.countryDetected ? null : name);
+    store.set("currencyChoice", null);          // a country chosen by hand brings its own currency
+  }
   if (!store.get("currencyChoice", null)) {
     const cur = currencyFor(NAME_TO_CODE[name] || "");
-    if (CURRENCIES[cur] && cur !== state.currency) { state.currency = cur; $("#currency").value = cur; renderPrices(); }
+    if (CURRENCIES[cur]) state.currency = cur;
   }
+  renderCurrencyPicker();
+  renderPrices();
   renderResidence();
   if ($("#checkoutForm")) { renderResidenceCheckout(); renderPayOptions(); }
+  if (manual) {
+    const methods = methodsFor(name).map(([, m]) => m.label).join(", ");
+    announce(`Country of residence: ${name}. Prices in ${CURRENCIES[state.currency].label}${before !== state.currency ? " (updated)" : ""}. Payment: ${methods}.`);
+    flashUpdated();
+  }
 }
 
-const countryOptions = (selected) => COUNTRIES.map((c) => `<option ${c === selected ? "selected" : ""}>${esc(c)}</option>`).join("");
+// ====== Feedback: every choice shows on the whole page ======
+function announce(text) {
+  let t = $("#toast");
+  if (!t) { t = document.createElement("div"); t.id = "toast"; t.className = "toast"; t.setAttribute("role", "status"); t.setAttribute("aria-live", "polite"); }
+  // an open dialog sits above the page: the message goes inside it to stay visible
+  const host = modal.open ? modal : document.body;
+  if (t.parentElement !== host) host.appendChild(t);
+  t.textContent = text;
+  t.classList.add("show");
+  clearTimeout(announce.timer);
+  announce.timer = setTimeout(() => t.classList.remove("show"), 4500);
+}
+function flashUpdated() {
+  document.querySelectorAll("#levelPanel, #methodBand, #compareTable, #examSoon, #liveGrid, #residenceLine, #payLocal, #currencyPicker, .checkout .totals, #payMethods")
+    .forEach((el) => { el.classList.remove("just-updated"); void el.offsetWidth; el.classList.add("just-updated"); });
+}
+
+// ====== Searchable picker (long lists: countries, currencies) ======
+const PICKERS = {};
+const fold = (s) => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+function pickerHTML(id, { label, options, value, name, onChange }) {
+  PICKERS[id] = { options, onChange };
+  const cur = options.find((o) => o.value === value) || { label: value };
+  return `<div class="picker" data-picker="${id}">
+    <input type="hidden" id="${id}" ${name ? `name="${name}"` : ""} value="${esc(value)}">
+    <button type="button" class="picker-btn" id="${id}-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="${esc(label)}: ${esc(cur.label)}">
+      <span>${esc(cur.label)}</span><span aria-hidden="true">▾</span></button>
+    <div class="picker-pop" hidden>
+      <input type="search" class="picker-search" placeholder="Search…" aria-label="Search ${esc(label)}" autocomplete="off">
+      <ul class="picker-list" role="listbox" aria-label="${esc(label)}"></ul>
+    </div>
+  </div>`;
+}
+function pickerFill(box, q = "") {
+  const { options } = PICKERS[box.dataset.picker];
+  const v = box.querySelector('input[type="hidden"]').value, f = fold(q.trim());
+  const list = options.filter((o) => !f || fold(o.label + " " + (o.keys || "")).includes(f));
+  box.querySelector(".picker-list").innerHTML = list.length
+    ? list.map((o, i) => `<li role="option" data-value="${esc(o.value)}" aria-selected="${o.value === v}" class="${i === 0 && f ? "active" : ""}">${esc(o.label)}${o.hint ? ` <small>${esc(o.hint)}</small>` : ""}</li>`).join("")
+    : `<li class="none">No match</li>`;
+}
+function pickerOpen(box, open) {
+  document.querySelectorAll(".picker-pop:not([hidden])").forEach((p) => { if (p.parentElement !== box) { p.hidden = true; p.parentElement.querySelector(".picker-btn").setAttribute("aria-expanded", "false"); } });
+  const pop = box.querySelector(".picker-pop");
+  pop.hidden = !open;
+  box.querySelector(".picker-btn").setAttribute("aria-expanded", String(open));
+  if (open) {
+    const s = box.querySelector(".picker-search"); s.value = ""; pickerFill(box);
+    s.focus();
+    box.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: "center" });
+  }
+}
+function pickerChoose(box, value) {
+  pickerOpen(box, false);
+  box.querySelector('input[type="hidden"]').value = value;
+  box.querySelector(".picker-btn").focus();
+  PICKERS[box.dataset.picker].onChange?.(value);
+}
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".picker-btn");
+  if (btn) { const box = btn.closest(".picker"); pickerOpen(box, box.querySelector(".picker-pop").hidden); return; }
+  const li = e.target.closest(".picker-list li[data-value]");
+  if (li) { pickerChoose(li.closest(".picker"), li.dataset.value); return; }
+  if (!e.target.closest(".picker")) document.querySelectorAll(".picker").forEach((b) => { if (!b.querySelector(".picker-pop").hidden) pickerOpen(b, false); });
+});
+document.addEventListener("input", (e) => { if (e.target.classList.contains("picker-search")) pickerFill(e.target.closest(".picker"), e.target.value); });
+document.addEventListener("keydown", (e) => {
+  const box = e.target.closest?.(".picker");
+  if (!box || box.querySelector(".picker-pop").hidden) return;
+  const items = [...box.querySelectorAll(".picker-list li[data-value]")];
+  let i = items.findIndex((x) => x.classList.contains("active"));
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault();
+    i = e.key === "ArrowDown" ? Math.min(items.length - 1, i + 1) : Math.max(0, i - 1);
+    items.forEach((x, k) => x.classList.toggle("active", k === i));
+    items[i]?.scrollIntoView({ block: "nearest" });
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    const pick = items[i] || (items.length === 1 ? items[0] : null);
+    if (pick) pickerChoose(box, pick.dataset.value);
+  } else if (e.key === "Escape") { e.preventDefault(); pickerOpen(box, false); box.querySelector(".picker-btn").focus(); }
+});
+
+const COUNTRY_OPTIONS = () => COUNTRIES.map((c) => ({ value: c, label: c, keys: NAME_TO_CODE[c] || "" }));
+const currencyName = (() => { try { const dn = new Intl.DisplayNames(["en"], { type: "currency" }); return (c) => dn.of(c); } catch { return (c) => c; } })();
+function renderCurrencyPicker() {
+  const box = $("#currencyPicker");
+  if (!box) return;
+  box.innerHTML = pickerHTML("currency", { label: "Currency", value: state.currency,
+    options: Object.entries(CURRENCIES).map(([k, c]) => ({ value: k, label: c.label, hint: c.perUSD ? "indicative" : "", keys: currencyName(k) })),
+    onChange: (v) => {
+      state.currency = v; store.set("currencyChoice", v);
+      renderCurrencyPicker(); renderPrices(); if ($("#checkoutForm")) renderPayDetails();
+      announce(`Prices now shown in ${CURRENCIES[v].label}${["USD", "XAF", "XOF"].includes(v) ? "" : " (indicative; you pay in US dollars or FCFA)"}.`);
+      flashUpdated();
+    } });
+}
+
 const residenceNote = () => countryChosen() ? "chosen by you" : "detected automatically";
 
 function renderResidence() {
   const box = $("#residenceLine");
   if (!box) return;
-  box.innerHTML = `<label for="resCountry">Your country of residence <small>(${residenceNote()})</small>
-    <select id="resCountry">${countryOptions(state.country)}</select></label>
+  box.innerHTML = `<div class="res-field"><span class="res-label" id="resCountryLabel">Your country of residence <small>(${residenceNote()})</small></span>
+    ${pickerHTML("resCountry", { label: "Country of residence", options: COUNTRY_OPTIONS(), value: state.country, onChange: (v) => setCountry(v, true) })}</div>
     <span>Payment methods shown: ${methodsFor(state.country).map(([, m]) => m.label).join(", ")}.</span>`;
+  renderPayLocal();
+}
+
+// The local methods of the visitor's country of residence, and only that country.
+function renderPayLocal() {
+  const box = $("#payLocal");
+  if (!box) return;
+  const local = methodsFor(state.country).filter(([, m]) => m.countries);
+  box.hidden = !local.length;
+  if (!local.length) return;
+  box.innerHTML = `<h3>${esc(state.country)}</h3>
+    <p>${local.map(([, m]) => m.label).join(" or ")}, charged in ${local.some(([, m]) => m.phone) ? "FCFA" : "local currency"}. You confirm the payment on your phone.</p>
+    <div class="chips">${local.map(([k, m]) => `<span class="chip chip-${k}">${m.label}</span>`).join("")}</div>`;
 }
 
 function renderResidenceCheckout() {
   const box = $("#coResidence");
   if (!box) return;
-  box.innerHTML = box.dataset.open ? `<label for="coCountry">Country of residence<select id="coCountry" name="country">${countryOptions(state.country)}</select></label>`
-    : `<input type="hidden" id="coCountry" name="country" value="${esc(state.country)}">
-      <p class="residence">Country of residence: <b>${esc(state.country)}</b> <small>(${residenceNote()})</small>
-      <button type="button" class="link-btn" data-change-country>Change</button></p>`;
+  box.innerHTML = `<div class="res-field"><span class="res-label">Country of residence <small>(${residenceNote()})</small></span>
+    ${pickerHTML("coCountry", { label: "Country of residence", name: "country", options: COUNTRY_OPTIONS(), value: state.country, onChange: (v) => setCountry(v, true) })}</div>`;
 }
 if (!LEVELS.some((l) => l.code === state.level)) state.level = "A0";
 
@@ -273,7 +392,7 @@ function renderCompare() {
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
     ["Exam practice papers", "DELF A1 to B2 and TCF Canada", "Rarely", "Depends on the tutor"],
     ["Try before you buy", "Module 1 free, in full", "Free version or trial, then subscription", "Sometimes a trial lesson"],
-    ["Pay the way your country pays", "Card and PayPal everywhere, MTN MoMo and Orange Money in Cameroon", "Card or app store", "Varies"],
+    ["Pay the way your country pays", "Card and PayPal everywhere, plus the local methods of your country", "Card or app store", "Varies"],
   ];
   $("#compareTable").innerHTML = `<table class="compare">
     <thead><tr><th scope="col"><span class="sr-only">Feature</span></th><th scope="col" class="us">Pas à Pas FRENCH</th><th scope="col">Language apps</th><th scope="col">Hourly tutors</th></tr></thead>
@@ -672,17 +791,12 @@ document.addEventListener("click", (e) => {
 });
 modal.addEventListener("click", (e) => { if (e.target === modal) modal.close(); });
 modal.addEventListener("change", (e) => {
-  if (e.target.id === "coCountry") setCountry(e.target.value, true);
-  else if (e.target.name === "pay") renderPayDetails();
+  if (e.target.name === "pay") renderPayDetails();
 });
 modal.addEventListener("submit", (e) => {
   if (e.target.id === "checkoutForm") { e.preventDefault(); submitCheckout(e.target); }
 });
 
-$("#currency").addEventListener("change", (e) => {
-  state.currency = e.target.value; store.set("currencyChoice", state.currency);
-  renderPrices();
-});
 
 lookupCountry().then((code) => {
   if (!code) return;
@@ -692,15 +806,6 @@ lookupCountry().then((code) => {
   setCountry(loc.country, false);   // also sets the currency of that country, unless one was picked by hand
 });
 
-document.addEventListener("click", (e) => {
-  if (!e.target.closest("[data-change-country]")) return;
-  $("#coResidence").dataset.open = "1";
-  renderResidenceCheckout();
-  $("#coCountry").focus();
-});
-document.addEventListener("change", (e) => {
-  if (e.target.id === "resCountry") setCountry(e.target.value, true);
-});
 
 // ====== Start ======
 renderResidence();
@@ -709,8 +814,7 @@ loadReviews();
 const contact = contactHTML();
 if (contact) { $("#contactLine").innerHTML = contact; $("#contactLine").hidden = false; }
 $("#year").textContent = new Date().getFullYear();
-$("#currency").innerHTML = Object.entries(CURRENCIES).map(([k, c]) => `<option value="${k}">${c.label}</option>`).join("");
-$("#currency").value = state.currency;
+renderCurrencyPicker();
 renderLevelTabs();
 renderPrices();
 refreshRates().then(renderPrices);

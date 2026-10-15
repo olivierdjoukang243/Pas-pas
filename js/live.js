@@ -29,7 +29,6 @@ const pad = (n) => String(n).padStart(2, "0");
 const hm = (s) => { const [h, m] = s.split(":").map(Number); return h * 60 + m; };
 const localDay = (ms) => new Date(ms).toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
 const localTime = (ms) => new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-const doualaTime = (ms) => { const d = new Date(ms + LIVE_CONFIG.utcOffset * H); return `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`; };
 function visitorZone() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return "your time"; } }
 function duration(ms) {
   const s = Math.max(0, Math.round(ms / 1000));
@@ -188,8 +187,8 @@ async function openAnswer(id, key) {
     <p class="eyebrow">Olivier · lesson request${DEMO ? " · demo" : ""}</p>
     <h2>${esc(r.name)} · ${p ? esc(p.name) : ""}</h2>
     <p>${esc(r.need)} · level ${esc(r.level)} · ${r.minutes} min · learner's zone: ${esc(r.zone)}</p>
-    <p class="eyebrow pm-title">Tick the times that suit you · Douala time</p>
-    <div class="answer-list">${r.proposed.map((t) => `<label class="pm"><input type="checkbox" name="t" value="${t}" ${(r.accepted || []).includes(t) ? "checked" : ""}> ${new Date(t + LIVE_CONFIG.utcOffset * H).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })} · ${doualaTime(t)}–${doualaTime(t + r.minutes * MIN)}</label>`).join("")}</div>
+    <p class="eyebrow pm-title">Tick the times that suit you · your time</p>
+    <div class="answer-list">${r.proposed.map((t) => `<label class="pm"><input type="checkbox" name="t" value="${t}" ${(r.accepted || []).includes(t) ? "checked" : ""}> ${localDay(t)} · ${localTime(t)}–${localTime(t + r.minutes * MIN)}</label>`).join("")}</div>
     <p class="form-error" id="ansError" hidden></p>
     <button class="btn btn-primary btn-block">Send my answer</button>
     <p class="note">The learner chooses one of the times you tick${r.credit ? "" : ", then pays"}. Tick none if nothing suits: the learner is asked to propose new times.</p>
@@ -229,7 +228,7 @@ async function openChoice(id, key) {
   openModal(`<form class="checkout" id="choiceForm" data-id="${esc(r.id)}">
     <p class="eyebrow">Olivier has answered${DEMO ? " · demo" : ""}</p>
     <h2>Choose your time</h2>
-    <div class="answer-list">${free.map((t, i) => `<label class="pm"><input type="radio" name="t" value="${t}" ${i ? "" : "checked"}> ${localDay(t)}, ${localTime(t)}–${localTime(t + r.minutes * MIN)} <small>(${doualaTime(t)} in Douala)</small></label>`).join("")}</div>
+    <div class="answer-list">${free.map((t, i) => `<label class="pm"><input type="radio" name="t" value="${t}" ${i ? "" : "checked"}> ${localDay(t)}, ${localTime(t)}–${localTime(t + r.minutes * MIN)}</label>`).join("")}</div>
     <button class="btn btn-primary btn-block">${r.credit ? "Confirm this time" : `Continue to payment · ${price(p)}`}</button>
   </form>`);
 }
@@ -270,7 +269,7 @@ function bookedScreen(b) {
   openModal(`<div class="checkout">
     <p class="eyebrow">${b.status === "demo" ? "Demo booking · nothing was charged" : "Booked"}</p>
     <h2>Your live lesson is booked</h2>
-    <p><strong>${localDay(b.start)}, ${localTime(b.start)}</strong> your time (${b.zone}) · ${doualaTime(b.start)} in Douala · ${b.minutes} minutes.</p>
+    <p><strong>${localDay(b.start)}, ${localTime(b.start)}</strong> your time (${b.zone}) · ${b.minutes} minutes.</p>
     <p>Come back to this page at that time: the <strong>Join</strong> button opens ${LIVE_CONFIG.joinEarly} minutes before the start, in the “My live lessons” section.</p>
     <button class="btn btn-primary" data-modal-close>Done</button>
   </div>`);

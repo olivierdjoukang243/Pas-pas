@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pas à Pas French — Learn French step by step</title>
-  <meta name="description" content="Learn French from A0 to B1 with 56 modules and 7 level checks written for English speakers by a qualified teacher. Module 1 free. DELF and TCF Canada practice papers, live video lessons. Pay by card or PayPal worldwide, MTN MoMo or Orange Money in Cameroon.">
+  <meta name="description" content="Learn French from A0 to B1 with 56 modules and 7 level checks written for English speakers by a qualified teacher. Module 1 free. DELF and TCF Canada practice papers, live video lessons. Pay by card, PayPal or the local payment methods of your country.">
   <meta property="og:title" content="Pas à Pas French — Learn French step by step">
   <meta property="og:description" content="56 modules and 7 level checks from A0 to B1, written for English speakers.">
   <meta property="og:type" content="website">
@@ -32,11 +32,7 @@
       <span class="logo-flag" aria-hidden="true"><i></i><i></i><i></i></span>
       Pas à Pas <span class="logo-sub">French</span>
     </a>
-    <div class="header-tools">
-      <label class="select-wrap" title="Currency">
-        <select id="currency" aria-label="Currency"></select>
-      </label>
-    </div>
+    <div class="header-tools" id="currencyPicker"></div>
   </div>
   <nav class="container nav" aria-label="Sections">
     <a href="#levels">Levels</a>
@@ -202,11 +198,7 @@
         <p>Bank card (Visa, Mastercard) or PayPal, charged in US dollars.</p>
         <div class="chips"><span class="chip">Visa</span><span class="chip">Mastercard</span><span class="chip">PayPal</span></div>
       </div>
-      <div class="pay-card pay-cm">
-        <h3>Cameroon</h3>
-        <p>MTN MoMo or Orange Money, charged in FCFA, for residents of Cameroon. You confirm the payment on your phone.</p>
-        <div class="chips"><span class="chip chip-momo">MTN MoMo</span><span class="chip chip-om">Orange Money</span></div>
-      </div>
+      <div class="pay-card pay-cm" id="payLocal" hidden></div>
       <div class="pay-card">
         <h3>Currencies</h3>
         <p>US dollar and FCFA (XAF, XOF) exactly; euro, pound, Canadian, Australian, New Zealand and Singapore dollars, rupee, rand, naira, cedi, shilling and peso as an indication.</p>
@@ -227,7 +219,7 @@
     <details><summary>Is there audio?</summary><p>Yes. The listening dialogue and the dictation of every module are recorded: as MP3 files with the PDF edition, and built into the page in the web edition.</p></details>
     <details><summary>Do I need a teacher?</summary><p>No. Each pack includes the full answer key, a self-marking grid and a revision plan. It also works alongside lessons with any tutor.</p></details>
     <details><summary>Is a full level cheaper than its two parts?</summary><p>Yes. A complete level costs $9 (4,900 FCFA) less than its two parts. The Complete Method costs $37 (20,300 FCFA) less than the four levels bought separately.</p></details>
-    <details><summary>How can I pay?</summary><p>The checkout shows the methods available in your country of residence: bank card (Visa, Mastercard) and PayPal everywhere, charged in US dollars; in Cameroon, also MTN MoMo and Orange Money, charged in FCFA.</p></details>
+    <details><summary>How can I pay?</summary><p>The checkout shows only the methods available in your country of residence: bank card (Visa, Mastercard) and PayPal everywhere, charged in US dollars, plus the local methods of your country, such as mobile money, where we offer them. Your country is detected automatically; you can choose another one.</p></details>
     <details><summary>Is Module 1 really free?</summary><p>Yes. Enter your email and A0 Module 1 arrives in your inbox: the PDF with its MP3 audio and the web edition. Nothing to pay, no card asked.</p></details>
     <details><summary>Are the DELF and TCF papers the official ones?</summary><p>No. They are original practice papers written from scratch in the official format, to train under real conditions. DELF, DALF and TCF are diplomas and tests of France Éducation international; Pas à Pas French is independent.</p></details>
     <details><summary>How do live lessons work?</summary><p>Choose a 30- or 60-minute session, or a pack of five, and propose at least 6 times over 3 days when you are free, in your own time zone. Olivier ticks the times that suit him; you receive an email, choose one of them and pay. Payment confirms the booking. At the time, come back to this page and press Join: the video lesson opens here, with a timer showing the time left. You can write to Olivier before booking, free of charge.</p></details>
@@ -246,7 +238,7 @@
     <div><h4>Help</h4><ul><li><a href="#" data-test>Free level test</a></li><li><a href="#faq">FAQ</a></li><li><a href="#pay">Payment</a></li></ul></div>
     <div><h4>Policies</h4><ul><li><a href="policies.html#terms">Terms of sale</a></li><li><a href="policies.html#withdrawal">Refunds</a></li><li><a href="policies.html#licence">Licence and teachers</a></li><li><a href="policies.html#live">Live lessons</a></li><li><a href="policies.html#reviews">Reviews</a></li><li><a href="policies.html#privacy">Privacy</a></li></ul></div>
   </div>
-  <p class="container legal">DELF, DALF and TCF are diplomas and tests of France Éducation international. Pas à Pas French is an independent course. © <span id="year"></span> Olivier Djoukang. Pas à Pas FRENCH is a trade name of Nuvalex LLC, Sheridan, Wyoming, USA · <a href="policies.html">Policies</a>.</p>
+  <p class="container legal">DELF, DALF and TCF are diplomas and tests of France Éducation international. Pas à Pas French is an independent course. © <span id="year"></span> Olivier Djoukang. Pas à Pas FRENCH is a trade name of Nuvalex LLC · <a href="policies.html">Policies</a>.</p>
 </footer>
 
 <dialog id="modal" class="modal"><div id="modalBody"></div></dialog>
