@@ -24,9 +24,11 @@ l'information, je fais le reste.
 | 1.4 b | Traiter les « à revoir » de A0 et A1 Partie 1 | Ensemble | Ces deux produits sont prêts à vendre |
 | 1.5 | Décider de ce qu'on vend au lancement : les produits sans illustrations (A1 Partie 2, A2, B1, niveaux complets, méthode complète) attendent leurs images, ou sortent sans | Olivier | Liste des produits du lancement |
 | 1.6 | Audio des sujets d'examen : 50 pistes (plan et coût, puis génération) si elles ne sont pas déjà faites | Olivier | Les 50 MP3 sont dans `audio/` |
-| 1.7 | Produire les packs DELF A1 à B2 et TCF Canada (commandes du LISEZ-MOI de l'atelier) | Olivier | 5 dossiers dans `livraison/packs/` |
+| 1.7 | Réserves DELF au format officiel actuel : carte « Cahiers des charges DELF », puis Claude chat écrit chaque réserve (6 tâches par exercice) ; carte « Contrôle DELF » jusqu'à « 3 sujet(s) possible(s) » | Olivier, avec Claude chat | Les 4 réserves passent le contrôle |
+| 1.7 b | Produire les packs DELF A1 à B2 (`--combien 3`), puis passer `ready: true` sur le site | Olivier puis Claude | 4 dossiers dans `livraison/packs/`, les fiches passent en vente |
+| 1.7 c | TCF Canada : décider la structure (une épreuve de A1 à C2, difficulté croissante) ; l'atelier aura alors sa norme et son cahier, comme le DELF | Olivier, puis Claude | Le pack TCF passe en vente |
 | 1.8 | Panneau → **« Exporter pour le site »**, puis **« Test de positionnement »** | Olivier | `livraison/site/` et `Pas-a-Pas-Level-Check.json` existent |
-| 1.9 | Importer dans le site les titres et le test, et afficher « Coming soon » sur les produits qui ne sont pas encore prêts | Claude | Le site ne vend que ce qui peut être livré |
+| 1.9 | Importer dans le site les titres et le test, et afficher « Coming soon » sur les produits qui ne sont pas encore prêts (fait pour les examens le 15/10 : « In preparation ») | Claude | Le site ne vend que ce qui peut être livré |
 | 1.10 | Donner au projet Claude chat la présentation exacte : « Qualified teacher · in person since 2011 · 7,800+ lessons online since 2023 » | Olivier | Les nouvelles sources arrivent justes |
 | 1.11 | Au fil des illustrations A1 P2, A2 et B1 : les déposer dans `illustrations/`, intégrer, produire, puis ouvrir le produit à la vente | Ensemble | Chaque produit illustré passe en vente |
 
