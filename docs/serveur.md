@@ -54,7 +54,7 @@ Les créneaux déjà réservés, pour que le site ne les propose plus.
 ```
 
 ### `POST /lesson-requests`
-L'élève propose ses heures. Le site exige au moins 6 heures de début réparties sur au moins 3 jours, 3 au plus par jour, sans chevauchement compte tenu de la durée de la séance ; le serveur le vérifie de nouveau.
+L'élève propose ses heures. Le site exige au moins 3 heures de début, 3 au plus par jour, sans chevauchement compte tenu de la durée de la séance (6 sur 3 jours sont conseillées, pas exigées) ; le serveur le vérifie de nouveau.
 ```json
 { "product": "live-60", "need": "…", "level": "A2", "minutes": 60, "name": "…", "email": "…",
   "zone": "Europe/London", "proposed": [1760630400000, …], "credit": null }
