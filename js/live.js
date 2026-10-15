@@ -135,7 +135,10 @@ function nextOpenDay(days, day, minutes) {
   return null;
 }
 
-function renderBooking() {
+// `next`: what to bring into view after this render: "times", "full", "details" or nothing.
+function renderBooking(next) {
+  // keep what the learner already typed: the form is drawn again at every choice
+  if ($("#bkName")) { booking.name = $("#bkName").value; booking.email = $("#bkEmail").value; }
   const minutes = LIVE_MINUTES[booking.product];
   const all = candidateTimes(minutes, takenFromServer);
   booking.times = pruneTimes(booking.times, minutes, all);
@@ -165,7 +168,7 @@ function renderBooking() {
       const k = perDay(booking.times, d), full = k >= LIVE_CONFIG.maxPerDay;
       const cls = d === booking.day ? "on" : full ? "day-full" : k ? "day-has" : "";
       return `<button type="button" class="slot ${cls}" data-day="${d}" ${k ? `title="${k} time${k > 1 ? "s" : ""} chosen on this day"` : ""}>${d}${k ? ` · ${k}/${LIVE_CONFIG.maxPerDay}` : ""}</button>`; }).join("")}</div>
-    <div class="chips-row" role="group" aria-label="Start times">${times.map((t) => {
+    <div class="chips-row" id="bkTimes" role="group" aria-label="Start times">${times.map((t) => {
       const why = blockedReason(t, minutes), on = booking.times.includes(t);
       return `<button type="button" class="slot ${on ? "on" : ""}" aria-pressed="${on}" data-slot="${t}" ${why ? `disabled title="${esc(why)}"` : ""}>${localTime(t)}</button>`; }).join("")}</div>
     ${(() => {
@@ -177,13 +180,19 @@ function renderBooking() {
     })()}
     <p class="note ${ready ? "ok" : ""}" role="status">${status.text}</p>
     ${chosen.length ? `<ul class="proposed">${chosen.map((t) => `<li>${localDay(t)}, ${localTime(t)}–${localTime(t + minutes * MIN)} <button type="button" class="link-btn" data-slot="${t}" aria-label="Remove">✕</button></li>`).join("")}</ul>` : ""}
-    <div class="form-grid">
+    <div class="form-grid" id="bkDetails">
       <label for="bkName">Your name<input id="bkName" name="name" required autocomplete="name" value="${esc(booking.name || "")}"></label>
       <label for="bkEmail">Email<input id="bkEmail" name="email" type="email" required autocomplete="email" value="${esc(booking.email || "")}"></label>
     </div>
     <p class="form-error" id="bkError" hidden></p>
     <button class="btn btn-primary btn-block" ${ready ? "" : "disabled"}>Send my times to Olivier</button>
     <p class="note">${booking.credit ? "" : `Nothing to pay now: you pay ${price(p)} once Olivier has answered and you have chosen your time. `}${talk ? `Want to talk first? ${talk}` : ""}</p>`;
+  if (next === "times") bringIntoView($("#bkTimes"));
+  else if (next === "full") bringIntoView($(".day-full-msg"));
+  else if (next === "details") {
+    const empty = [$("#bkName"), $("#bkEmail")].find((x) => !x.value);
+    bringIntoView($("#bkDetails"), empty || null);
+  }
 }
 
 function talkFirstLinks() {
@@ -464,13 +473,14 @@ document.addEventListener("click", (e) => {
   if (!el) return;
   const d = el.dataset;
   if ("book" in d) openBooking(d.book || null);
-  else if (d.day) { booking.day = d.day; renderBooking(); }
-  else if ("dismissFull" in d) { booking.dismissFull = booking.day; renderBooking(); }
+  else if (d.day) { booking.day = d.day; renderBooking("times"); }
+  else if ("dismissFull" in d) { booking.dismissFull = booking.day; renderBooking("details"); }
   else if (d.slot) {
     const t = Number(d.slot);
     if (booking.times.includes(t)) booking.times = booking.times.filter((x) => x !== t);
     else if (!blockedReason(t, LIVE_MINUTES[booking.product])) booking.times = [...booking.times, t];
-    renderBooking();
+    const full = perDay(booking.times, booking.day) >= LIVE_CONFIG.maxPerDay && booking.dismissFull !== booking.day;
+    renderBooking(full ? "full" : null);
   }
   else if (d.join) openRoom(d.join);
   else if ("leave" in d) leaveRoom();
