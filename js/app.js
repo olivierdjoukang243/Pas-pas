@@ -159,7 +159,7 @@ function announce(text) {
   announce.timer = setTimeout(() => t.classList.remove("show"), 4500);
 }
 function flashUpdated() {
-  document.querySelectorAll("#levelPanel, #methodBand, #compareTable, #examSoon, #liveGrid, #residenceLine, #payLocal, #currencyPicker, .checkout .totals, #payMethods")
+  document.querySelectorAll("#levelPanel, #methodBand, #compareTable, #examSoon, #liveGrid, #residenceLine, #payLocal, #payCurrency, #currencyPicker, .checkout .totals, #payMethods")
     .forEach((el) => { el.classList.remove("just-updated"); void el.offsetWidth; el.classList.add("just-updated"); });
 }
 
@@ -255,6 +255,21 @@ function renderResidence() {
   renderPayLocal();
 }
 
+const localFCFA = () => methodsFor(state.country).some(([, m]) => m.phone);
+
+// What the visitor's currency means for them: exact price, or an estimate of a US dollar charge.
+function renderPayCurrency() {
+  const box = $("#payCurrency");
+  if (!box) return;
+  const c = state.currency, label = CURRENCIES[c].label;
+  const exact = c === "USD" || ((c === "XAF" || c === "XOF") && localFCFA());
+  box.innerHTML = `<h3>Your currency: ${esc(label)}</h3><p>${c === "USD"
+    ? "Prices are shown in US dollars, the currency card and PayPal payments are charged in."
+    : exact ? `Prices are shown in ${esc(label)}: the exact price paid with your local payment methods. Card and PayPal are charged in US dollars.`
+    : `Prices in ${esc(label)} are estimates${CURRENCIES[c].perUSD ? ", updated daily" : ""}. Card and PayPal are charged in US dollars; your bank converts the amount.`}
+    You can change the currency at the top of the page.</p>`;
+}
+
 // The local methods of the visitor's country of residence, and only that country.
 function renderPayLocal() {
   const box = $("#payLocal");
@@ -288,7 +303,8 @@ const fmtMoney = (value, code) => { const d = CURRENCIES[code]?.whole ? 0 : 2;
 // Price shown in the selected currency. "≈" marks a conversion; USD and FCFA are exact.
 function amount(usd, xaf, currency = state.currency) {
   if (currency === "USD") return fmtUSD(usd);
-  if (currency === "XAF" || currency === "XOF") return fmtXAF(xaf);
+  // FCFA is an exact price only where a local method charges it; elsewhere the card pays in US dollars
+  if (currency === "XAF" || currency === "XOF") return (localFCFA() ? "" : "≈ ") + fmtXAF(xaf);
   if (currency === "EUR") return "≈ " + fmtMoney(xaf / XAF_PER_EUR, "EUR");
   return "≈ " + fmtMoney(usd * CURRENCIES[currency].perUSD, currency);
 }
@@ -430,7 +446,7 @@ function renderSavings() {
     if (s) el.textContent = amount(s.usd, s.xaf);
   });
 }
-function renderPrices() { renderLevelPanel(); renderMethod(); renderCompare(); renderExams(); renderLive(); renderSavings(); }
+function renderPrices() { renderLevelPanel(); renderMethod(); renderCompare(); renderExams(); renderLive(); renderSavings(); renderPayCurrency(); }
 
 // ====== Dialogs ======
 const modal = $("#modal");
