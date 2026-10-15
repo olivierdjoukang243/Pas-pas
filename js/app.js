@@ -147,6 +147,18 @@ function setCountry(name, manual) {
 }
 
 // ====== Feedback: every choice shows on the whole page ======
+// What needs the visitor's action next comes into view by itself (smoothly, unless reduced motion is asked).
+function bringIntoView(el, focusEl) {
+  if (!el) return;
+  const smooth = !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  el.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
+  if (focusEl) focusEl.focus({ preventScroll: true });
+}
+// Any error message that appears in a form is brought into view.
+new MutationObserver((changes) => {
+  for (const c of changes) if (c.target.classList?.contains("form-error") && !c.target.hidden) bringIntoView(c.target);
+}).observe(document.documentElement, { subtree: true, attributes: true, attributeFilter: ["hidden"] });
+
 function announce(text) {
   let t = $("#toast");
   if (!t) { t = document.createElement("div"); t.id = "toast"; t.className = "toast"; t.setAttribute("role", "status"); t.setAttribute("aria-live", "polite"); }
@@ -814,7 +826,10 @@ document.addEventListener("click", (e) => {
 });
 modal.addEventListener("click", (e) => { if (e.target === modal) modal.close(); });
 modal.addEventListener("change", (e) => {
-  if (e.target.name === "pay") renderPayDetails();
+  if (e.target.name === "pay") {
+    renderPayDetails();
+    if ($("#coMomo")) bringIntoView($("#coMomo"), $("#coMomo"));   // the number to type comes into view
+  }
 });
 modal.addEventListener("submit", (e) => {
   if (e.target.id === "checkoutForm") { e.preventDefault(); submitCheckout(e.target); }
