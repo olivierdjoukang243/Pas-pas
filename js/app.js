@@ -331,7 +331,7 @@ function modulesHTML(p) {
   const count = groups.reduce((s, g) => s + g.data.modules.length, 0);
   const lists = groups.map((g) => `<ol class="mod-list" start="${g.offset + 1}">
       ${g.data.modules.map((m) => `<li>${m.titre}</li>`).join("")}
-    </ol>${g.data.bilan ? `<p class="mod-bilan">Level check · ${g.data.bilan.titre}</p>` : ""}`).join("");
+    </ol>${g.data.bilan ? `<p class="mod-bilan">${/^level check/i.test(g.data.bilan.titre) ? g.data.bilan.titre : `Level check · ${g.data.bilan.titre}`}</p>` : ""}`).join("");
   return `<details class="mods"><summary>See the ${count} modules</summary>${lists}</details>`;
 }
 
@@ -423,7 +423,14 @@ function renderLive() {
   </div>`).join("");
 }
 
-function renderPrices() { renderLevelPanel(); renderMethod(); renderCompare(); renderExams(); renderLive(); }
+// Amounts written in the page text follow the chosen currency too, computed from the catalogue.
+function renderSavings() {
+  document.querySelectorAll("[data-saving]").forEach((el) => {
+    const s = el.dataset.saving === "method" ? methodSaving() : levelSaving("A1");
+    if (s) el.textContent = amount(s.usd, s.xaf);
+  });
+}
+function renderPrices() { renderLevelPanel(); renderMethod(); renderCompare(); renderExams(); renderLive(); renderSavings(); }
 
 // ====== Dialogs ======
 const modal = $("#modal");
