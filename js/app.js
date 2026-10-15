@@ -418,7 +418,7 @@ function renderCompare() {
     ["Works offline", "PDF and MP3 on any device", "Partly, in the app", "No"],
     ["Answer keys you keep", "Every exercise", "Instant marking, nothing to keep", "Depends on the tutor"],
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
-    ["Exam practice papers", "DELF, DALF and TCF Canada, in preparation", "Rarely", "Depends on the tutor"],
+    ["Exam practice papers", "DELF, DALF and TCF, in preparation", "Rarely", "Depends on the tutor"],
     ["Try before you buy", "Module 1 free, in full", "Free version or trial, then subscription", "Sometimes a trial lesson"],
     ["Pay the way your country pays", "Card and PayPal everywhere, plus the local methods of your country", "Card or app store", "Varies"],
   ];
