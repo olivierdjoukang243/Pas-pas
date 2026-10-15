@@ -438,7 +438,11 @@ function formatHTML(x) {
   if (!x) return "";
   return `<details class="exam-format"><summary>Paper format</summary>
     <table>${x.papers.map((p) => `<tr><th>${p.name}<span>${p.time}${p.prep ? ` · ${p.prep} preparation` : ""}${p.marks ? ` · /${p.marks}` : ""}</span></th><td>${p.detail}</td></tr>`).join("")}</table>
-    <p>${x.written ? `Written papers: ${x.written} in one sitting. ` : ""}${x.pass}.</p></details>`;
+    <p>${x.written ? `Written papers: ${x.written} in one sitting. ` : ""}${x.pass}.</p>
+    ${x.nclc ? `<p class="nclc-target"><strong>${x.nclc.target}</strong></p>
+    <div class="nclc-wrap"><table class="nclc"><tr><th>NCLC</th>${x.nclc.rows.map((r) => `<th>${r.name}</th>`).join("")}</tr>
+    ${x.nclc.levels.map((l, i) => `<tr${l === "7" ? ' class="t7"' : ""}><th>${l}</th>${x.nclc.rows.map((r) => `<td>${r.scores[i]}</td>`).join("")}</tr>`).slice().reverse().join("")}</table></div>
+    <p>${x.nclc.note} Source: ${x.nclc.source}.</p>` : ""}</details>`;
 }
 
 function renderExams() {

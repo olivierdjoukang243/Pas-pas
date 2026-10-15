@@ -217,6 +217,70 @@ const EXAM_FORMATS = {
     "detail": "3 tasks: guided interview; interaction after 2 minutes of preparation; expressing a point of view"
    }
   ],
-  "pass": "No pass mark: Listening and Reading are scored from 100 to 699, Writing and Speaking out of 20, and each score is converted into a CEFR level and an NCLC level"
+  "pass": "No pass mark: Listening and Reading are scored from 100 to 699, Writing and Speaking out of 20, and each score is converted into a CEFR level and an NCLC level",
+  "nclc": {
+   "source": "France Éducation international, correspondence between TCF Canada results and Canadian Language Benchmarks (NCLC)",
+   "levels": [
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10+"
+   ],
+   "rows": [
+    {
+     "name": "Listening",
+     "scores": [
+      "331–368",
+      "369–397",
+      "398–457",
+      "458–502",
+      "503–522",
+      "523–548",
+      "549–699"
+     ]
+    },
+    {
+     "name": "Reading",
+     "scores": [
+      "342–374",
+      "375–405",
+      "406–452",
+      "453–498",
+      "499–523",
+      "524–548",
+      "549–699"
+     ]
+    },
+    {
+     "name": "Writing",
+     "scores": [
+      "4–5",
+      "6",
+      "7–9",
+      "10–11",
+      "12–13",
+      "14–15",
+      "16–20"
+     ]
+    },
+    {
+     "name": "Speaking",
+     "scores": [
+      "4–5",
+      "6",
+      "7–9",
+      "10–11",
+      "12–13",
+      "14–15",
+      "16–20"
+     ]
+    }
+   ],
+   "note": "Listening and Reading out of 699, Writing and Speaking out of 20.",
+   "target": "For the extra Express Entry points for French, Canada asks for NCLC 7 in all four skills: a solid B2, not a low one. Check the current rules with IRCC."
+  }
  }
 };

@@ -391,6 +391,12 @@ textarea { font: inherit; padding: .7em .8em; border: 2px solid var(--ligne); bo
 .exam-format th span { display: block; font-weight: 400; font-size: .82rem; color: #5f6b80; }
 .exam-format p { margin: 0; font-size: .85rem; color: #5f6b80; }
 .exam-wait { font-size: .85rem; color: #8a5a00; font-weight: 600; }
+.nclc-target { margin: .8em 0 .4em !important; color: var(--bleu) !important; }
+.nclc-wrap { overflow-x: auto; margin: .3em 0 .5em; }
+.exam-format table.nclc { width: 100%; font-size: .74rem; }
+.exam-format .nclc th, .exam-format .nclc td { width: auto; padding: .35em .25em; text-align: center; font-size: .74rem; }
+.exam-format .nclc td { white-space: nowrap; }
+.exam-format .nclc .t7 { background: #eef1fb; font-weight: 700; color: var(--bleu); }
 .author { display: grid; grid-template-columns: auto 1fr; gap: 1.6em; align-items: start; background: #fff; border-radius: 20px; padding: 2em; box-shadow: var(--shadow); }
 .author p { max-width: 68ch; color: #3b3f4a; }
 .author-mark { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; background: var(--bleu); color: #fff; font-family: var(--serif); font-size: 1.8rem; font-weight: 700; }
