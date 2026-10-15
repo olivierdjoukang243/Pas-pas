@@ -59,11 +59,12 @@ const EXAM_PACKS = [
   { id: "delf-a2", kind: "exam", level: "DELF", exam: "DELF A2", format: ["delf", "A2"], ready: false, name: "DELF A2 — 3 practice papers", contents: "3 complete papers · four skills · audio included", usd: 19, xaf: 10400, desc: DELF_DESC("DELF A2") },
   { id: "delf-b1", kind: "exam", level: "DELF", exam: "DELF B1", format: ["delf", "B1"], ready: false, name: "DELF B1 — 3 practice papers", contents: "3 complete papers · four skills · audio included", usd: 25, xaf: 13700, desc: DELF_DESC("DELF B1") },
   { id: "delf-b2", kind: "exam", level: "DELF", exam: "DELF B2", format: ["delf", "B2"], ready: false, name: "DELF B2 — 3 practice papers", contents: "3 complete papers · four skills · audio included", usd: 25, xaf: 13700, desc: DELF_DESC("DELF B2") },
-  { id: "tcf-canada", kind: "exam", level: "TCF", exam: "TCF Canada", format: ["tcf"], ready: false, name: "TCF Canada — practice papers", contents: "complete papers · four skills · audio included", usd: 29, xaf: 15900,
-    desc: "Complete TCF Canada papers in the official format: listening and reading questions that rise in difficulty through the paper, the three writing tasks and the three speaking tasks, with marking guide and a self-marking web edition." },
+  { id: "tcf-canada", kind: "exam", level: "TCF", exam: "TCF Canada", format: ["tcf"], ready: false, name: "TCF Canada — 3 practice papers", contents: "3 complete papers, A1 to C2 · four skills · audio included", usd: 29, xaf: 15900,
+    desc: "Three complete TCF Canada papers in the official format, sharing no question: 39 listening and 39 reading questions rising from A1 to C2, the three writing tasks and the three speaking tasks. Marking guide with the level of every question, and a web edition that counts your right answers level by level." },
 ];
 const EXAMS_SOON = [
-  { name: "DALF C1", format: ["dalf", "C1"], levels: "C1 · C2", note: "The advanced diploma, for university and professional use. In preparation with the C1 and C2 levels." },
+  { name: "DALF C1", format: ["dalf", "C1"], levels: "Advanced diploma · C1", note: "For university and professional use. Practice papers in preparation, in the current official format." },
+  { name: "DALF C2", format: ["dalf", "C2"], levels: "Advanced diploma · C2", note: "The highest French diploma. Practice papers in preparation, in the current official format." },
 ];
 PRODUCTS.push(...EXAM_PACKS);
 

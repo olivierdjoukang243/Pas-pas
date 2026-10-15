@@ -26,7 +26,8 @@ l'information, je fais le reste.
 | 1.6 | Audio des sujets d'examen : 50 pistes (plan et coût, puis génération) si elles ne sont pas déjà faites | Olivier | Les 50 MP3 sont dans `audio/` |
 | 1.7 | Réserves DELF au format officiel actuel : carte « Cahiers des charges DELF », puis Claude chat écrit chaque réserve (6 tâches par exercice) ; carte « Contrôle DELF » jusqu'à « 3 sujet(s) possible(s) » | Olivier, avec Claude chat | Les 4 réserves passent le contrôle |
 | 1.7 b | Produire les packs DELF A1 à B2 (`--combien 3`), puis passer `ready: true` sur le site | Olivier puis Claude | 4 dossiers dans `livraison/packs/`, les fiches passent en vente |
-| 1.7 c | TCF Canada : décider la structure (une épreuve de A1 à C2, difficulté croissante) ; l'atelier aura alors sa norme et son cahier, comme le DELF | Olivier, puis Claude | Le pack TCF passe en vente |
+| 1.7 c | TCF Canada complet (fait le 15/10 : `tcf.py`) : carte « Cahier des charges TCF », Claude chat écrit les tâches de A1 à C2, carte « Contrôle TCF » jusqu'à « 3 sujet(s) » | Olivier, avec Claude chat | Le pack TCF passe en vente |
+| 1.7 d | DALF C1 et C2 (norme faite le 15/10) : réserves C1 et C2 selon leurs cahiers ; confirmer sur un sujet officiel récent la répartition 18/7 de l'oral C1 et le format du C2 ; fixer les prix | Olivier | Les fiches DALF passent en vente |
 | 1.8 | Panneau → **« Exporter pour le site »**, puis **« Test de positionnement »** | Olivier | `livraison/site/` et `Pas-a-Pas-Level-Check.json` existent |
 | 1.9 | Importer dans le site les titres et le test, et afficher « Coming soon » sur les produits qui ne sont pas encore prêts (fait pour les examens le 15/10 : « In preparation ») | Claude | Le site ne vend que ce qui peut être livré |
 | 1.10 | Donner au projet Claude chat la présentation exacte : « Qualified teacher · in person since 2011 · 7,800+ lessons online since 2023 » | Olivier | Les nouvelles sources arrivent justes |

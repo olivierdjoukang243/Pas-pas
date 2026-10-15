@@ -136,35 +136,56 @@ const EXAM_FORMATS = {
   "C1": {
    "name": "DALF C1",
    "written": "4 h",
-   "source": "France Éducation international, DALF C1 candidate handbook, July 2022",
    "papers": [
     {
      "name": "Listening",
      "time": "about 40 min",
      "marks": 25,
-     "detail": "2 exercises: one long document (interview, lecture, talk) heard twice; two short documents (news flashes, surveys) heard once"
+     "detail": "2 exercises: one long document (interview, lecture, talk) heard twice; two short documents (news flashes, surveys) heard once; multiple choice, short answers and true/false with justification"
     },
     {
      "name": "Reading",
      "time": "50 min",
      "marks": 25,
-     "detail": "1 exercise on a text of ideas, literary or journalistic"
+     "detail": "1 exercise: one text of ideas, literary or journalistic; multiple choice, short answers and true/false with justification"
     },
     {
      "name": "Writing",
      "time": "2 h 30",
      "marks": 25,
-     "detail": "a synthesis of a set of documents (200 to 240 words), then an argued essay on the same theme (at least 250 words)"
+     "detail": "a synthesis of a set of documents (200 to 240 words), without giving your opinion; an argued essay on the same theme (contribution to a debate, formal letter, critical article…), at least 250 words"
     },
     {
      "name": "Speaking",
      "time": "30 min",
      "marks": 25,
      "prep": "1 h",
-     "detail": "a presentation defending a point of view from a short trigger document, then a debate with the jury"
+     "detail": "a presentation defending a point of view from a short trigger document (two topics drawn, one chosen), then a debate with the jury"
     }
    ],
-   "pass": "Pass mark 50/100, with at least 5/25 in each paper"
+   "pass": "Pass mark 50/100, with at least 5/25 in each paper",
+   "source": "France Éducation international, Manuel du candidat DALF C1, juillet 2022"
+  },
+  "C2": {
+   "name": "DALF C2",
+   "written": "3 h 30 min",
+   "papers": [
+    {
+     "name": "Reading and writing",
+     "time": "3 h 30",
+     "marks": 50,
+     "detail": "one structured text (article, editorial, report, speech) of at least 700 words, from a file of documents of about 2,000 words"
+    },
+    {
+     "name": "Listening and speaking",
+     "time": "30 min",
+     "marks": 50,
+     "prep": "1 h",
+     "detail": "reporting on recorded documents (heard twice), then an argued presentation and a debate with the jury"
+    }
+   ],
+   "pass": "Pass mark 50/100, with at least 10/50 in each paper",
+   "source": "France Éducation international, format relevé le 27/09/2026"
   }
  },
  "tcf": {
