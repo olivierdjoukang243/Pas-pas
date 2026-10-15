@@ -161,7 +161,7 @@ const EXAM_FORMATS = {
      "time": "30 min",
      "marks": 25,
      "prep": "1 h",
-     "detail": "a presentation defending a point of view from a set of documents, then a debate with the jury"
+     "detail": "a presentation defending a point of view from a short trigger document, then a debate with the jury"
     }
    ],
    "pass": "Pass mark 50/100, with at least 5/25 in each paper"
