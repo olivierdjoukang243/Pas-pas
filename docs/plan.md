@@ -10,16 +10,24 @@ l'information, je fais le reste.
 
 ## Phase 1 — Le contenu prêt à vendre
 
+État des ressources (15/10/2026) :
+- **Audio des modules :** prêt de A0 à B1.
+- **Illustrations :** prêtes pour A0 et A1 Partie 1 (66 images), mais pas encore intégrées dans les sources. Il en manque pour A1 Partie 2, A2 et B1.
+- **Sujets d'examen :** ils n'ont pas d'illustrations.
+
 | # | Étape | Qui | Résultat attendu |
 |---|---|---|---|
-| 1.1 | Dans `C:\projets\PasAPas` : `git pull`, puis `pip install pypdf reportlab cryptography` | Olivier | `git log --oneline -1` affiche `9c6f3ea` ; aucune erreur à l'installation |
-| 1.2 | Panneau → **« Tout le catalogue (A0 à B1) »**, sur un PC qu'on peut laisser tourner environ une heure | Olivier | « TERMINÉ » ; la liste des « à revoir » m'est envoyée |
-| 1.3 | Traiter les « à revoir » de l'étape 1.2 | Ensemble | Plus aucun « à revoir » |
-| 1.4 | Panneau → **« Voix de synthèse »** pour les 50 pistes des sujets d'examen (plan et coût d'abord, puis génération) | Olivier | Les 50 MP3 sont dans `audio/` |
-| 1.5 | Produire les packs DELF A1 à B2 et TCF Canada (commandes du LISEZ-MOI de l'atelier) | Olivier | 5 dossiers dans `livraison/packs/` |
-| 1.6 | Panneau → **« Exporter pour le site »**, puis **« Test de positionnement »** | Olivier | `livraison/site/` et `Pas-a-Pas-Level-Check.json` existent |
-| 1.7 | Importer dans le site les titres et le test à partir de ces exports | Claude | Le site affiche les titres et les questions à jour |
-| 1.8 | Donner au projet Claude chat la présentation exacte : « Qualified teacher · in person since 2011 · 7,800+ lessons online since 2023 » | Olivier | Les nouvelles sources arrivent justes |
+| 1.1 | Dans `C:\projets\PasAPas` : `git pull` et `pip install pypdf reportlab cryptography` | Olivier | ✅ Fait le 15/10 (`9c6f3ea`) |
+| 1.2 | Intégrer les illustrations dans les sources A0 et A1 : `python images.py --sources "Sources A0" --images ./illustrations --integrer --ecrire`, puis la même commande avec `"Sources A1"` | Olivier | A0 et A1 Partie 1 n'ont plus aucun « Illustration à fournir » |
+| 1.3 | Produire le catalogue : `python tout.py --catalogue --vers ./livraison > livraison\catalogue.log 2>&1` (environ une heure) | Olivier | « TERMINÉ » ; le rapport m'est envoyé |
+| 1.4 | Traiter les « à revoir » de A0 et A1 Partie 1 | Ensemble | Ces deux produits sont prêts à vendre |
+| 1.5 | Décider de ce qu'on vend au lancement : les produits sans illustrations (A1 Partie 2, A2, B1, niveaux complets, méthode complète) attendent leurs images, ou sortent sans | Olivier | Liste des produits du lancement |
+| 1.6 | Audio des sujets d'examen : 50 pistes (plan et coût, puis génération) si elles ne sont pas déjà faites | Olivier | Les 50 MP3 sont dans `audio/` |
+| 1.7 | Produire les packs DELF A1 à B2 et TCF Canada (commandes du LISEZ-MOI de l'atelier) | Olivier | 5 dossiers dans `livraison/packs/` |
+| 1.8 | Panneau → **« Exporter pour le site »**, puis **« Test de positionnement »** | Olivier | `livraison/site/` et `Pas-a-Pas-Level-Check.json` existent |
+| 1.9 | Importer dans le site les titres et le test, et afficher « Coming soon » sur les produits qui ne sont pas encore prêts | Claude | Le site ne vend que ce qui peut être livré |
+| 1.10 | Donner au projet Claude chat la présentation exacte : « Qualified teacher · in person since 2011 · 7,800+ lessons online since 2023 » | Olivier | Les nouvelles sources arrivent justes |
+| 1.11 | Au fil des illustrations A1 P2, A2 et B1 : les déposer dans `illustrations/`, intégrer, produire, puis ouvrir le produit à la vente | Ensemble | Chaque produit illustré passe en vente |
 
 ## Phase 2 — L'identité et les comptes
 
