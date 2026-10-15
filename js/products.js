@@ -56,14 +56,14 @@ const PRODUCTS = [
 // written by the workshop from its norm (delf.py --site), never typed here.
 // ready: false until the workshop can produce the papers; the card then says
 // "In preparation" and nothing can be bought.
-const DELF_DESC = (lvl) => `Three complete ${lvl} papers in the current official format, sharing no task: listening, reading, writing and speaking. Marking guide with the answers, transcripts and grids, and a web edition that marks listening and reading out of 25.`;
+const DELF_DESC = (lvl) => `Four complete ${lvl} papers in the current official format, sharing no task: listening, reading, writing and speaking. Marking guide with the answers, transcripts and grids, and a web edition that marks listening and reading out of 25.`;
 const EXAM_PACKS = [
-  { id: "delf-a1", kind: "exam", level: "DELF", exam: "DELF A1", format: ["delf", "A1"], ready: false, name: "DELF A1 — 3 practice papers", contents: "3 complete papers · four skills · audio included", usd: 19, xaf: 10400, desc: DELF_DESC("DELF A1") },
-  { id: "delf-a2", kind: "exam", level: "DELF", exam: "DELF A2", format: ["delf", "A2"], ready: false, name: "DELF A2 — 3 practice papers", contents: "3 complete papers · four skills · audio included", usd: 19, xaf: 10400, desc: DELF_DESC("DELF A2") },
-  { id: "delf-b1", kind: "exam", level: "DELF", exam: "DELF B1", format: ["delf", "B1"], ready: false, name: "DELF B1 — 3 practice papers", contents: "3 complete papers · four skills · audio included", usd: 25, xaf: 13700, desc: DELF_DESC("DELF B1") },
-  { id: "delf-b2", kind: "exam", level: "DELF", exam: "DELF B2", format: ["delf", "B2"], ready: false, name: "DELF B2 — 3 practice papers", contents: "3 complete papers · four skills · audio included", usd: 25, xaf: 13700, desc: DELF_DESC("DELF B2") },
-  { id: "tcf-canada", kind: "exam", level: "TCF", exam: "TCF Canada", format: ["tcf"], ready: false, name: "TCF Canada — 3 practice papers", contents: "3 complete papers, A1 to C2 · four skills · audio included", usd: 29, xaf: 15900,
-    desc: "Three complete TCF Canada papers in the official format, sharing no question: 39 listening and 39 reading questions rising from A1 to C2, the three writing tasks and the three speaking tasks. Marking guide with the level of every question, and a web edition that counts your right answers level by level." },
+  { id: "delf-a1", kind: "exam", level: "DELF", exam: "DELF A1", format: ["delf", "A1"], ready: false, name: "DELF A1 — 4 practice papers", contents: "4 complete papers · four skills · audio included", usd: 19, xaf: 10400, desc: DELF_DESC("DELF A1") },
+  { id: "delf-a2", kind: "exam", level: "DELF", exam: "DELF A2", format: ["delf", "A2"], ready: false, name: "DELF A2 — 4 practice papers", contents: "4 complete papers · four skills · audio included", usd: 19, xaf: 10400, desc: DELF_DESC("DELF A2") },
+  { id: "delf-b1", kind: "exam", level: "DELF", exam: "DELF B1", format: ["delf", "B1"], ready: false, name: "DELF B1 — 4 practice papers", contents: "4 complete papers · four skills · audio included", usd: 25, xaf: 13700, desc: DELF_DESC("DELF B1") },
+  { id: "delf-b2", kind: "exam", level: "DELF", exam: "DELF B2", format: ["delf", "B2"], ready: false, name: "DELF B2 — 4 practice papers", contents: "4 complete papers · four skills · audio included", usd: 25, xaf: 13700, desc: DELF_DESC("DELF B2") },
+  { id: "tcf-canada", kind: "exam", level: "TCF", exam: "TCF Canada", format: ["tcf"], ready: false, name: "TCF Canada — 4 practice papers", contents: "4 complete papers, A1 to C2 · four skills · audio included", usd: 29, xaf: 15900,
+    desc: "Four complete TCF Canada papers in the official format, sharing no question: 39 listening and 39 reading questions rising from A1 to C2, the three writing tasks and the three speaking tasks. Marking guide with the level of every question, and a web edition that counts your right answers level by level." },
 ];
 const EXAMS_SOON = [
   { name: "DALF C1", format: ["dalf", "C1"], levels: "Advanced diploma · C1", note: "For university and professional use. Practice papers in preparation, in the current official format." },
