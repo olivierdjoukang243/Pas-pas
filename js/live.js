@@ -10,7 +10,7 @@
 
 const LIVE_CONFIG = {
   utcOffset: 1,                 // Douala: UTC+1, no daylight saving
-  hours: ["06:00", "22:00"],    // the times a lesson can take place, Douala time
+  hours: ["06:00", "22:00"],    // Douala time: no lesson starts before 06:00 or ends after 22:00 (Olivier sleeps 22:00–06:00)
   step: 30,                     // minutes between two possible start times
   noticeHours: 24,              // earliest start: 24 h ahead
   horizonDays: 21,              // latest start: 3 weeks ahead
