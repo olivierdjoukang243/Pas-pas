@@ -20,28 +20,31 @@ const LEVEL_INTRO = {
 };
 
 // kind: "part" (8 modules + level check), "level" (both parts), "method" (everything).
+// ready: false = shown as "In preparation", cannot be bought. Olivier, 15/10/2026: the
+// products without their illustrations wait for them (A1 Part 2, A2, B1, and the packs
+// that contain them). Set ready back to true (or remove it) as each one is illustrated.
 const PRODUCTS = [
   { id: "a0-complete", level: "A0", kind: "level", name: "French A0 — Complete Beginner Course", contents: "8 modules + level check", usd: 19, xaf: 10400,
     desc: "Start French from zero. Eight modules that take you from the alphabet to holding a first conversation: introducing yourself, numbers, describing people and places, asking questions, present tense, telling the time, ordering in a café, and talking about your day. Every trap that catches English speakers is handled where it appears: tu and vous, silent endings, je suis Paul instead of je m'appelle Paul. Ends with a level check that tells you whether to move on to A1 or revise." },
   { id: "a1-part1", level: "A1", kind: "part", part: 1, name: "French A1 Part 1 — Modules 1 to 8", contents: "Modules 1–8 + level check", usd: 29, xaf: 15900,
     desc: "The first half of A1. You move from single sentences to real exchanges: past events with the passé composé, future plans, expressing opinions and preferences, shopping and quantities, giving directions, and describing your home and daily routine. Ends with a level check before Part 2." },
-  { id: "a1-part2", level: "A1", kind: "part", part: 2, name: "French A1 Part 2 — Modules 9 to 16", contents: "Modules 9–16 + level check", usd: 29, xaf: 15900,
+  { id: "a1-part2", ready: false, level: "A1", kind: "part", part: 2, name: "French A1 Part 2 — Modules 9 to 16", contents: "Modules 9–16 + level check", usd: 29, xaf: 15900,
     desc: "The second half of A1, where French starts to sound natural. Reflexive verbs, the imperative, comparisons, weather and seasons, health and the body, travel and transport, plus the pronouns that let you stop repeating nouns. Ends with the A1 level check: you will know whether you are ready for A2." },
-  { id: "a1-complete", level: "A1", kind: "level", name: "French A1 Complete — All 16 Modules", contents: "Parts 1 and 2 · 16 modules + 2 level checks", usd: 49, xaf: 26900,
+  { id: "a1-complete", ready: false, level: "A1", kind: "level", name: "French A1 Complete — All 16 Modules", contents: "Parts 1 and 2 · 16 modules + 2 level checks", usd: 49, xaf: 26900,
     desc: "Both halves of A1 in one purchase, and cheaper than buying them separately. Sixteen modules and two level checks, from your first past tense to the pronouns that make you sound less like a textbook." },
-  { id: "a2-part1", level: "A2", kind: "part", part: 1, name: "French A2 Part 1 — Modules 1 to 8", contents: "Modules 1–8 + level check", usd: 29, xaf: 15900,
+  { id: "a2-part1", ready: false, level: "A2", kind: "part", part: 1, name: "French A2 Part 1 — Modules 1 to 8", contents: "Modules 1–8 + level check", usd: 29, xaf: 15900,
     desc: "Past participle agreement, double pronouns, the plus-que-parfait, qui and que, où and dont, si + imparfait, and the subjunctive: how it is formed and what triggers it. Ends with a level check before Part 2." },
-  { id: "a2-part2", level: "A2", kind: "part", part: 2, name: "French A2 Part 2 — Modules 9 to 16", contents: "Modules 9–16 + level check", usd: 29, xaf: 15900,
+  { id: "a2-part2", ready: false, level: "A2", kind: "part", part: 2, name: "French A2 Part 2 — Modules 9 to 16", contents: "Modules 9–16 + level check", usd: 29, xaf: 15900,
     desc: "The gérondif, demonstratives and possessives, cause and consequence, purpose and opposition, reported speech in the present and the past, the passive voice and the futur antérieur. Ends with the A2 level check." },
-  { id: "a2-complete", level: "A2", kind: "level", name: "French A2 Complete — All 16 Modules", contents: "Parts 1 and 2 · 16 modules + 2 level checks", usd: 49, xaf: 26900,
+  { id: "a2-complete", ready: false, level: "A2", kind: "level", name: "French A2 Complete — All 16 Modules", contents: "Parts 1 and 2 · 16 modules + 2 level checks", usd: 49, xaf: 26900,
     desc: "The whole A2 level in one purchase: sixteen modules and two level checks. Cheaper than buying the two parts separately." },
-  { id: "b1-part1", level: "B1", kind: "part", part: 1, name: "French B1 Part 1 — Modules 1 to 8", contents: "Modules 1–8 + level check", usd: 29, xaf: 15900,
+  { id: "b1-part1", ready: false, level: "B1", kind: "part", part: 1, name: "French B1 Part 1 — Modules 1 to 8", contents: "Modules 1–8 + level check", usd: 29, xaf: 15900,
     desc: "Compound relative pronouns, past conditional, past subjunctive, present participle, se faire + infinitive, emphasis, indefinites, and the passé simple for reading. From B1 the objectives and section openers are in French too; the page \"Ce qui change au B1\" explains the shift." },
-  { id: "b1-part2", level: "B1", kind: "part", part: 2, name: "French B1 Part 2 — Modules 9 to 16", contents: "Modules 9–16 + level check", usd: 29, xaf: 15900,
+  { id: "b1-part2", ready: false, level: "B1", kind: "part", part: 2, name: "French B1 Part 2 — Modules 9 to 16", contents: "Modules 9–16 + level check", usd: 29, xaf: 15900,
     desc: "The second half of B1: argument and nuance. Concession and opposition, hypothesis, formal and informal registers, professional writing, debating an idea, and the connectors that hold a long answer together. Ends with the B1 level check, the level most exams and employers ask for." },
-  { id: "b1-complete", level: "B1", kind: "level", name: "French B1 Complete — All 16 Modules", contents: "Parts 1 and 2 · 16 modules + 2 level checks", usd: 49, xaf: 26900,
+  { id: "b1-complete", ready: false, level: "B1", kind: "level", name: "French B1 Complete — All 16 Modules", contents: "Parts 1 and 2 · 16 modules + 2 level checks", usd: 49, xaf: 26900,
     desc: "The complete B1 level, both parts, sixteen modules and two level checks. The level that lets you work, study and argue in French. Cheaper than buying the parts separately." },
-  { id: "complete-method", level: "A0–B1", kind: "method", name: "Pas à Pas — The Complete Method (A0 to B1)", contents: "56 modules + 7 level checks", usd: 129, xaf: 70800,
+  { id: "complete-method", ready: false, level: "A0–B1", kind: "method", name: "Pas à Pas — The Complete Method (A0 to B1)", contents: "56 modules + 7 level checks", usd: 129, xaf: 70800,
     desc: "Everything: 56 modules and 7 level checks, from the alphabet to arguing a point in French. Four levels that share one method, one set of characters and one way of explaining, so nothing is ever re-taught differently halfway through. You keep the files for good, including the updates." },
 ];
 

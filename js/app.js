@@ -374,7 +374,7 @@ function productRow(p) {
     </div>
     <div class="prod-buy">
       <span class="price">${price(p)}</span>
-      <button class="btn ${p.kind === "level" ? "btn-primary" : "btn-ghost"} mini" data-buy="${p.id}">Buy</button>
+      ${p.ready === false ? `<span class="tag soon">In preparation</span>` : `<button class="btn ${p.kind === "level" ? "btn-primary" : "btn-ghost"} mini" data-buy="${p.id}">Buy</button>`}
     </div>
   </li>`;
 }
@@ -405,7 +405,7 @@ function renderMethod() {
     </div>
     <div class="method-buy">
       <span class="price">${price(m)}</span>
-      <button class="btn btn-light" data-buy="${m.id}">Buy the Complete Method</button>
+      ${m.ready === false ? `<span class="tag soon">In preparation: on sale once every level is illustrated</span>` : `<button class="btn btn-light" data-buy="${m.id}">Buy the Complete Method</button>`}
     </div>`;
 }
 
@@ -680,7 +680,8 @@ function testResult(finishedAll) {
     <h2>${finishedAll ? "You have reached the end of <em>B1</em>" : `Start with <em>${last.step.name}</em>`}</h2>
     <p>${passedSteps.length ? `You passed ${passedSteps.join(", ")}. ` : ""}${finishedAll ? "B2, C1 and C2 are in preparation. Meanwhile, a live lesson with Olivier is the best next step." : `At this step you had ${last.right} of ${last.total} right.`}</p>
     ${!finishedAll && last.wrong.length ? `<p class="quiz-note">This pack teaches, among others:</p><ul class="quiz-skills">${last.wrong.map((w) => `<li>${esc(w.skill)}</li>`).join("")}</ul>` : ""}
-    <ul class="pick-list">${(p ? [p] : [live]).map((x) => `<li><span>${x.name}</span><span><strong>${price(x)}</strong> <button class="btn btn-primary mini" ${x.kind === "live" ? `data-book="${x.id}"` : `data-buy="${x.id}"`}>${x.kind === "live" ? "Book" : "Buy"}</button></span></li>`).join("")}</ul>
+    <ul class="pick-list">${(p ? (p.ready === false ? [p, live] : [p]) : [live]).map((x) => `<li><span>${x.name}</span><span><strong>${price(x)}</strong> ${x.ready === false ? `<span class="tag soon">In preparation</span>` : `<button class="btn btn-primary mini" ${x.kind === "live" ? `data-book="${x.id}"` : `data-buy="${x.id}"`}>${x.kind === "live" ? "Book" : "Buy"}</button>`}</span></li>`).join("")}</ul>
+    ${p && p.ready === false ? `<p class="quiz-note">This pack is being illustrated and is not on sale yet. Meanwhile, a live lesson with Olivier can work on exactly these points.</p>` : ""}
     <div class="hero-cta tight">
       ${p ? `<button class="btn btn-ghost" data-goto-level="${p.level}">See all ${p.level} packs</button>` : ""}
       <button class="link-btn" data-test>Retake the test</button>
