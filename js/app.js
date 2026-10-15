@@ -144,6 +144,19 @@ function renderResidence() {
   box.innerHTML = `<label for="resCountry">Your country of residence <small>(${residenceNote()})</small>
     <select id="resCountry">${countryOptions(state.country)}</select></label>
     <span>Payment methods shown: ${methodsFor(state.country).map(([, m]) => m.label).join(", ")}.</span>`;
+  renderPayLocal();
+}
+
+// The local methods of the visitor's country of residence, and only that country.
+function renderPayLocal() {
+  const box = $("#payLocal");
+  if (!box) return;
+  const local = methodsFor(state.country).filter(([, m]) => m.countries);
+  box.hidden = !local.length;
+  if (!local.length) return;
+  box.innerHTML = `<h3>${esc(state.country)}</h3>
+    <p>${local.map(([, m]) => m.label).join(" or ")}, charged in ${local.some(([, m]) => m.phone) ? "FCFA" : "local currency"}. You confirm the payment on your phone.</p>
+    <div class="chips">${local.map(([k, m]) => `<span class="chip chip-${k}">${m.label}</span>`).join("")}</div>`;
 }
 
 function renderResidenceCheckout() {
@@ -273,7 +286,7 @@ function renderCompare() {
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
     ["Exam practice papers", "DELF A1 to B2 and TCF Canada", "Rarely", "Depends on the tutor"],
     ["Try before you buy", "Module 1 free, in full", "Free version or trial, then subscription", "Sometimes a trial lesson"],
-    ["Pay the way your country pays", "Card and PayPal everywhere, MTN MoMo and Orange Money in Cameroon", "Card or app store", "Varies"],
+    ["Pay the way your country pays", "Card and PayPal everywhere, plus the local methods of your country", "Card or app store", "Varies"],
   ];
   $("#compareTable").innerHTML = `<table class="compare">
     <thead><tr><th scope="col"><span class="sr-only">Feature</span></th><th scope="col" class="us">Pas à Pas FRENCH</th><th scope="col">Language apps</th><th scope="col">Hourly tutors</th></tr></thead>
