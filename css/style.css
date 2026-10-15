@@ -344,10 +344,12 @@ details p { margin: .7em 0 0; color: #3b3f4a; }
 .method-meta span { color: #b9f0cd; font-weight: 600; }
 .method-buy { display: flex; flex-direction: column; align-items: flex-start; gap: .6em; }
 .method-buy .price { color: #fff; font-size: 2rem; white-space: nowrap; }
-.inside-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
-.inside-list { background: #fff; border-radius: var(--radius); padding: 1.4em 1.6em; box-shadow: var(--shadow); margin: 0; display: flex; flex-direction: column; gap: .55em; }
+.inside-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: stretch; }
+.inside-list { background: #fff; border-radius: var(--radius); padding: 1.4em 1.6em; box-shadow: var(--shadow); margin: 0; display: flex; flex-direction: column; justify-content: space-evenly; gap: .8em; font-size: 1.05rem; }
+.inside-list li { padding: .35em 0; border-bottom: 1px solid #eef0f5; }
+.inside-list li:last-child { border-bottom: 0; }
 .inside-side { display: flex; flex-direction: column; gap: 1rem; }
-.exam-soon { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.exam-soon { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
 .proposed { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4em; }
 .proposed li { background: #eef1fb; color: var(--bleu); border-radius: 999px; padding: .2em .4em .2em .8em; font-size: .88rem; display: flex; align-items: center; gap: .2em; }
 .proposed .link-btn { padding: 0 .3em; }
@@ -383,6 +385,20 @@ textarea { font: inherit; padding: .7em .8em; border: 2px solid var(--ligne); bo
 .exam-card h3 { font-family: var(--serif); font-size: 1.6rem; }
 .exam-levels { font-weight: 600; color: var(--bleu) !important; }
 .tag.soon { background: #fdf0d5; color: #8a5a00; }
+.exam-format { align-self: stretch; min-width: 0; margin: .2em 0 .8em; font-size: .9rem; }
+.exam-format summary { cursor: pointer; font-weight: 600; color: var(--bleu); }
+.exam-format table { width: 100%; min-width: 0; border-collapse: collapse; margin: .6em 0; background: transparent; }
+.exam-format th, .exam-format td { text-align: left; vertical-align: top; padding: .45em .4em; border-top: 1px solid #e3e7f0; border-bottom: 0; font-size: .86rem; }
+.exam-format th { width: 34%; font-weight: 700; background: none; color: var(--bleu); }
+.exam-format th span { display: block; font-weight: 400; font-size: .82rem; color: #5f6b80; }
+.exam-format p { margin: 0; font-size: .85rem; color: #5f6b80; }
+.exam-wait { font-size: .85rem; color: #8a5a00; font-weight: 600; }
+.nclc-target { margin: .8em 0 .4em !important; color: var(--bleu) !important; }
+.nclc-wrap { overflow-x: auto; margin: .3em 0 .5em; }
+.exam-format table.nclc { width: 100%; font-size: .74rem; }
+.exam-format .nclc th, .exam-format .nclc td { width: auto; padding: .35em .25em; text-align: center; font-size: .74rem; }
+.exam-format .nclc td { white-space: nowrap; }
+.exam-format .nclc .t7 { background: #eef1fb; font-weight: 700; color: var(--bleu); }
 .author { display: grid; grid-template-columns: auto 1fr; gap: 1.6em; align-items: start; background: #fff; border-radius: 20px; padding: 2em; box-shadow: var(--shadow); }
 .author p { max-width: 68ch; color: #3b3f4a; }
 .author-mark { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; background: var(--bleu); color: #fff; font-family: var(--serif); font-size: 1.8rem; font-weight: 700; }
@@ -477,7 +493,7 @@ details.mods { margin: .5em 0 0; padding: 0; background: none; box-shadow: none;
   .session .countdown { grid-column: 1 / -1; order: 3; }
   .prod { grid-template-columns: 1fr; }
   .prod-buy { flex-direction: row; align-items: center; justify-content: space-between; }
-  .exam-soon, .author { grid-template-columns: 1fr; }
+  .exam-soon, .author { grid-template-columns: minmax(0, 1fr); }
   .modules li { grid-template-columns: 32px 1fr auto; }
   .modules li .btn { grid-column: 2 / -1; justify-self: start; }
   .lp-code { font-size: 2.4rem; }

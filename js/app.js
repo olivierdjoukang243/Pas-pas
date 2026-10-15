@@ -374,7 +374,7 @@ function productRow(p) {
     </div>
     <div class="prod-buy">
       <span class="price">${price(p)}</span>
-      <button class="btn ${p.kind === "level" ? "btn-primary" : "btn-ghost"} mini" data-buy="${p.id}">Buy</button>
+      ${p.ready === false ? `<span class="tag soon">In preparation</span>` : `<button class="btn ${p.kind === "level" ? "btn-primary" : "btn-ghost"} mini" data-buy="${p.id}">Buy</button>`}
     </div>
   </li>`;
 }
@@ -405,7 +405,7 @@ function renderMethod() {
     </div>
     <div class="method-buy">
       <span class="price">${price(m)}</span>
-      <button class="btn btn-light" data-buy="${m.id}">Buy the Complete Method</button>
+      ${m.ready === false ? `<span class="tag soon">In preparation: on sale once every level is illustrated</span>` : `<button class="btn btn-light" data-buy="${m.id}">Buy the Complete Method</button>`}
     </div>`;
 }
 
@@ -418,7 +418,7 @@ function renderCompare() {
     ["Works offline", "PDF and MP3 on any device", "Partly, in the app", "No"],
     ["Answer keys you keep", "Every exercise", "Instant marking, nothing to keep", "Depends on the tutor"],
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
-    ["Exam practice papers", "DELF A1 to B2 and TCF Canada", "Rarely", "Depends on the tutor"],
+    ["Exam practice papers", "DELF, DALF and TCF, in preparation", "Rarely", "Depends on the tutor"],
     ["Try before you buy", "Module 1 free, in full", "Free version or trial, then subscription", "Sometimes a trial lesson"],
     ["Pay the way your country pays", "Card and PayPal everywhere, plus the local methods of your country", "Card or app store", "Varies"],
   ];
@@ -428,18 +428,37 @@ function renderCompare() {
   </table>`;
 }
 
+function examFormat(f) {
+  if (typeof EXAM_FORMATS === "undefined" || !f) return null;
+  const x = f[0] === "tcf" ? EXAM_FORMATS.tcf : (EXAM_FORMATS[f[0]] || {})[f[1]];
+  return x || null;
+}
+
+function formatHTML(x) {
+  if (!x) return "";
+  return `<details class="exam-format"><summary>Paper format</summary>
+    <table>${x.papers.map((p) => `<tr><th>${p.name}<span>${p.time}${p.marks ? ` · /${p.marks}` : ""}${p.prep ? `<br>preparation ${p.prep}` : ""}</span></th><td>${p.detail}</td></tr>`).join("")}</table>
+    <p>${x.written ? `Written papers: ${x.written} in one sitting. ` : ""}${x.pass}.</p>
+    ${x.nclc ? `<p class="nclc-target"><strong>${x.nclc.target}</strong></p>
+    <div class="nclc-wrap"><table class="nclc"><tr><th>NCLC</th>${x.nclc.rows.map((r) => `<th>${r.name}</th>`).join("")}</tr>
+    ${x.nclc.levels.map((l, i) => `<tr${l === "7" ? ' class="t7"' : ""}><th>${l}</th>${x.nclc.rows.map((r) => `<td>${r.scores[i]}</td>`).join("")}</tr>`).slice().reverse().join("")}</table></div>
+    <p>${x.nclc.note} Source: ${x.nclc.source}.</p>` : ""}</details>`;
+}
+
 function renderExams() {
   $("#examSoon").innerHTML = EXAM_PACKS.map((p) => `<div class="pay-card exam-card">
-    <span class="tag">${p.level}</span>
+    <span class="tag${p.ready ? "" : " soon"}">${p.ready ? p.level : "In preparation"}</span>
     <h3>${p.exam}</h3>
     <p class="exam-levels">${p.contents}</p>
     <p>${p.desc}</p>
-    <div class="exam-buy"><span class="price">${price(p)}</span><button class="btn btn-primary mini" data-buy="${p.id}">Buy</button></div>
+    ${formatHTML(examFormat(p.format))}
+    <div class="exam-buy"><span class="price">${price(p)}</span>${p.ready ? `<button class="btn btn-primary mini" data-buy="${p.id}">Buy</button>` : `<span class="exam-wait">Not on sale yet</span>`}</div>
   </div>`).join("") + EXAMS_SOON.map((e) => `<div class="pay-card exam-card">
     <span class="tag soon">Coming soon</span>
     <h3>${e.name}</h3>
     <p class="exam-levels">${e.levels}</p>
     <p>${e.note}</p>
+    ${formatHTML(examFormat(e.format))}
   </div>`).join("");
 }
 
@@ -483,6 +502,7 @@ let checkoutDraft = null;   // a live lesson being booked, set by live.js
 
 function openBuy(id, draft = null) {
   const p = byId(id);
+  if (!p || p.ready === false) return;      // a product that cannot be delivered is never sold
   checkoutDraft = draft;
   openModal(`<form class="checkout" id="checkoutForm" data-product="${p.id}" novalidate>
     <p class="eyebrow">${p.level === "A0–B1" ? "A0 to B1" : p.level}${DEMO ? " · demo" : ""}</p>
@@ -660,7 +680,8 @@ function testResult(finishedAll) {
     <h2>${finishedAll ? "You have reached the end of <em>B1</em>" : `Start with <em>${last.step.name}</em>`}</h2>
     <p>${passedSteps.length ? `You passed ${passedSteps.join(", ")}. ` : ""}${finishedAll ? "B2, C1 and C2 are in preparation. Meanwhile, a live lesson with Olivier is the best next step." : `At this step you had ${last.right} of ${last.total} right.`}</p>
     ${!finishedAll && last.wrong.length ? `<p class="quiz-note">This pack teaches, among others:</p><ul class="quiz-skills">${last.wrong.map((w) => `<li>${esc(w.skill)}</li>`).join("")}</ul>` : ""}
-    <ul class="pick-list">${(p ? [p] : [live]).map((x) => `<li><span>${x.name}</span><span><strong>${price(x)}</strong> <button class="btn btn-primary mini" ${x.kind === "live" ? `data-book="${x.id}"` : `data-buy="${x.id}"`}>${x.kind === "live" ? "Book" : "Buy"}</button></span></li>`).join("")}</ul>
+    <ul class="pick-list">${(p ? (p.ready === false ? [p, live] : [p]) : [live]).map((x) => `<li><span>${x.name}</span><span><strong>${price(x)}</strong> ${x.ready === false ? `<span class="tag soon">In preparation</span>` : `<button class="btn btn-primary mini" ${x.kind === "live" ? `data-book="${x.id}"` : `data-buy="${x.id}"`}>${x.kind === "live" ? "Book" : "Buy"}</button>`}</span></li>`).join("")}</ul>
+    ${p && p.ready === false ? `<p class="quiz-note">This pack is being illustrated and is not on sale yet. Meanwhile, a live lesson with Olivier can work on exactly these points.</p>` : ""}
     <div class="hero-cta tight">
       ${p ? `<button class="btn btn-ghost" data-goto-level="${p.level}">See all ${p.level} packs</button>` : ""}
       <button class="link-btn" data-test>Retake the test</button>
