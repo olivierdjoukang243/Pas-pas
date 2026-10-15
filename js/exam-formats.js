@@ -189,7 +189,7 @@ const EXAM_FORMATS = {
   }
  },
  "tcf": {
-  "name": "TCF Canada",
+  "name": "TCF",
   "checked": "2026-09-26",
   "papers": [
    {
@@ -219,7 +219,7 @@ const EXAM_FORMATS = {
   ],
   "pass": "No pass mark: Listening and Reading are scored from 100 to 699, Writing and Speaking out of 20, and each score is converted into a CEFR level and an NCLC level",
   "nclc": {
-   "source": "France Éducation international, correspondence between TCF Canada results and Canadian Language Benchmarks (NCLC)",
+   "source": "France Éducation international, correspondence between TCF results and NCLC levels",
    "levels": [
     "4",
     "5",
@@ -280,7 +280,7 @@ const EXAM_FORMATS = {
     }
    ],
    "note": "Listening and Reading out of 699, Writing and Speaking out of 20.",
-   "target": "For the extra Express Entry points for French, Canada asks for NCLC 7 in all four skills: a solid B2, not a low one. Check the current rules with IRCC."
+   "target": "Immigration programmes that score French usually ask for NCLC 7 in all four skills: a solid B2, not a low one. Check the current rules with the authority concerned."
   }
  }
 };

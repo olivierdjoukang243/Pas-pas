@@ -63,7 +63,7 @@ const EXAM_PACKS = [
   { id: "delf-b1", kind: "exam", level: "DELF", exam: "DELF B1", format: ["delf", "B1"], ready: false, name: "DELF B1 — 4 practice papers", contents: "4 complete papers · four skills · audio included", usd: 25, xaf: 13700, desc: DELF_DESC("DELF B1") },
   { id: "delf-b2", kind: "exam", level: "DELF", exam: "DELF B2", format: ["delf", "B2"], ready: false, name: "DELF B2 — 4 practice papers", contents: "4 complete papers · four skills · audio included", usd: 25, xaf: 13700, desc: DELF_DESC("DELF B2") },
   { id: "tcf-canada", kind: "exam", level: "TCF", exam: "TCF", format: ["tcf"], ready: false, name: "TCF — 4 practice papers", contents: "4 complete papers, A1 to C2 · four skills · audio included", usd: 29, xaf: 15900,
-    desc: "Four complete TCF papers in the official TCF Canada format, sharing no question: 39 listening and 39 reading questions rising from A1 to C2, the three writing tasks and the three speaking tasks. Marking guide with the level of every question, and a web edition that counts your right answers level by level." },
+    desc: "Four complete TCF papers in the official format, sharing no question: 39 listening and 39 reading questions rising from A1 to C2, the three writing tasks and the three speaking tasks. Marking guide with the level of every question, and a web edition that counts your right answers level by level." },
 ];
 const EXAMS_SOON = [
   { name: "DALF C1", format: ["dalf", "C1"], levels: "Advanced diploma · C1", note: "For university and professional use. Practice papers in preparation, in the current official format." },
