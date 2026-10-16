@@ -321,6 +321,14 @@ function amount(usd, xaf, currency = state.currency) {
   return "≈ " + fmtMoney(usd * CURRENCIES[currency].perUSD, currency);
 }
 const price = (p) => amount(p.usd, p.xaf);
+// Pre-order: not deliverable yet, paid now and sent as soon as it is ready (policies, 2-3).
+const isPre = (p) => p.ready === false && !!p.preorder;
+const buyable = (p) => p.ready !== false || isPre(p);
+const buyLabel = (p) => isPre(p) ? "Pre-order" : "Buy";
+// The parts of a pack already deliverable: sent at once with a pre-order of the pack.
+const readyParts = (p) => p.kind === "level" ? PRODUCTS.filter((x) => x.level === p.level && x.kind === "part" && x.ready !== false)
+  : p.kind === "method" ? PRODUCTS.filter((x) => ["part", "level"].includes(x.kind) && x.ready !== false && !(x.kind === "part" && PRODUCTS.some((l) => l.kind === "level" && l.level === x.level && l.ready !== false))) : [];
+const PRE_NOTE = "Delivered by email as soon as it is ready. Cancel for a full refund until then.";
 
 // Savings are computed from the catalogue, never typed by hand.
 function levelSaving(code) {
@@ -374,7 +382,8 @@ function productRow(p) {
     </div>
     <div class="prod-buy">
       <span class="price">${price(p)}</span>
-      ${p.ready === false ? `<span class="tag soon">In preparation</span>` : `<button class="btn ${p.kind === "level" ? "btn-primary" : "btn-ghost"} mini" data-buy="${p.id}">Buy</button>`}
+      ${!buyable(p) ? `<span class="tag soon">In preparation</span>` : `<button class="btn ${p.kind === "level" ? "btn-primary" : "btn-ghost"} mini" data-buy="${p.id}">${buyLabel(p)}</button>`}
+      ${isPre(p) ? `<span class="pre-note">${readyParts(p).length ? `${readyParts(p).map((x) => x.name.split(" — ")[0].replace("French ", "")).join(", ")} sent at once, the rest as soon as it is illustrated. Cancel for a refund of what is not yet sent.` : `Being illustrated · ${PRE_NOTE}`}</span>` : ""}
     </div>
   </li>`;
 }
@@ -405,7 +414,8 @@ function renderMethod() {
     </div>
     <div class="method-buy">
       <span class="price">${price(m)}</span>
-      ${m.ready === false ? `<span class="tag soon">In preparation: on sale once every level is illustrated</span>` : `<button class="btn btn-light" data-buy="${m.id}">Buy the Complete Method</button>`}
+      ${!buyable(m) ? `<span class="tag soon">In preparation: on sale once every level is illustrated</span>` : `<button class="btn btn-light" data-buy="${m.id}">${isPre(m) ? "Pre-order the Complete Method" : "Buy the Complete Method"}</button>`}
+      ${isPre(m) ? `<span class="pre-note light">${readyParts(m).map((x) => x.name.split(" — ")[0].replace("French ", "")).join(" and ")} sent at once, each other part as soon as it is illustrated. Cancel for a refund of what is not yet sent.</span>` : ""}
     </div>`;
 }
 
@@ -418,7 +428,7 @@ function renderCompare() {
     ["Works offline", "PDF and MP3 on any device", "Partly, in the app", "No"],
     ["Answer keys you keep", "Every exercise", "Instant marking, nothing to keep", "Depends on the tutor"],
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
-    ["Exam practice papers", "DELF, DALF and TCF, in preparation", "Rarely", "Depends on the tutor"],
+    ["Exam practice papers", "DELF A1 to B2 and the five TCF, in the official format", "Rarely", "Depends on the tutor"],
     ["Try before you buy", "Module 1 free, in full", "Free version or trial, then subscription", "Sometimes a trial lesson"],
     ["Pay the way your country pays", "Card and PayPal everywhere, plus the local methods of your country", "Card or app store", "Varies"],
   ];
@@ -447,13 +457,14 @@ function formatHTML(x) {
 
 function renderExams() {
   $("#examSoon").innerHTML = EXAM_PACKS.map((p) => `<div class="pay-card exam-card">
-    <span class="tag${p.ready ? "" : " soon"}">${p.ready ? p.level : "In preparation"}</span>
+    <span class="tag${isPre(p) ? " pre" : buyable(p) ? "" : " soon"}">${isPre(p) ? "Pre-order" : buyable(p) ? p.level : "In preparation"}</span>
     <h3>${p.exam}</h3>
     ${(examFormat(p.format) || {}).official ? `<p class="exam-official" lang="fr">${examFormat(p.format).official}</p>` : ""}
     <p class="exam-levels">${p.contents}</p>
     <p>${p.desc}</p>
     ${formatHTML(examFormat(p.format))}
-    <div class="exam-buy"><span class="price">${price(p)}</span>${p.ready ? `<button class="btn btn-primary mini" data-buy="${p.id}">Buy</button>` : `<span class="exam-wait">Not on sale yet</span>`}</div>
+    <div class="exam-buy"><span class="price">${price(p)}</span>${buyable(p) ? `<button class="btn btn-primary mini" data-buy="${p.id}">${buyLabel(p)}</button>` : `<span class="exam-wait">Not on sale yet</span>`}</div>
+    ${isPre(p) ? `<p class="pre-note">The papers are being written. ${PRE_NOTE}</p>` : ""}
   </div>`).join("") + EXAMS_SOON.map((e) => `<div class="pay-card exam-card">
     <span class="tag soon">Coming soon</span>
     <h3>${e.name}</h3>
@@ -503,10 +514,11 @@ let checkoutDraft = null;   // a live lesson being booked, set by live.js
 
 function openBuy(id, draft = null) {
   const p = byId(id);
-  if (!p || p.ready === false) return;      // a product that cannot be delivered is never sold
+  if (!p || !buyable(p)) return;      // a product that can be neither delivered nor pre-ordered is never sold
+  const pre = isPre(p);
   checkoutDraft = draft;
   openModal(`<form class="checkout" id="checkoutForm" data-product="${p.id}" novalidate>
-    <p class="eyebrow">${p.level === "A0–B1" ? "A0 to B1" : p.level}${DEMO ? " · demo" : ""}</p>
+    <p class="eyebrow">${pre ? "Pre-order · " : ""}${p.level === "A0–B1" ? "A0 to B1" : p.level}${DEMO ? " · demo" : ""}</p>
     <h2>${p.name}</h2>
     <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} your time · ${draft.minutes} min · ${draft.need}` : p.contents}</p>
     <div class="form-grid">
@@ -519,10 +531,11 @@ function openBuy(id, draft = null) {
     <div class="totals" id="coTotals"></div>
     <label class="check"><input type="checkbox" name="terms" id="coTerms"> ${p.kind === "live"
       ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a> (free rescheduling up to 24 h before).`
+      : pre ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I understand that this is a pre-order: the files are sent as soon as they are ready, and I can cancel for a full refund until then.`
       : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I ask for immediate delivery of the files and understand that I then lose my right of withdrawal.`}</label>
     <p class="form-error" id="formError" hidden></p>
     <button class="btn btn-primary btn-block" id="payBtn"></button>
-    <p class="note">${p.kind === "live" ? "Payment confirms the session and reserves the time for you." : "Sales are final: the files are delivered instantly. A faulty file is replaced."}</p>
+    <p class="note">${p.kind === "live" ? "Payment confirms the session and reserves the time for you." : pre ? `Pre-order. ${PRE_NOTE} If it is not delivered within 90 days, you are refunded unless you choose to wait.` : "Sales are final: the files are delivered instantly. A faulty file is replaced."}</p>
   </form>`);
   renderResidenceCheckout();
   renderPayOptions();
@@ -563,7 +576,7 @@ function submitCheckout(form) {
   const charged = inFCFA ? fmtXAF(p.xaf) : fmtUSD(p.usd);
   const order = { product: p.id, email: data.get("email"), country: state.country, method: data.get("pay"),
     phone: m.phone ? String(data.get("momo")).replace(/[\s.-]/g, "") : "",
-    currency: inFCFA ? "XAF" : "USD", amount: inFCFA ? p.xaf : p.usd, booking: checkoutDraft };
+    currency: inFCFA ? "XAF" : "USD", amount: inFCFA ? p.xaf : p.usd, preorder: isPre(p), booking: checkoutDraft };
 
   // Live payment: the server creates the Notch Pay transaction and sends back its page.
   if (SHOP.api) return payOnline(order);
@@ -571,10 +584,10 @@ function submitCheckout(form) {
   if (DEMO) {
     if (checkoutDraft) return bookedScreen(confirmBooking(checkoutDraft, "demo"));
     return openModal(`<div class="checkout"><p class="eyebrow">Demo · nothing was charged</p><h2>Payment accepted</h2>
-      <p>In the live shop, ${p.name} would now be sent to ${order.email}.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
+      <p>In the live shop, ${p.name} would now be ${order.preorder ? "reserved for" : "sent to"} ${order.email}${order.preorder ? ", and sent as soon as it is ready" : ""}.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
   }
   const contact = contactHTML();
-  const wa = SHOP.whatsapp ? whatsappLink(`Hello, I'd like to buy "${p.name}" (${charged}), paying by ${m.label}. My email: ${data.get("email")}`) : "";
+  const wa = SHOP.whatsapp ? whatsappLink(`Hello, I'd like to ${order.preorder ? "pre-order" : "buy"} "${p.name}" (${charged}), paying by ${m.label}. My email: ${data.get("email")}`) : "";
   openModal(`<div class="checkout">
     <h2>Online payment opens soon</h2>
     <p>Nothing has been charged. Payment by ${m.label} is not active on the site yet.</p>
@@ -610,7 +623,7 @@ async function checkReturn() {
       return openModal(`<div class="checkout"><h2>Payment not completed</h2><p>Nothing was charged. You can try again.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
     }
     if (d.booking) return bookedScreen(confirmBooking(d.booking, "paid", ref));
-    openModal(`<div class="checkout"><h2>Thank you</h2><p>Payment received. Your files are on their way to ${d.email}.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
+    openModal(`<div class="checkout"><h2>Thank you</h2><p>Payment received. ${d.preorder ? `Your pre-order is confirmed: the files will be sent to ${esc(d.email)} as soon as they are ready. You can cancel for a full refund until then.` : `Your files are on their way to ${esc(d.email)}.`}</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
   } catch {
     openModal(`<div class="checkout"><h2>Checking your payment…</h2><p>We could not confirm it yet. You will receive an email as soon as it is confirmed.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
   }
@@ -681,8 +694,8 @@ function testResult(finishedAll) {
     <h2>${finishedAll ? "You have reached the end of <em>B1</em>" : `Start with <em>${last.step.name}</em>`}</h2>
     <p>${passedSteps.length ? `You passed ${passedSteps.join(", ")}. ` : ""}${finishedAll ? "B2, C1 and C2 are in preparation. Meanwhile, a live lesson with Olivier is the best next step." : `At this step you had ${last.right} of ${last.total} right.`}</p>
     ${!finishedAll && last.wrong.length ? `<p class="quiz-note">This pack teaches, among others:</p><ul class="quiz-skills">${last.wrong.map((w) => `<li>${esc(w.skill)}</li>`).join("")}</ul>` : ""}
-    <ul class="pick-list">${(p ? (p.ready === false ? [p, live] : [p]) : [live]).map((x) => `<li><span>${x.name}</span><span><strong>${price(x)}</strong> ${x.ready === false ? `<span class="tag soon">In preparation</span>` : `<button class="btn btn-primary mini" ${x.kind === "live" ? `data-book="${x.id}"` : `data-buy="${x.id}"`}>${x.kind === "live" ? "Book" : "Buy"}</button>`}</span></li>`).join("")}</ul>
-    ${p && p.ready === false ? `<p class="quiz-note">This pack is being illustrated and is not on sale yet. Meanwhile, a live lesson with Olivier can work on exactly these points.</p>` : ""}
+    <ul class="pick-list">${(p ? (p.ready === false ? [p, live] : [p]) : [live]).map((x) => `<li><span>${x.name}</span><span><strong>${price(x)}</strong> ${!buyable(x) ? `<span class="tag soon">In preparation</span>` : `<button class="btn btn-primary mini" ${x.kind === "live" ? `data-book="${x.id}"` : `data-buy="${x.id}"`}>${x.kind === "live" ? "Book" : buyLabel(x)}</button>`}</span></li>`).join("")}</ul>
+    ${p && p.ready === false ? `<p class="quiz-note">${isPre(p) ? `This pack is being illustrated: pre-order it now and it is sent as soon as it is ready, with a full refund if you cancel before.` : "This pack is being illustrated and is not on sale yet."} Meanwhile, a live lesson with Olivier can work on exactly these points.</p>` : ""}
     <div class="hero-cta tight">
       ${p ? `<button class="btn btn-ghost" data-goto-level="${p.level}">See all ${p.level} packs</button>` : ""}
       <button class="link-btn" data-test>Retake the test</button>
