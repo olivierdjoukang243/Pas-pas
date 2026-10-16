@@ -189,98 +189,241 @@ const EXAM_FORMATS = {
   }
  },
  "tcf": {
-  "name": "TCF",
-  "checked": "2026-09-26",
-  "papers": [
-   {
-    "name": "Listening",
-    "time": "35 min",
-    "marks": null,
-    "detail": "39 multiple-choice questions (4 choices), each recording heard once; difficulty rises from A1 to C2"
-   },
-   {
-    "name": "Reading",
-    "time": "60 min",
-    "marks": null,
-    "detail": "39 multiple-choice questions (4 choices); difficulty rises from A1 to C2"
-   },
-   {
-    "name": "Writing",
-    "time": "60 min",
-    "marks": null,
-    "detail": "3 tasks: a message (60 to 120 words); an article, letter or note (120 to 150 words); comparing two points of view, then your own (120 to 180 words)"
-   },
-   {
-    "name": "Speaking",
-    "time": "12 min",
-    "marks": null,
-    "detail": "3 tasks: guided interview; interaction after 2 minutes of preparation; expressing a point of view"
-   }
-  ],
-  "pass": "No pass mark: Listening and Reading are scored from 100 to 699, Writing and Speaking out of 20, and each score is converted into a CEFR level and an NCLC level",
-  "nclc": {
-   "source": "France Éducation international, correspondence between TCF results and NCLC levels",
-   "levels": [
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10+"
-   ],
-   "rows": [
+  "tcf-canada": {
+   "name": "TCF Canada",
+   "official": "Test de connaissance du français pour le Canada",
+   "papers": [
     {
      "name": "Listening",
-     "scores": [
-      "331–368",
-      "369–397",
-      "398–457",
-      "458–502",
-      "503–522",
-      "523–548",
-      "549–699"
-     ]
+     "time": "35 min",
+     "marks": null,
+     "detail": "39 multiple-choice questions (4 choices), each recording heard once; difficulty rises from A1 to C2"
     },
     {
      "name": "Reading",
-     "scores": [
-      "342–374",
-      "375–405",
-      "406–452",
-      "453–498",
-      "499–523",
-      "524–548",
-      "549–699"
-     ]
+     "time": "60 min",
+     "marks": null,
+     "detail": "39 multiple-choice questions (4 choices), difficulty rises from A1 to C2"
     },
     {
      "name": "Writing",
-     "scores": [
-      "4–5",
-      "6",
-      "7–9",
-      "10–11",
-      "12–13",
-      "14–15",
-      "16–20"
-     ]
+     "marks": null,
+     "time": "60 min",
+     "detail": "3 tasks: a message (60 to 120 words); an article, letter or note (120 to 150 words); comparing two points of view, then your own (120 to 180 words)"
     },
     {
      "name": "Speaking",
-     "scores": [
-      "4–5",
-      "6",
-      "7–9",
-      "10–11",
-      "12–13",
-      "14–15",
-      "16–20"
-     ]
+     "marks": null,
+     "time": "12 min",
+     "detail": "3 tasks: guided interview; interaction after 2 minutes of preparation; expressing a point of view"
     }
    ],
-   "note": "Listening and Reading out of 699, Writing and Speaking out of 20.",
-   "target": "Immigration programmes that score French usually ask for NCLC 7 in all four skills: a solid B2, not a low one. Check the current rules with the authority concerned."
+   "pass": "No pass mark: Listening and Reading are scored from 100 to 699, Writing and Speaking out of 20, and each score is converted into a CEFR level and an NCLC level",
+   "source": "France Éducation international, format relevé le 26/09/2026",
+   "nclc": {
+    "source": "France Éducation international, correspondence between TCF results and NCLC levels",
+    "levels": [
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10+"
+    ],
+    "rows": [
+     {
+      "name": "Listening",
+      "scores": [
+       "331–368",
+       "369–397",
+       "398–457",
+       "458–502",
+       "503–522",
+       "523–548",
+       "549–699"
+      ]
+     },
+     {
+      "name": "Reading",
+      "scores": [
+       "342–374",
+       "375–405",
+       "406–452",
+       "453–498",
+       "499–523",
+       "524–548",
+       "549–699"
+      ]
+     },
+     {
+      "name": "Writing",
+      "scores": [
+       "4–5",
+       "6",
+       "7–9",
+       "10–11",
+       "12–13",
+       "14–15",
+       "16–20"
+      ]
+     },
+     {
+      "name": "Speaking",
+      "scores": [
+       "4–5",
+       "6",
+       "7–9",
+       "10–11",
+       "12–13",
+       "14–15",
+       "16–20"
+      ]
+     }
+    ],
+    "note": "Listening and Reading out of 699, Writing and Speaking out of 20.",
+    "target": "Immigration programmes that score French usually ask for NCLC 7 in all four skills: a solid B2, not a low one. Check the current rules with the authority concerned."
+   }
+  },
+  "tcf-quebec": {
+   "name": "TCF Québec",
+   "official": "Test de connaissance du français pour le Québec",
+   "papers": [
+    {
+     "name": "Listening",
+     "time": "25 min",
+     "marks": null,
+     "detail": "29 multiple-choice questions (4 choices), each recording heard once; difficulty rises from A1 to C2"
+    },
+    {
+     "name": "Reading",
+     "time": "45 min",
+     "marks": null,
+     "detail": "29 multiple-choice questions (4 choices), difficulty rises from A1 to C2"
+    },
+    {
+     "name": "Writing",
+     "marks": null,
+     "time": "60 min",
+     "detail": "3 tasks: a message (60 to 120 words); an article, letter or note (120 to 150 words); comparing two points of view, then your own (120 to 180 words)"
+    },
+    {
+     "name": "Speaking",
+     "marks": null,
+     "time": "12 min",
+     "detail": "3 tasks: guided interview; interaction after 2 minutes of preparation; expressing a point of view"
+    }
+   ],
+   "pass": "No pass mark: each paper gives a CEFR level (A1 to C2) and a level of the Quebec scale; candidates choose which papers they take",
+   "source": "France Éducation international et MIFI (novembre 2024) ; épreuves d’exemple officielles d’expression écrite (2022) et orale de France Éducation international"
+  },
+  "tcf-tp": {
+   "name": "TCF tout public",
+   "official": "Test de connaissance du français tout public",
+   "papers": [
+    {
+     "name": "Listening",
+     "time": "25 min",
+     "marks": null,
+     "detail": "29 multiple-choice questions (4 choices), each recording heard once; difficulty rises from A1 to C2"
+    },
+    {
+     "name": "Language structures",
+     "time": "15 min",
+     "marks": null,
+     "detail": "18 multiple-choice questions (4 choices), grammar and vocabulary; difficulty rises from A1 to C2"
+    },
+    {
+     "name": "Reading",
+     "time": "45 min",
+     "marks": null,
+     "detail": "29 multiple-choice questions (4 choices), difficulty rises from A1 to C2"
+    },
+    {
+     "name": "Writing",
+     "marks": null,
+     "time": "60 min",
+     "detail": "3 tasks: a message (60 to 120 words); an article, letter or note (120 to 150 words); comparing two points of view, then your own (120 to 180 words) (optional)"
+    },
+    {
+     "name": "Speaking",
+     "marks": null,
+     "time": "12 min",
+     "detail": "3 tasks: guided interview; interaction after 2 minutes of preparation; expressing a point of view (optional)"
+    }
+   ],
+   "pass": "No pass mark: each paper gives a CEFR level (A1 to C2); Writing and Speaking are optional",
+   "source": "France Éducation international et centres agréés ; épreuves d’exemple officielles d’expression écrite (2022) et orale de France Éducation international"
+  },
+  "tcf-dap": {
+   "name": "TCF DAP",
+   "official": "TCF pour la demande d’admission préalable",
+   "papers": [
+    {
+     "name": "Listening",
+     "time": "25 min",
+     "marks": null,
+     "detail": "29 multiple-choice questions (4 choices), each recording heard once; difficulty rises from A1 to C2"
+    },
+    {
+     "name": "Language structures",
+     "time": "15 min",
+     "marks": null,
+     "detail": "18 multiple-choice questions (4 choices), grammar and vocabulary; difficulty rises from A1 to C2"
+    },
+    {
+     "name": "Reading",
+     "time": "45 min",
+     "marks": null,
+     "detail": "29 multiple-choice questions (4 choices), difficulty rises from A1 to C2"
+    },
+    {
+     "name": "Writing",
+     "marks": null,
+     "time": "60 min",
+     "detail": "3 tasks: a message (60 to 120 words); an article, letter or note (120 to 150 words); comparing two points of view, then your own (120 to 180 words)"
+    },
+    {
+     "name": "Speaking",
+     "marks": null,
+     "time": "12 min",
+     "detail": "3 tasks: guided interview; interaction after 2 minutes of preparation; expressing a point of view (optional)"
+    }
+   ],
+   "pass": "The TCF tout public with Writing compulsory, for a prior admission request to a university; each paper gives a CEFR level (A1 to C2)",
+   "source": "France Éducation international et centres agréés ; épreuves d’exemple officielles d’expression écrite (2022) et orale de France Éducation international"
+  },
+  "tcf-irn": {
+   "name": "TCF IRN",
+   "official": "TCF pour l’intégration, la résidence et la nationalité",
+   "papers": [
+    {
+     "name": "Listening",
+     "time": "20 min",
+     "marks": null,
+     "detail": "25 multiple-choice questions (4 choices), each recording heard once; difficulty rises question by question"
+    },
+    {
+     "name": "Reading",
+     "time": "35 min",
+     "marks": null,
+     "detail": "25 multiple-choice questions (4 choices), difficulty rises question by question"
+    },
+    {
+     "name": "Writing",
+     "marks": null,
+     "time": "30 min",
+     "detail": "3 tasks: answering a short message (30 to 60 words); a message telling about an event (40 to 90 words); giving your opinion, for example on a forum (40 to 90 words)"
+    },
+    {
+     "name": "Speaking",
+     "marks": null,
+     "time": "10 min",
+     "detail": "3 tasks, no preparation: guided interview; interaction on a situation with pictures; expressing your tastes and opinions"
+    }
+   ],
+   "pass": "No pass mark: each paper gives a CEFR level; 1 h 35 in all",
+   "source": "France Éducation international, page officielle du TCF IRN (relevée le 16/10/2026 : 25 + 25 questions, 20 et 35 min, EE 3 exercices 30 min, EO 3 exercices 10 min, 1 h 35) et épreuves d’exemple officielles (2022, 2023). Questions de A1 à B2 : choix de l’atelier"
   }
  }
 };

@@ -159,7 +159,7 @@ Olivier reçoit un jeton modérateur pour le même salon (lien dans son e-mail d
 3. **Liens personnels.** Liens signés (HMAC), liés à la commande, valables 7 jours et 5 téléchargements, puis renouvelables sur demande de l'acheteur.
 4. **Alerte de partage.** Une même commande téléchargée depuis plus de 5 adresses IP, ou plus de 3 pays, en 24 h suspend les liens et prévient Olivier.
 5. **Éditions web.** Elles s'ouvrent par un lien personnel, et chaque page servie est tatouée au vol. Le jeton n'est valable que pour sa commande.
-6. **Sujets d'examen.** Un tirage différent par commande, dont la référence est enregistrée avec la commande.
+6. **Sujets d'examen.** Une série jamais livrée par commande (`livrer.py`), dont la référence est enregistrée avec la commande.
 
 ### Les paiements
 - **Prix et moyens.** Le prix est toujours recalculé côté serveur, et le moyen de paiement contrôlé selon le pays de résidence (voir `/checkout`).
@@ -173,9 +173,24 @@ Olivier reçoit un jeton modérateur pour le même salon (lien dans son e-mail d
 - **Si une copie circule.** Lancer `tracer.py` (atelier) sur la copie, puis faire la demande de retrait décrite dans `docs/protection.md`.
 
 ## Packs d'examen
-Les produits `delf-a1`, `delf-a2`, `delf-b1` et `delf-b2` (3 sujets chacun) et `tcf-canada`
-(4 sujets, de A1 à B2) sont des fichiers comme les autres. L'atelier les produit une fois avec
-`examen.py` (commandes dans son LISEZ-MOI). Garder les références des sujets livrés.
+Les produits `delf-a1` à `delf-b2` et les cinq TCF (`tcf-canada`, `tcf-quebec`, `tcf-tp`,
+`tcf-dap`, `tcf-irn`) sont des séries de 4 sujets complets sans tâche commune. L'atelier les
+produit avec `delf.py` et `tcf.py` (registre `examens/series.json`) ; à chaque commande,
+`livrer.py` donne une série jamais livrée, renomme les fichiers et les tatoue. Garder la
+référence de la série livrée avec la commande.
+
+## Précommandes
+Un produit `ready: false, preorder: true` (`js/products.js`) se paie tout de suite :
+`/checkout` reçoit `preorder: true`. Après `payment.complete`, le serveur n'envoie pas de
+fichiers : il enregistre la précommande, envoie un accusé (« sent as soon as it is ready,
+cancel for a full refund until then ») et prévient Olivier. `GET /payments/:ref` renvoie
+`preorder: true` pour que le site affiche le bon message.
+- Les parties d'un pack déjà prêtes (A1 Part 1 dans A1 Complete ; A0 et A1 Part 1 dans la
+  méthode complète) partent tout de suite, tatouées comme d'habitude.
+- Le jour où un produit passe `ready: true`, le serveur livre toutes ses précommandes en attente.
+- Annulation avant livraison : remboursement de ce qui n'a pas été livré. Sans livraison
+  90 jours après le paiement : remboursement, sauf si l'acheteur préfère attendre
+  (`policies.html`, sections 2 et 3).
 
 ## Données à garder
 - commandes : référence, produit, montant, devise, pays de résidence, moyen, statut, e-mail ;
