@@ -384,6 +384,7 @@ textarea { font: inherit; padding: .7em .8em; border: 2px solid var(--ligne); bo
 .exam-buy { margin-top: auto; display: flex; align-items: center; gap: .8em; flex-wrap: wrap; }
 .exam-card h3 { font-family: var(--serif); font-size: 1.6rem; }
 .exam-levels { font-weight: 600; color: var(--bleu) !important; }
+.exam-official { font-style: italic; font-size: .9rem; margin-top: -.25rem; }
 .tag.soon { background: #fdf0d5; color: #8a5a00; }
 .exam-format { align-self: stretch; min-width: 0; margin: .2em 0 .8em; font-size: .9rem; }
 .exam-format summary { cursor: pointer; font-weight: 600; color: var(--bleu); }

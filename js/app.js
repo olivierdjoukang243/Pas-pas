@@ -430,7 +430,7 @@ function renderCompare() {
 
 function examFormat(f) {
   if (typeof EXAM_FORMATS === "undefined" || !f) return null;
-  const x = f[0] === "tcf" ? EXAM_FORMATS.tcf : (EXAM_FORMATS[f[0]] || {})[f[1]];
+  const x = (EXAM_FORMATS[f[0]] || {})[f[1]];
   return x || null;
 }
 
@@ -449,6 +449,7 @@ function renderExams() {
   $("#examSoon").innerHTML = EXAM_PACKS.map((p) => `<div class="pay-card exam-card">
     <span class="tag${p.ready ? "" : " soon"}">${p.ready ? p.level : "In preparation"}</span>
     <h3>${p.exam}</h3>
+    ${(examFormat(p.format) || {}).official ? `<p class="exam-official" lang="fr">${examFormat(p.format).official}</p>` : ""}
     <p class="exam-levels">${p.contents}</p>
     <p>${p.desc}</p>
     ${formatHTML(examFormat(p.format))}
