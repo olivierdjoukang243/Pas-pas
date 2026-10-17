@@ -848,7 +848,8 @@ document.addEventListener("click", (e) => {
   if (!el) return;
   const d = el.dataset;
   if (d.buy) openBuy(d.buy);
-  else if (d.level) { state.level = d.level; store.set("level", d.level); renderLevelTabs(); renderLevelPanel(); }
+  else if (d.level) { state.level = d.level; store.set("level", d.level); renderLevelTabs(); renderLevelPanel();
+    if (d.scroll) $("#" + d.scroll).scrollIntoView({ behavior: "smooth" }); }
   else if ("modalClose" in d) modal.close();
   else if ("test" in d) { e.preventDefault(); openTest(); }
   else if ("free" in d) { e.preventDefault(); openFree(); }
