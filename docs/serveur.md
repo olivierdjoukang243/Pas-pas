@@ -70,6 +70,22 @@ revérifie qu'elle est libre (freebusy), la tient 15 min, puis, au webhook `paym
    paiement), l'élève choisit une autre heure ou il est remboursé.
 Une séance de pack (crédit) suit le même chemin, sans paiement.
 
+### Forfaits et abonnements (`live-pack5`, `plan-4`, `plan-8`, `plan-16`)
+- Le premier paiement réserve la première séance et ouvre un crédit : 5, 4, 8 ou 16 séances de
+  60 min, valable **2 mois** à partir du paiement. Chaque séance suivante se réserve comme une
+  séance immédiate, sans paiement (crédit).
+- **Abonnement** (`plan-*`) : à l'échéance des 2 mois, le crédit repart à zéro avec un nouveau lot
+  de séances, au prix souscrit, jusqu'à résiliation ; les séances non réservées sont perdues.
+  - E-mail de rappel **7 jours avant** chaque renouvellement (date, montant, lien de résiliation).
+  - Carte et PayPal : prélèvement automatique, par un prestataire qui gère les paiements
+    récurrents (Paddle, Lemon Squeezy, Stripe Billing…). Notch Pay ne prélève pas sans accord.
+  - Mobile money : à l'échéance, une demande de paiement que l'élève confirme sur son téléphone ;
+    sans confirmation sous 3 jours, l'abonnement s'arrête.
+  - `POST /plans/:id/cancel` : arrête le prochain renouvellement ; les séances restantes restent
+    utilisables jusqu'à la fin de la période. Un clic, aucune question.
+  - Un renouvellement payé sans aucune séance réservée dans la nouvelle période est remboursé sur
+    demande dans les 7 jours (`policies.html`, section 5).
+
 ### `GET /slots/taken`
 Les créneaux déjà réservés, pour que le site ne les propose plus.
 ```json

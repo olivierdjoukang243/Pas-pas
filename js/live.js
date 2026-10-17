@@ -27,8 +27,11 @@ const LIVE_CONFIG = {
   video: { appId: "" },         // JaaS (8x8) app id, e.g. "vpaas-magic-cookie-…"; needs SHOP.api for the token
 };
 
-const LIVE_MINUTES = { "live-30": 30, "live-60": 60, "live-pack5": 60 };
-const PACK_SIZE = { "live-pack5": 5 };
+const LIVE_MINUTES = { "live-30": 30, "live-60": 60, "live-pack5": 60, "plan-4": 60, "plan-8": 60, "plan-16": 60 };
+const PACK_SIZE = { "live-pack5": 5, "plan-4": 4, "plan-8": 8, "plan-16": 16 };
+const CREDIT_MONTHS = 2;          // a pack or a plan period lasts 2 months; a plan then renews, its counter back to zero
+const addMonths = (ms, n) => { const d = new Date(ms); d.setMonth(d.getMonth() + n); return d.getTime(); };
+const isPlan = (id) => !!(byId(id) || {}).plan;
 
 // ---- time helpers -------------------------------------------------------
 const H = 3600e3, MIN = 60e3, DAY = 24 * H;
@@ -136,11 +139,11 @@ function renderInstant() {
   const talk = talkFirstLinks();
   $("#bookForm").innerHTML = `
     <p class="eyebrow">${booking.credit ? "Book with your pack" : "Book a live lesson"}${DEMO ? " · demo" : ""}</p>
-    <h2>Pick a time that suits you</h2>
+    <h2>${PACK_SIZE[booking.product] && !booking.credit ? "Pick the time of your first lesson" : "Pick a time that suits you"}</h2>
     <p>These are Olivier's free times, updated live, in <strong>your local time (${zoneLabel()})</strong>. Choose one${booking.credit ? " and confirm it" : ", pay, and it is booked"}: no waiting for an answer.</p>
     ${booking.credit ? `<p class="note">Session ${booking.credit.used + 1} of ${booking.credit.total} of your pack: no payment needed.</p>` : `
     <div class="pay-methods book-len" role="radiogroup" aria-label="Session">
-      ${LIVE.map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> ${x.name}<br><b>${price(x)}</b></label>`).join("")}
+      ${LIVE.filter((x) => !x.plan || x.id === booking.product).map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> ${x.name}<br><b>${price(x)}${x.plan ? " every 2 months" : ""}</b></label>`).join("")}
     </div>`}
     <div class="form-grid">
       <label for="bkNeed">What would you like to work on?<select id="bkNeed" name="need">${LIVE_NEEDS.map((x) => `<option ${x === booking.need ? "selected" : ""}>${x}</option>`).join("")}</select></label>
@@ -156,7 +159,8 @@ function renderInstant() {
       <label for="bkEmail">Email<input id="bkEmail" name="email" type="email" required autocomplete="email" value="${esc(booking.email || "")}"></label>
     </div>
     <p class="form-error" id="bkError" hidden></p>
-    <button class="btn btn-primary btn-block" ${booking.slot ? "" : "disabled"}>${booking.credit ? "Confirm this time" : `Continue to payment · ${price(p)}`}</button>
+    ${PACK_SIZE[booking.product] && !booking.credit ? `<p class="note">The other ${PACK_SIZE[booking.product] - 1} lessons: book them whenever you like over the next 2 months, from “My live lessons”.</p>` : ""}
+    <button class="btn btn-primary btn-block" ${booking.slot ? "" : "disabled"}>${booking.credit ? "Confirm this time" : `Continue to payment · ${price(p)}${p.plan ? " every 2 months" : ""}`}</button>
     <p class="note">None of these times suits you? <button type="button" class="link-btn" data-propose>Propose your own times</button>${talk ? ` · Want to talk first? ${talk}` : ""}</p>`;
 }
 
@@ -234,7 +238,7 @@ function renderBooking(next) {
     <p>Propose at least <strong>${LIVE_CONFIG.minTimes} start times</strong>, at most ${LIVE_CONFIG.maxPerDay} a day; ${LIVE_CONFIG.goodTimes} times over ${LIVE_CONFIG.goodDays} different days give the best chance. Olivier ticks the ones that suit him, then you choose one and ${booking.credit ? "confirm it" : "pay to confirm it"}.</p>
     ${booking.credit ? `<p class="note">Session ${booking.credit.used + 1} of ${booking.credit.total} of your pack: no payment needed.</p>` : `
     <div class="pay-methods book-len" role="radiogroup" aria-label="Session">
-      ${LIVE.map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> ${x.name}<br><b>${price(x)}</b></label>`).join("")}
+      ${LIVE.filter((x) => !x.plan || x.id === booking.product).map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> ${x.name}<br><b>${price(x)}${x.plan ? " every 2 months" : ""}</b></label>`).join("")}
     </div>`}
     <div class="form-grid">
       <label for="bkNeed">What would you like to work on?<select id="bkNeed" name="need">${LIVE_NEEDS.map((x) => `<option ${x === booking.need ? "selected" : ""}>${x}</option>`).join("")}</select></label>
@@ -392,7 +396,8 @@ function submitChoice(form) {
 function confirmBooking(draft, status, reference) {
   const b = { ...draft, id: reference || "PAP-" + Date.now().toString(36).toUpperCase(), status, room: null };
   const pack = PACK_SIZE[draft.product];
-  if (pack) b.credit = { total: pack, used: 1 };
+  if (pack) b.credit = { total: pack, used: 1, expires: addMonths(Date.now(), CREDIT_MONTHS),
+    plan: isPlan(draft.product), renews: isPlan(draft.product) };
   saveBookings([...bookings(), b]);
   if (draft.request) saveRequests(requests().filter((x) => x.id !== draft.request));
   renderMySessions();
@@ -402,7 +407,7 @@ function confirmBooking(draft, status, reference) {
 function useCredit(packId, draft) {
   const list = bookings();
   const pack = list.find((x) => x.id === packId);
-  if (!pack || pack.credit.used >= pack.credit.total) return;
+  if (!pack || pack.credit.used >= pack.credit.total || (pack.credit.expires && pack.credit.expires < Date.now())) return;
   pack.credit.used++;
   list.push({ ...draft, id: `${packId}-${pack.credit.used}`, status: pack.status, fromPack: packId, room: null });
   saveBookings(list);
@@ -411,13 +416,26 @@ function useCredit(packId, draft) {
   renderMySessions();
 }
 
+// Right after a single lesson: the moment to offer the plans (the learner has just committed).
+function planOffer(b) {
+  if (b.fromPack || PACK_SIZE[b.product]) return "";
+  const one = byId("live-60"), plan = LIVE.find((x) => x.best) || LIVE.find((x) => x.plan);
+  if (!one || !plan) return "";
+  const per = amount(plan.usd / plan.lessons, plan.xaf / plan.lessons);
+  return `<div class="plan-offer"><p class="eyebrow">Keep the momentum</p>
+    <h3>${plan.lessons} lessons every 2 months, ${per} each instead of ${price(one)}</h3>
+    <p>Learners who meet a teacher every week keep what they learn. With the ${esc(plan.name.split(" · ")[0])}, you book each lesson when it suits you over 2 months; the plan renews by itself, and you can cancel the renewal at any time.</p>
+    <div class="hero-cta tight"><button class="btn btn-primary" data-modal-close data-goto-plans>See the plans</button><button class="btn btn-ghost" data-modal-close>Not now</button></div></div>`;
+}
+
 function bookedScreen(b) {
   openModal(`<div class="checkout">
     <p class="eyebrow">${b.status === "demo" ? "Demo booking · nothing was charged" : "Booked"}</p>
     <h2>Your live lesson is booked</h2>
     <p><strong>${localDay(b.start)}, ${localTime(b.start)}</strong> your time (${b.zone}) · ${b.minutes} minutes.</p>
     <p>Come back to this page at that time: the <strong>Join</strong> button opens ${LIVE_CONFIG.joinEarly} minutes before the start, in the “My live lessons” section.</p>
-    <button class="btn btn-primary" data-modal-close>Done</button>
+    ${b.credit ? `<p class="note">${b.credit.plan ? "Your plan" : "Your pack"}: ${b.credit.total - 1} more lesson${b.credit.total - 1 === 1 ? "" : "s"} to book whenever you like until ${localDay(b.credit.expires)}, from “My live lessons”.</p>` : ""}
+    ${planOffer(b) || `<button class="btn btn-primary" data-modal-close>Done</button>`}
   </div>`);
 }
 
@@ -429,11 +447,23 @@ function sessionState(b, now = Date.now()) {
   return "waiting";
 }
 
+// Cancelling stops the next renewal; the lessons of the current 2 months stay usable until its end.
+async function cancelPlan(id) {
+  const list = bookings(), b = list.find((x) => x.id === id);
+  if (!b || !confirm(`Cancel the renewal of your plan? You keep the lessons left until ${localDay(b.credit.expires)}.`)) return;
+  if (SHOP.api) {
+    try { const r = await fetch(`${SHOP.api}/plans/${encodeURIComponent(id)}/cancel`, { method: "POST" }); if (!r.ok) throw new Error(); }
+    catch { return alert("The renewal could not be cancelled just now. Please try again, or write to us: we cancel it for you."); }
+  }
+  b.credit.renews = false; saveBookings(list); renderMySessions();
+}
+
 function renderMySessions() {
   const box = $("#mySessions");
   if (!box) return;
   const list = bookings().filter((b) => b.start + b.minutes * MIN > Date.now() - DAY).sort((a, b) => a.start - b.start);
-  const packs = bookings().filter((b) => b.credit && b.credit.used < b.credit.total);
+  const packs = bookings().filter((b) => b.credit && (b.credit.plan ? b.credit.renews || b.credit.expires > Date.now()
+    : b.credit.used < b.credit.total && (!b.credit.expires || b.credit.expires > Date.now())));
   const reqs = requests();
   box.hidden = !list.length && !packs.length && !reqs.length;
   box.innerHTML = `<h3>My live lessons${DEMO ? " · demo" : ""}</h3>
@@ -448,8 +478,11 @@ function renderMySessions() {
       <span class="countdown" data-countdown="${b.id}"></span>
       <button class="btn btn-primary mini" data-join="${b.id}">Join</button>
     </div>`).join("")}
-    ${packs.map((b) => `<div class="session pack"><div><strong>Your pack</strong><small>${b.credit.total - b.credit.used} session(s) left</small></div>
-      <button class="btn btn-ghost mini" data-book-credit="${b.id}">Book the next one</button></div>`).join("")}`;
+    ${packs.map((b) => { const c = b.credit, left = c.total - c.used, until = c.expires ? localDay(c.expires) : "";
+      return `<div class="session pack"><div><strong>${c.plan ? esc(byId(b.product).name.split(" · ")[0]) : "Your pack"}</strong>
+      <small>${left} lesson${left === 1 ? "" : "s"} left${until ? ` until ${until}` : ""}${c.plan ? (c.renews ? ` · renews on ${until} with ${c.total} new lessons` : " · renewal cancelled") : ""}</small></div>
+      ${left > 0 ? `<button class="btn btn-ghost mini" data-book-credit="${b.id}">Book the next one</button>` : ""}
+      ${c.plan && c.renews ? `<button class="link-btn" data-cancel-plan="${b.id}">Cancel renewal</button>` : ""}</div>`; }).join("")}`;
   tick();
 }
 
@@ -547,7 +580,7 @@ function leaveRoom() {
 
 // ---- events ---------------------------------------------------------------
 document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-book],[data-day],[data-slot],[data-pick],[data-propose],[data-join],[data-leave],[data-book-credit],[data-choose],[data-answer-demo],[data-dismiss-full]");
+  const el = e.target.closest("[data-book],[data-day],[data-slot],[data-pick],[data-propose],[data-join],[data-leave],[data-book-credit],[data-cancel-plan],[data-goto-plans],[data-choose],[data-answer-demo],[data-dismiss-full]");
   if (!el) return;
   const d = el.dataset;
   if ("book" in d) openBooking(d.book || null);
@@ -566,8 +599,10 @@ document.addEventListener("click", (e) => {
   else if ("leave" in d) leaveRoom();
   else if (d.bookCredit) {
     const pack = bookings().find((x) => x.id === d.bookCredit);
-    if (pack) openBooking("live-pack5", { id: pack.id, used: pack.credit.used, total: pack.credit.total });
+    if (pack) openBooking(pack.product, { id: pack.id, used: pack.credit.used, total: pack.credit.total });
   }
+  else if (d.cancelPlan) cancelPlan(d.cancelPlan);
+  else if ("gotoPlans" in d) { const g = $("#livePlans"); if (g) g.scrollIntoView({ behavior: "smooth" }); }
   else if (d.choose) { const r = requests().find((x) => x.id === d.choose); if (r) openChoice(r.id, r.key); }
   else if (d.answerDemo) openAnswer(d.answerDemo, "demo");
 });
