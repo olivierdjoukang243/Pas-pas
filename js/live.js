@@ -1,4 +1,9 @@
-// ====== Live lessons: request, Olivier's answer, payment, countdown, video room ======
+// ====== Live lessons: instant booking, request, payment, countdown, video room ======
+// Book now (default, needs SHOP.api or ?demo): the learner sees Olivier's real free times, read by
+// the server from his Google Calendar (his Preply lessons included), picks one, pays: booked.
+// The server writes the lesson in a separate "Pas à Pas" calendar, never linked to Preply, and
+// notifies Olivier, who blocks the time on Preply himself (docs/serveur.md, GET /slots).
+// Propose times (fallback, when no free time suits):
 // 1. The learner proposes at least 3 start times (at most 3 a day; 6 over 3 days advised), in their own time zone.
 // 2. Olivier ticks the times that suit him (link in his email: ?olivier=<id>&key=<key>).
 // 3. The learner gets an email (?lesson=<id>&key=<key>), picks one of those times and pays.
@@ -18,6 +23,7 @@ const LIVE_CONFIG = {
   goodTimes: 6, goodDays: 3,    // …but 6 over 3 days give Olivier the best chance, and the page says so
   maxPerDay: 3,                 // at most 3 times a day, so the times are really spread out
   joinEarly: 10,                // the Join button opens 10 minutes before the start
+  instant: { noticeHours: 3, horizonDays: 14, bufferMin: 15 },   // Book now: from 3 h ahead, 2 weeks, 15 min between lessons
   video: { appId: "" },         // JaaS (8x8) app id, e.g. "vpaas-magic-cookie-…"; needs SHOP.api for the token
 };
 
@@ -77,8 +83,27 @@ const saveRequests = (list) => store.set("requests", list);
 const upsertRequest = (r) => saveRequests([...requests().filter((x) => x.id !== r.id), r]);
 const daysOf = (times) => new Set(times.map(localDay)).size;
 
+// ---- book now: Olivier's free times, from his calendar -------------------
+let freeSlots = null;                 // start times (ms) free for the chosen length, or null while loading
+async function loadFree(minutes) {
+  freeSlots = null;
+  if (SHOP.api) {
+    try {
+      const r = await fetch(`${SHOP.api}/slots?minutes=${minutes}`);
+      freeSlots = ((await r.json()).free || []).map(Number).filter((t) => t > Date.now());
+    } catch { freeSlots = []; }
+  } else if (DEMO) {
+    // demo: every time of the lesson hours from 3 h ahead, minus a pretend busy pattern
+    const C = LIVE_CONFIG, keep = { ...C };
+    C.noticeHours = C.instant.noticeHours; C.horizonDays = C.instant.horizonDays;
+    freeSlots = candidateTimes(minutes).filter((t) => (Math.floor(t / (90 * MIN)) % 3) !== 0);
+    Object.assign(C, keep);
+  } else freeSlots = [];
+}
+const instantOn = () => !!(SHOP.api || DEMO);
+
 // ---- step 1: the learner proposes times -------------------------------
-const booking = { product: "live-60", need: LIVE_NEEDS[0], level: "I don't know yet", day: null, times: [], credit: null };
+const booking = { product: "live-60", need: LIVE_NEEDS[0], level: "I don't know yet", day: null, times: [], credit: null, mode: "now", slot: null };
 let takenFromServer = [];
 
 async function loadTaken() {
@@ -89,11 +114,63 @@ async function loadTaken() {
   } catch { takenFromServer = []; }
 }
 
-function openBooking(product, credit = null) {
-  Object.assign(booking, { product: product || booking.product, day: null, times: [], credit });
-  loadTaken().then(() => { if (modal.open && $("#bookForm")) renderBooking(); });
+function openBooking(product, credit = null, mode = null) {
+  Object.assign(booking, { product: product || booking.product, day: null, times: [], credit, slot: null,
+    mode: mode || (instantOn() ? "now" : "propose") });
   openModal(`<form class="checkout book" id="bookForm" novalidate></form>`);
+  if (booking.mode === "now") {
+    loadFree(LIVE_MINUTES[booking.product]).then(() => { if (modal.open && $("#bookForm")) renderBooking(); });
+  } else loadTaken().then(() => { if (modal.open && $("#bookForm")) renderBooking(); });
   renderBooking();
+}
+
+// Book now: one free time, then payment (or the pack credit).
+function renderInstant() {
+  if ($("#bkName")) { booking.name = $("#bkName").value; booking.email = $("#bkEmail").value; }
+  const minutes = LIVE_MINUTES[booking.product], p = byId(booking.product);
+  const all = freeSlots || [];
+  const days = [...new Set(all.map(localDay))];
+  if (!days.includes(booking.day)) booking.day = days[0] || null;
+  if (booking.slot && !all.includes(booking.slot)) booking.slot = null;
+  const times = all.filter((t) => localDay(t) === booking.day);
+  const talk = talkFirstLinks();
+  $("#bookForm").innerHTML = `
+    <p class="eyebrow">${booking.credit ? "Book with your pack" : "Book a live lesson"}${DEMO ? " · demo" : ""}</p>
+    <h2>Pick a time that suits you</h2>
+    <p>These are Olivier's free times, updated live, in <strong>your local time (${zoneLabel()})</strong>. Choose one${booking.credit ? " and confirm it" : ", pay, and it is booked"}: no waiting for an answer.</p>
+    ${booking.credit ? `<p class="note">Session ${booking.credit.used + 1} of ${booking.credit.total} of your pack: no payment needed.</p>` : `
+    <div class="pay-methods book-len" role="radiogroup" aria-label="Session">
+      ${LIVE.map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> ${x.name}<br><b>${price(x)}</b></label>`).join("")}
+    </div>`}
+    <div class="form-grid">
+      <label for="bkNeed">What would you like to work on?<select id="bkNeed" name="need">${LIVE_NEEDS.map((x) => `<option ${x === booking.need ? "selected" : ""}>${x}</option>`).join("")}</select></label>
+      <label for="bkLevel">Your level<select id="bkLevel" name="level"><option>I don't know yet</option>${LEVELS.map((l) => `<option ${l.code === booking.level ? "selected" : ""}>${l.code}</option>`).join("")}</select></label>
+    </div>
+    ${freeSlots === null ? `<p class="note" role="status">Loading Olivier's free times…</p>` : !all.length ? `<p class="note" role="status">No free ${minutes}-minute time in the next ${LIVE_CONFIG.instant.horizonDays} days.</p>` : `
+    <p class="eyebrow pm-title">Free times · ${minutes}-minute lesson</p>
+    <div class="chips-row" role="group" aria-label="Day">${days.map((d) => `<button type="button" class="slot ${d === booking.day ? "on" : ""}" data-day="${d}">${d}</button>`).join("")}</div>
+    <div class="chips-row" id="bkTimes" role="group" aria-label="Start times">${times.map((t) => `<button type="button" class="slot ${t === booking.slot ? "on" : ""}" aria-pressed="${t === booking.slot}" data-pick="${t}">${localTime(t)}</button>`).join("")}</div>
+    ${booking.slot ? `<p class="note ok" role="status">Your lesson: <strong>${localDay(booking.slot)}, ${localTime(booking.slot)}–${localTime(booking.slot + minutes * MIN)}</strong> your time.</p>` : ""}`}
+    <div class="form-grid" id="bkDetails">
+      <label for="bkName">Your name<input id="bkName" name="name" required autocomplete="name" value="${esc(booking.name || "")}"></label>
+      <label for="bkEmail">Email<input id="bkEmail" name="email" type="email" required autocomplete="email" value="${esc(booking.email || "")}"></label>
+    </div>
+    <p class="form-error" id="bkError" hidden></p>
+    <button class="btn btn-primary btn-block" ${booking.slot ? "" : "disabled"}>${booking.credit ? "Confirm this time" : `Continue to payment · ${price(p)}`}</button>
+    <p class="note">None of these times suits you? <button type="button" class="link-btn" data-propose>Propose your own times</button>${talk ? ` · Want to talk first? ${talk}` : ""}</p>`;
+}
+
+function submitInstant(form) {
+  const d = new FormData(form);
+  booking.name = String(d.get("name") || "").trim();
+  booking.email = String(d.get("email") || "").trim();
+  const err = $("#bkError");
+  if (!booking.slot) { err.textContent = "Choose a time."; err.hidden = false; return; }
+  if (!booking.name || !form.bkEmail.checkValidity() || !booking.email) { err.textContent = "Enter your name and a valid email address."; err.hidden = false; return; }
+  const draft = { product: booking.product, need: booking.need, level: booking.level, start: booking.slot,
+    minutes: LIVE_MINUTES[booking.product], name: booking.name, email: booking.email, zone: visitorZone(), instant: true };
+  if (booking.credit) return useCredit(booking.credit.id, draft);
+  openBuy(booking.product, draft);                    // payment; the server holds the time while it is paid
 }
 
 // Two proposed times may not overlap: a lesson of `minutes` starting at one must end before the other.
@@ -137,6 +214,7 @@ function nextOpenDay(days, day, minutes) {
 
 // `next`: what to bring into view after this render: "times", "full", "details" or nothing.
 function renderBooking(next) {
+  if (booking.mode === "now") return renderInstant();
   // keep what the learner already typed: the form is drawn again at every choice
   if ($("#bkName")) { booking.name = $("#bkName").value; booking.email = $("#bkEmail").value; }
   const minutes = LIVE_MINUTES[booking.product];
@@ -469,11 +547,13 @@ function leaveRoom() {
 
 // ---- events ---------------------------------------------------------------
 document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-book],[data-day],[data-slot],[data-join],[data-leave],[data-book-credit],[data-choose],[data-answer-demo],[data-dismiss-full]");
+  const el = e.target.closest("[data-book],[data-day],[data-slot],[data-pick],[data-propose],[data-join],[data-leave],[data-book-credit],[data-choose],[data-answer-demo],[data-dismiss-full]");
   if (!el) return;
   const d = el.dataset;
   if ("book" in d) openBooking(d.book || null);
   else if (d.day) { booking.day = d.day; renderBooking("times"); }
+  else if (d.pick) { booking.slot = Number(d.pick); renderBooking(); bringIntoView($("#bkDetails"), [$("#bkName"), $("#bkEmail")].find((x) => !x.value) || null); }
+  else if ("propose" in d) openBooking(booking.product, booking.credit, "propose");
   else if ("dismissFull" in d) { booking.dismissFull = booking.day; renderBooking("details"); }
   else if (d.slot) {
     const t = Number(d.slot);
@@ -493,7 +573,11 @@ document.addEventListener("click", (e) => {
 });
 modal.addEventListener("change", (e) => {
   if (!$("#bookForm") || !e.target.closest("#bookForm")) return;
-  if (e.target.name === "product") { booking.product = e.target.value; renderBooking(); }
+  if (e.target.name === "product") {
+    booking.product = e.target.value;
+    if (booking.mode === "now") { booking.slot = null; freeSlots = null; loadFree(LIVE_MINUTES[booking.product]).then(() => renderBooking()); }
+    renderBooking();
+  }
   else if (e.target.name === "need") booking.need = e.target.value;
   else if (e.target.name === "level") booking.level = e.target.value;
 });
@@ -501,7 +585,7 @@ modal.addEventListener("submit", (e) => {
   const id = e.target.id;
   if (!["bookForm", "answerForm", "choiceForm"].includes(id)) return;
   e.preventDefault();
-  if (id === "bookForm") submitBooking(e.target);
+  if (id === "bookForm") (booking.mode === "now" ? submitInstant : submitBooking)(e.target);
   else if (id === "answerForm") submitAnswer(e.target);
   else submitChoice(e.target);
 });

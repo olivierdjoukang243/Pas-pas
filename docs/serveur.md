@@ -47,6 +47,29 @@ Le serveur est indispensable pour quatre raisons :
 
 ## Les routes
 
+### `GET /slots?minutes=60` — réservation immédiate
+Les heures de début libres pour une séance de cette durée. Le serveur les calcule à chaque
+appel depuis Google Agenda (API Calendar, `freebusy.query`, compte Google d'Olivier, adresse
+dans la variable d'environnement `AGENDA_OLIVIER`, jamais dans le code du site) :
+- agendas lus : l'agenda principal, où Preply écrit ses cours, et l'agenda secondaire
+  « Pas à Pas » (`AGENDA_PASAPAS`), où le serveur écrit les séances vendues ;
+- plages : 06:00–22:00 heure de Douala, tous les jours, moins tout ce qui est occupé ;
+- de 3 h à 14 jours à l'avance, pas de 30 min, 15 min de battement autour de chaque occupation
+  (`LIVE_CONFIG.instant` dans `js/live.js`) ;
+- moins les créneaux tenus pendant un paiement en cours.
+```json
+{ "free": [1760630400000, 1760632200000] }
+```
+**Paiement** : `POST /checkout` reçoit `booking.instant = true` et l'heure choisie. Le serveur
+revérifie qu'elle est libre (freebusy), la tient 15 min, puis, au webhook `payment.complete` :
+1. crée l'événement dans l'agenda **« Pas à Pas »**, qui n'est **pas** relié à Preply : rien ne
+   remonte vers Preply ;
+2. écrit à Olivier (e-mail, et WhatsApp si configuré) : « Séance Pas à Pas réservée : <jour>,
+   <heure> heure de Douala — bloquez ce créneau sur Preply » ;
+3. confirme à l'élève. Si l'heure a été prise entre-temps (cours Preply arrivé pendant le
+   paiement), l'élève choisit une autre heure ou il est remboursé.
+Une séance de pack (crédit) suit le même chemin, sans paiement.
+
 ### `GET /slots/taken`
 Les créneaux déjà réservés, pour que le site ne les propose plus.
 ```json
