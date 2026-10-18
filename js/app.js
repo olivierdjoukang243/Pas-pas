@@ -535,6 +535,7 @@ function openBuy(id, draft = null) {
     <h2>${p.name}</h2>
     <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} your time · ${draft.minutes} min · ${draft.need}` : p.contents}</p>
     <div class="form-grid">
+      ${p.kind === "live" ? "" : `<label for="coName">Your name (printed on your files)<input id="coName" name="name" type="text" maxlength="80" autocomplete="name"></label>`}
       <label for="coEmail">Email (to receive your ${p.kind === "live" ? "booking confirmation" : "files"})<input id="coEmail" name="email" type="email" required autocomplete="email" value="${draft ? draft.email : ""}"></label>
       <div id="coResidence"></div>
     </div>
@@ -588,7 +589,8 @@ function submitCheckout(form) {
   if (data.get("country") !== state.country) setCountry(data.get("country"), true);
   const inFCFA = state.country === "Cameroon" || m.phone;
   const charged = inFCFA ? fmtXAF(p.xaf) : fmtUSD(p.usd);
-  const order = { product: p.id, email: data.get("email"), country: state.country, method: data.get("pay"),
+  const order = { product: p.id, email: data.get("email"), name: String(data.get("name") || (checkoutDraft && checkoutDraft.name) || "").trim(),
+    country: state.country, method: data.get("pay"),
     phone: m.phone ? String(data.get("momo")).replace(/[\s.-]/g, "") : "",
     currency: inFCFA ? "XAF" : "USD", amount: inFCFA ? p.xaf : p.usd, preorder: isPre(p), booking: checkoutDraft };
 
@@ -628,21 +630,38 @@ async function payOnline(order) {
   }
 }
 
-// Back from the payment page: the server tells whether the payment is complete.
+// Back from the payment page: the server tells whether the payment is complete. The files take a
+// few seconds to prepare (watermarked for the buyer): the page waits for them, then offers the course.
 async function checkReturn() {
   const ref = new URLSearchParams(location.search).get("paid");
   if (!ref || !PAY_API) return;
   history.replaceState(null, "", location.pathname + location.hash);
   try {
-    const d = await (await fetch(`${PAY_API}/payments/${encodeURIComponent(ref)}`)).json();
+    let d;
+    for (let i = 0; i < 15; i++) {
+      d = await (await fetch(`${PAY_API}/payments/${encodeURIComponent(ref)}`)).json();
+      if (d.status !== "complete" || d.booking || d.preorder || d.delivery !== "preparing") break;
+      if (i === 0) openModal(`<div class="checkout"><h2>Payment received</h2><p>Preparing your files, in your name… a few seconds.</p></div>`);
+      await new Promise((r) => setTimeout(r, 2000));
+    }
     if (d.status !== "complete") {
       return openModal(`<div class="checkout"><h2>Payment not completed</h2><p>Nothing was charged. You can try again.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
     }
     if (d.booking) return bookedScreen(confirmBooking(d.booking, "paid", ref));
-    openModal(`<div class="checkout"><h2>Thank you</h2><p>Payment received. ${d.preorder ? `Your pre-order is confirmed: the files will be sent to ${esc(d.email)} as soon as they are ready. You can cancel for a full refund until then.` : `Your files are on their way to ${esc(d.email)}.`}</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
+    if (d.preorder) return openModal(`<div class="checkout"><h2>Thank you</h2><p>Payment received. Your pre-order is confirmed: the files will be sent to ${esc(d.email)} as soon as they are ready. You can cancel for a full refund until then.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
+    if (d.account_url) return openModal(`<div class="checkout"><h2>Thank you</h2><p>Payment received. Your course is ready: read it online now, and pick up where you left off for 12 months. A copy of the link and the download are in your email (${esc(d.email)}).</p>
+      <a class="btn btn-primary" href="${esc(d.account_url)}">Open my course</a> <button class="btn btn-ghost" data-modal-close>Later</button></div>`);
+    openModal(`<div class="checkout"><h2>Thank you</h2><p>Payment received. Your files will follow by email shortly, to ${esc(d.email)}.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
   } catch {
     openModal(`<div class="checkout"><h2>Checking your payment…</h2><p>We could not confirm it yet. You will receive an email as soon as it is confirmed.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
   }
+}
+
+// Buyers come back to their courses from the menu ("My courses"), once the payment server exists.
+if (PAY_API && document.querySelector("nav.nav")) {
+  const a = document.createElement("a");
+  a.href = `${PAY_API}/account`; a.textContent = "My courses";
+  document.querySelector("nav.nav").appendChild(a);
 }
 
 // ====== Placement test ======
