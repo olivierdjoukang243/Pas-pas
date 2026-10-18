@@ -49,11 +49,12 @@ button, input, select { font: inherit; }
 .ticker-set span { white-space: nowrap; padding: 0 1.6em; position: relative; }
 .ticker-set span::after { content: "•"; position: absolute; right: -.25em; opacity: .5; }
 @keyframes defile { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* fewer animations asked (often the phone's battery saver): the bar still scrolls, more
+   slowly, and always on one line; touching it pauses it */
 @media (prefers-reduced-motion: reduce) {
-  .ticker-track { animation: none; width: auto; justify-content: center; }
-  .ticker-set { flex-wrap: wrap; justify-content: center; }
-  .ticker-set[aria-hidden] { display: none; }
+  .ticker-track { animation-duration: 70s; }
 }
+.ticker:active .ticker-track { animation-play-state: paused; }
 .header { background: var(--papier); position: sticky; top: 0; z-index: 30; border-bottom: 1px solid var(--ligne); }
 .header-inner { display: flex; align-items: center; gap: 1.2em; padding: .8em 0; }
 .logo { font-family: var(--serif); font-weight: 700; font-size: 1.5rem; color: var(--bleu); text-decoration: none; display: inline-flex; align-items: center; gap: .45em; }

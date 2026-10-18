@@ -71,6 +71,11 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 
 GitHub Pages, branche `main` : https://olivierdjoukang243.github.io/Pas-pas/
 
+**Version des fichiers.** `index.html` et `policies.html` appellent `css/style.css?v=…` et
+`js/*.js?v=…`. À chaque modification du CSS ou d'un script, changez ce numéro (le même
+partout) : sans lui, un téléphone peut garder l'ancien CSS en mémoire avec la nouvelle page,
+et l'afficher en vrac.
+
 ## Ce qui manque pour vendre
 
 Le bouton « Buy » ouvre pour l'instant une fenêtre « Online checkout opens soon » : aucun paiement n'est encaissé. Restent à fournir ou à construire :
