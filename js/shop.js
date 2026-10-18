@@ -5,11 +5,11 @@ const SHOP = {
   whatsapp: "",       // international format without "+", e.g. 2376XXXXXXXX
   api: "",            // booking, payment and email server, e.g. "https://api.pasapasfrench.com"
   // Seller identity shown in the policies (required by consumer law in many countries).
-  // The EIN and the state filing number are not published: no law asks for them on the site.
+  // Since 18/10/2026 the seller is Olivier Djoukang in his own name: Notch Pay only opens
+  // merchant accounts to individuals living in French-speaking Africa.
   seller: {
-    name: "Nuvalex LLC",
-    status: "a limited liability company registered in Wyoming, USA",
-    address: "30 N Gould St, Ste R, Sheridan, WY 82801, United States",
-    manager: "Olivier Djoukang",
+    name: "Olivier Djoukang",
+    status: "a self-employed French teacher",
+    address: "Dschang, Cameroon",
   },
 };
