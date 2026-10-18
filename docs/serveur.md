@@ -162,7 +162,7 @@ Le formulaire « Get Module 1 free ».
 Le serveur doit :
 1. vérifier l'adresse et limiter les demandes : une par adresse et par jour, quelques-unes par adresse IP ;
 2. enregistrer le contact : adresse, prénom, pays, date, et le consentement `marketing` tel quel (la case est décochée par défaut) ;
-3. envoyer **tout de suite** `emails/module-gratuit.html` et sa version `.txt`. Les liens pointent vers l'édition web, le PDF vendu et les MP3 du module A0-1, nommés selon `noms.py` de l'atelier (`pas-a-pas-french_a0-complete_m01_vendue.pdf`, etc.). Ils peuvent rester publics : le module est offert ;
+3. envoyer **tout de suite** `emails/module-gratuit.html` et sa version `.txt`. Les liens pointent vers la copie publique du module A0-1, préparée par l'atelier dans `livraison/boutique/gratuit/free-module/` (déjà tatouée « Free sample »), sous les noms définitifs de `noms.py` (`PasAPas-French_A0-Free-Sample_01-Module-1_Book.pdf`, `…_Online.html`, `…_Memo.pdf`, et les MP3 dans `audio/`). Ils peuvent rester publics : le module est offert ;
 4. remplir `{{A0_PRICE}}` et `{{LIVE_PRICE}}` dans la devise du visiteur, ainsi que `{{UNSUBSCRIBE_URL}}`.
 
 Réponse : `204`, ou `{ "error": "…" }` avec un code 4xx. Seuls les contacts qui ont coché la case reçoivent d'autres e-mails ensuite.
