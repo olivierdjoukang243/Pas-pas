@@ -87,8 +87,17 @@ const LIVE = [
     desc: "A short, focused session: one grammar point, a pronunciation problem, or a quick speaking practice before an exam or an interview." },
   { id: "live-60", kind: "live", level: "Live", name: "Live lesson · 60 minutes", contents: "One to one with Olivier", usd: 15, xaf: 8200,
     desc: "A full session to study a topic in depth, work on a module, practise speaking or prepare an exam task." },
-  { id: "live-pack5", kind: "live", level: "Live", name: "5 live lessons · 60 minutes each", contents: "One to one with Olivier · use within 3 months", usd: 65, xaf: 35700,
+  { id: "live-pack5", kind: "live", level: "Live", lessons: 5, name: "5 live lessons · 60 minutes each", contents: "One to one with Olivier · book them over 2 months", usd: 65, xaf: 35700,
     desc: "A short course built around your goal, with a plan agreed in the first session and a short written follow-up after each one." },
+  // Plans (16/10/2026, Olivier: "make the best choices for me"): 60-minute lessons booked as you go over
+  // 2 months; the counter resets and the plan renews every 2 months unless cancelled before.
+  // Three tiers, the middle one highlighted; savings are computed against the single 60-minute lesson.
+  { id: "plan-4", kind: "live", plan: true, level: "Live", lessons: 4, name: "Light plan · 4 lessons every 2 months", contents: "One lesson every two weeks", usd: 52, xaf: 28400,
+    desc: "Enough to keep your French moving alongside the course: a regular date with Olivier to speak, ask and fix what holds you back." },
+  { id: "plan-8", kind: "live", plan: true, best: true, level: "Live", lessons: 8, name: "Steady plan · 8 lessons every 2 months", contents: "One lesson a week", usd: 96, xaf: 52500,
+    desc: "One lesson a week is the rhythm that turns study into a habit. You feel the progress from month to month, and you never lose the thread." },
+  { id: "plan-16", kind: "live", plan: true, level: "Live", lessons: 16, name: "Intensive plan · 16 lessons every 2 months", contents: "Two lessons a week", usd: 176, xaf: 96300,
+    desc: "For an exam date, a move or a new job: two lessons a week, the fastest way from understanding to speaking with ease." },
 ];
 const LIVE_NEEDS = ["Study a grammar point or a module", "Practise speaking or pronunciation", "Conversation practice", "Prepare an exam (DELF, DALF, TCF)", "Something else"];
 PRODUCTS.push(...LIVE);

@@ -47,6 +47,45 @@ Le serveur est indispensable pour quatre raisons :
 
 ## Les routes
 
+### `GET /slots?minutes=60` — réservation immédiate
+Les heures de début libres pour une séance de cette durée. Le serveur les calcule à chaque
+appel depuis Google Agenda (API Calendar, `freebusy.query`, compte Google d'Olivier, adresse
+dans la variable d'environnement `AGENDA_OLIVIER`, jamais dans le code du site) :
+- agendas lus : l'agenda principal, où Preply écrit ses cours, et l'agenda secondaire
+  « Pas à Pas » (`AGENDA_PASAPAS`), où le serveur écrit les séances vendues ;
+- plages : 06:00–22:00 heure de Douala, tous les jours, moins tout ce qui est occupé ;
+- de 3 h à 14 jours à l'avance, pas de 30 min, 15 min de battement autour de chaque occupation
+  (`LIVE_CONFIG.instant` dans `js/live.js`) ;
+- moins les créneaux tenus pendant un paiement en cours.
+```json
+{ "free": [1760630400000, 1760632200000] }
+```
+**Paiement** : `POST /checkout` reçoit `booking.instant = true` et l'heure choisie. Le serveur
+revérifie qu'elle est libre (freebusy), la tient 15 min, puis, au webhook `payment.complete` :
+1. crée l'événement dans l'agenda **« Pas à Pas »**, qui n'est **pas** relié à Preply : rien ne
+   remonte vers Preply ;
+2. écrit à Olivier (e-mail, et WhatsApp si configuré) : « Séance Pas à Pas réservée : <jour>,
+   <heure> heure de Douala — bloquez ce créneau sur Preply » ;
+3. confirme à l'élève. Si l'heure a été prise entre-temps (cours Preply arrivé pendant le
+   paiement), l'élève choisit une autre heure ou il est remboursé.
+Une séance de pack (crédit) suit le même chemin, sans paiement.
+
+### Forfaits et abonnements (`live-pack5`, `plan-4`, `plan-8`, `plan-16`)
+- Le premier paiement réserve la première séance et ouvre un crédit : 5, 4, 8 ou 16 séances de
+  60 min, valable **2 mois** à partir du paiement. Chaque séance suivante se réserve comme une
+  séance immédiate, sans paiement (crédit).
+- **Abonnement** (`plan-*`) : à l'échéance des 2 mois, le crédit repart à zéro avec un nouveau lot
+  de séances, au prix souscrit, jusqu'à résiliation ; les séances non réservées sont perdues.
+  - E-mail de rappel **7 jours avant** chaque renouvellement (date, montant, lien de résiliation).
+  - Carte et PayPal : prélèvement automatique, par un prestataire qui gère les paiements
+    récurrents (Paddle, Lemon Squeezy, Stripe Billing…). Notch Pay ne prélève pas sans accord.
+  - Mobile money : à l'échéance, une demande de paiement que l'élève confirme sur son téléphone ;
+    sans confirmation sous 3 jours, l'abonnement s'arrête.
+  - `POST /plans/:id/cancel` : arrête le prochain renouvellement ; les séances restantes restent
+    utilisables jusqu'à la fin de la période. Un clic, aucune question.
+  - Un renouvellement payé sans aucune séance réservée dans la nouvelle période est remboursé sur
+    demande dans les 7 jours (`policies.html`, section 5).
+
 ### `GET /slots/taken`
 Les créneaux déjà réservés, pour que le site ne les propose plus.
 ```json
@@ -123,7 +162,7 @@ Le formulaire « Get Module 1 free ».
 Le serveur doit :
 1. vérifier l'adresse et limiter les demandes : une par adresse et par jour, quelques-unes par adresse IP ;
 2. enregistrer le contact : adresse, prénom, pays, date, et le consentement `marketing` tel quel (la case est décochée par défaut) ;
-3. envoyer **tout de suite** `emails/module-gratuit.html` et sa version `.txt`. Les liens pointent vers l'édition web, le PDF vendu et les MP3 du module A0-1, nommés selon `noms.py` de l'atelier (`pas-a-pas-french_a0-complete_m01_vendue.pdf`, etc.). Ils peuvent rester publics : le module est offert ;
+3. envoyer **tout de suite** `emails/module-gratuit.html` et sa version `.txt`. Les liens pointent vers la copie publique du module A0-1, préparée par l'atelier dans `livraison/boutique/gratuit/free-module/` (déjà tatouée « Free sample »), sous les noms définitifs de `noms.py` (`PasAPas-French_A0-Free-Sample_01-Module-1_Book.pdf`, `…_Online.html`, `…_Memo.pdf`, et les MP3 dans `audio/`). Ils peuvent rester publics : le module est offert ;
 4. remplir `{{A0_PRICE}}` et `{{LIVE_PRICE}}` dans la devise du visiteur, ainsi que `{{UNSUBSCRIBE_URL}}`.
 
 Réponse : `204`, ou `{ "error": "…" }` avec un code 4xx. Seuls les contacts qui ont coché la case reçoivent d'autres e-mails ensuite.
