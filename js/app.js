@@ -593,7 +593,7 @@ function submitCheckout(form) {
     currency: inFCFA ? "XAF" : "USD", amount: inFCFA ? p.xaf : p.usd, preorder: isPre(p), booking: checkoutDraft };
 
   // Live payment: the server creates the Notch Pay transaction and sends back its page.
-  if (SHOP.api) return payOnline(order);
+  if (PAY_API) return payOnline(order);
   // Demo: nothing is charged; a live lesson is booked in this browser only.
   if (DEMO) {
     if (checkoutDraft) return bookedScreen(confirmBooking(checkoutDraft, "demo"));
@@ -615,7 +615,7 @@ async function payOnline(order) {
   const btn = $("#payBtn"), err = $("#formError");
   btn.disabled = true; btn.textContent = "Opening the secure payment page…";
   try {
-    const r = await fetch(`${SHOP.api}/checkout`, { method: "POST", headers: { "Content-Type": "application/json" },
+    const r = await fetch(`${PAY_API}/checkout`, { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...order, return_url: location.href.split(/[?#]/)[0] }) });
     const d = await r.json();
     if (!r.ok || !d.authorization_url) throw new Error(d.error || "no payment page");
@@ -629,10 +629,10 @@ async function payOnline(order) {
 // Back from the payment page: the server tells whether the payment is complete.
 async function checkReturn() {
   const ref = new URLSearchParams(location.search).get("paid");
-  if (!ref || !SHOP.api) return;
+  if (!ref || !PAY_API) return;
   history.replaceState(null, "", location.pathname + location.hash);
   try {
-    const d = await (await fetch(`${SHOP.api}/payments/${encodeURIComponent(ref)}`)).json();
+    const d = await (await fetch(`${PAY_API}/payments/${encodeURIComponent(ref)}`)).json();
     if (d.status !== "complete") {
       return openModal(`<div class="checkout"><h2>Payment not completed</h2><p>Nothing was charged. You can try again.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
     }
