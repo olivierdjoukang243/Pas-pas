@@ -8,7 +8,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231d2f6f'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>Pà</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261018b">
+  <link rel="stylesheet" href="css/style.css?v=20261018c">
 </head>
 <body>
 
@@ -24,7 +24,7 @@
 
 <main class="container policies">
   <h1 class="section-title">Policies</h1>
-  <p class="sub">Last updated: 16 October 2026. These policies apply to every purchase, free download, live lesson and review on this site, for customers in every country. In these policies, “we” means Nuvalex LLC, trading as Pas à Pas FRENCH.</p>
+  <p class="sub">Last updated: 18 October 2026. These policies apply to every purchase, free download, live lesson and review on this site, for customers in every country. In these policies, “we” means Olivier Djoukang, trading as Pas à Pas FRENCH.</p>
 
   <nav class="policy-toc" aria-label="Contents">
     <a href="#seller">Seller</a><a href="#terms">Terms of sale</a><a href="#withdrawal">Refunds and withdrawal</a><a href="#licence">Licence and teachers</a><a href="#live">Live lessons</a><a href="#exams">Exam papers</a><a href="#reviews">Reviews</a><a href="#privacy">Privacy</a><a href="#cookies">Cookies and storage</a><a href="#law">Applicable law</a>
@@ -32,7 +32,7 @@
 
   <section id="seller">
     <h2>1. Seller</h2>
-    <p>Pas à Pas FRENCH is a trade name of <b data-shop="seller.name"></b>, <span data-shop="seller.status"></span>, managed by <span data-shop="seller.manager"></span>, the author of the method.</p>
+    <p>Pas à Pas FRENCH is the trade name of <b data-shop="seller.name"></b>, <span data-shop="seller.status"></span> and the author of the method, who sells in his own name.</p>
     <p>Address: <span data-shop="seller.address"></span>.</p>
     <p id="contactP">Contact: <span id="contactWays">the contact details are published when the shop opens.</span></p>
   </section>
@@ -116,11 +116,11 @@
       <li>Your <b>review</b>, if you leave one.</li>
       <li><b>Marketing emails</b> (French tips and news) are sent only if you tick the box for them. Every email has a one-click unsubscribe link.</li>
     </ul>
-    <p><b>Who is responsible.</b> Nuvalex LLC, at the address above, is responsible for your data.</p>
+    <p><b>Who is responsible.</b> Olivier Djoukang, at the address above, is responsible for your data.</p>
     <p><b>Who processes your data for us.</b> Our payment providers, for payments; Google (Gmail), for sending emails; 8x8 (Jitsi as a Service), for the video lessons; geojs.io, which receives your IP address to find your country; open.er-api.com, to show indicative prices in your currency; Google Fonts, which receives your IP address to display the fonts; and the host of the site. Some of them are outside your country, in particular in the United States. We never sell your data.</p>
     <p><b>How long.</b> Order records are kept as long as accounting rules require. Marketing contacts are deleted when you unsubscribe or after 3 years without any contact. Lesson requests that are not booked are deleted after 3 months.</p>
     <p><b>Your rights.</b> You can ask to see, correct or delete your data, and object to its use, by writing to us. You may also complain to the data protection authority of your country.</p>
-    <p><b>Age.</b> Learners under 16 need the agreement of a parent or guardian to buy or book.</p>
+    <p><b>Age.</b> Purchases and bookings are made by adults. A child's course or live lessons are bought and booked by a parent or guardian, who receives the emails and the links.</p>
   </section>
 
   <section id="cookies">
@@ -130,17 +130,17 @@
 
   <section id="law">
     <h2>10. Applicable law</h2>
-    <p>These policies are governed by the law of the State of Wyoming, United States. If you buy as a consumer, you also keep the mandatory protections of the law of the country where you live. In case of a problem, write to us first: we answer every message and look for an amicable solution.</p>
+    <p>These policies are governed by the law of Cameroon, where the seller lives. If you buy as a consumer, you also keep the mandatory protections of the law of the country where you live. In case of a problem, write to us first: we answer every message and look for an amicable solution.</p>
   </section>
 </main>
 
 <footer class="footer">
   <div class="container">
-    <p class="legal">DELF, DALF and TCF are diplomas and tests of France Éducation international. Pas à Pas FRENCH is an independent course. © <span id="year"></span> Olivier Djoukang. Pas à Pas FRENCH is a trade name of Nuvalex LLC.</p>
+    <p class="legal">DELF, DALF and TCF are diplomas and tests of France Éducation international. Pas à Pas FRENCH is an independent course. © <span id="year"></span> Olivier Djoukang. Pas à Pas FRENCH is the trade name of Olivier Djoukang, Dschang, Cameroon.</p>
   </div>
 </footer>
 
-<script src="js/shop.js?v=20261018b"></script>
+<script src="js/shop.js?v=20261018c"></script>
 <script>
   const get = (path) => path.split(".").reduce((o, k) => (o || {})[k], SHOP) || "";
   document.querySelectorAll("[data-shop]").forEach((el) => { el.textContent = get(el.dataset.shop); });

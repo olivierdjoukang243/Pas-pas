@@ -11,7 +11,7 @@ livraison (poste de l'atelier, serveur, stockage) : changer les mots de passe et
 
 ## 2. Faire retirer la copie
 La plupart des hébergeurs, réseaux sociaux, plateformes de partage et Google acceptent une
-demande de retrait au titre du DMCA (droit américain), qui convient à Nuvalex LLC.
+demande de retrait au titre du DMCA (droit américain), que tout titulaire de droits d'auteur peut faire, où qu'il vive.
 Chaque grande plateforme a son formulaire : Google (https://reportcontent.google.com/),
 Facebook et Instagram, YouTube, Telegram (abuse@telegram.org), Scribd, et les hébergeurs.
 Sinon, on écrit à l'adresse « abuse » ou « DMCA agent » de l'hébergeur, avec le modèle
@@ -20,8 +20,8 @@ ci-dessous.
 ```
 Subject: DMCA takedown notice — infringing copy of "Pas à Pas FRENCH"
 
-I am writing on behalf of Nuvalex LLC, 30 N Gould St, Ste R, Sheridan, WY 82801, United States,
-which sells the course "Pas à Pas FRENCH" written by Olivier Djoukang, the copyright owner.
+I am Olivier Djoukang, Dschang, Cameroon, the author and copyright owner of the course
+"Pas à Pas FRENCH", which I sell under that name.
 
 1. Copyrighted work: "Pas à Pas FRENCH — [titre du produit]", © Olivier Djoukang,
    sold at [adresse du site].

@@ -51,7 +51,7 @@ l'information, je fais le reste.
 | 3.2 | Créer le compte Payhip au nom de Nuvalex LLC (vérifier d'abord frais et conditions sur payhip.com) | Olivier | Le compte est validé |
 | 3.3 | Créer les 16 produits sur Payhip : zip, prix en dollars, impression du nom de l'acheteur dans les PDF activée ; plus le Module 1 gratuit | Olivier | 17 liens de produit |
 | 3.4 | Brancher les boutons « Buy » et « Get Module 1 free » sur ces liens | Claude | Un achat test réussit de bout en bout |
-| 3.5 | Vérifier chez Notch Pay que Nuvalex (ou vous, au Cameroun) peut encaisser MoMo et Orange Money par lien de paiement | Olivier | Un lien de paiement fonctionne |
+| 3.5 | Vérifier chez Notch Pay que Nuvalex (ou vous, au Cameroun) peut encaisser MoMo et Orange Money par lien de paiement. **18/10/2026 : Nuvalex n'est pas admise (personnes physiques d'Afrique francophone seulement) ; compte ouvert au nom d'Olivier, et le site le nomme vendeur.** | Olivier | Un lien de paiement fonctionne |
 | 3.6 | Brancher MoMo et Orange Money sur ce lien ; livraison à la main, avec `tatouer.py` | Ensemble | Un achat test MoMo réussit |
 | 3.7 | Séances en attendant le serveur : la demande d'heures part sur WhatsApp ou par e-mail | Claude | Une demande test vous arrive |
 | 3.8 | Relecture finale, puis ouverture : un premier achat réel | Ensemble | La première vente |
