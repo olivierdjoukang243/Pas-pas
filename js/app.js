@@ -617,8 +617,10 @@ async function payOnline(order) {
   try {
     const r = await fetch(`${PAY_API}/checkout`, { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...order, return_url: location.href.split(/[?#]/)[0] }) });
-    const d = await r.json();
-    if (!r.ok || !d.authorization_url) throw new Error(d.error || "no payment page");
+    const d = await r.json().catch(() => ({}));
+    // A refusal explained by the server (method not open yet, wrong number…) is shown as is.
+    if (!r.ok && d.error) { err.textContent = d.error; err.hidden = false; btn.disabled = false; renderPayDetails(); return; }
+    if (!d.authorization_url) throw new Error("no payment page");
     location.href = d.authorization_url;
   } catch (e) {
     err.textContent = "The payment page could not be opened. Nothing was charged. Please try again in a moment.";
