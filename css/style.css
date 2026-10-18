@@ -41,6 +41,19 @@ button, input, select { font: inherit; }
 /* Barre haute + header */
 .topbar { background: var(--bleu); color: #fff; font-size: .82rem; }
 .topbar-inner { display: flex; justify-content: space-between; gap: 1em; padding: .5em 0; }
+/* the bar scrolls its messages from right to left, in a loop; it stops under the pointer */
+.ticker { overflow: hidden; padding: .5em 0; }
+.ticker-track { display: flex; width: max-content; animation: defile 38s linear infinite; }
+.ticker:hover .ticker-track, .ticker:focus-within .ticker-track { animation-play-state: paused; }
+.ticker-set { display: flex; flex-shrink: 0; }
+.ticker-set span { white-space: nowrap; padding: 0 1.6em; position: relative; }
+.ticker-set span::after { content: "•"; position: absolute; right: -.25em; opacity: .5; }
+@keyframes defile { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; width: auto; justify-content: center; }
+  .ticker-set { flex-wrap: wrap; justify-content: center; }
+  .ticker-set[aria-hidden] { display: none; }
+}
 .header { background: var(--papier); position: sticky; top: 0; z-index: 30; border-bottom: 1px solid var(--ligne); }
 .header-inner { display: flex; align-items: center; gap: 1.2em; padding: .8em 0; }
 .logo { font-family: var(--serif); font-weight: 700; font-size: 1.5rem; color: var(--bleu); text-decoration: none; display: inline-flex; align-items: center; gap: .45em; }
@@ -449,6 +462,8 @@ details.mods { margin: .5em 0 0; padding: 0; background: none; box-shadow: none;
 .slot:disabled:hover { border-color: var(--ligne); }
 .book-len { grid-template-columns: repeat(3, 1fr); }
 .book-len b { color: var(--bleu); }
+.book-len .pm-t { display: flex; flex-direction: column; gap: .15em; }
+.book-len .pm-t small { color: var(--gris); }
 .my-sessions { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.2em 1.4em; margin-bottom: 1.2rem; border-left: 5px solid var(--vert); }
 .my-sessions h3 { margin: 0 0 .6em; color: var(--bleu); }
 .session { display: grid; grid-template-columns: 1fr auto auto; gap: 1em; align-items: center; padding: .7em 0; border-top: 1px solid var(--ligne); }

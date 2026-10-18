@@ -899,6 +899,18 @@ lookupCountry().then((code) => {
 renderResidence();
 loadReviews();
 { const t = new URLSearchParams(location.search).get("review"); if (t) openReview(t); }
+// ?next=<product id> or ?next=live: the "Your next step" button at the end of every module,
+// level check and self-assessment (workshop: etape_suivante.py) lands on what comes next.
+function openNext(id) {
+  if (id === "live") return bringIntoView($("#live"));
+  const p = byId(id);
+  if (!p) return;
+  if (p.kind === "exam") return bringIntoView($("#exams"));
+  if (p.kind === "method") return bringIntoView($("#method") || $("#levels"));
+  state.level = p.level; store.set("level", p.level); renderLevelTabs(); renderLevelPanel();
+  const row = document.querySelector(`#levelPanel [data-buy="${p.id}"]`);
+  bringIntoView(row ? row.closest("li") || row : $("#levels"));
+}
 const contact = contactHTML();
 if (contact) { $("#contactLine").innerHTML = contact; $("#contactLine").hidden = false; }
 $("#year").textContent = new Date().getFullYear();
@@ -906,3 +918,4 @@ renderCurrencyPicker();
 renderLevelTabs();
 renderPrices();
 refreshRates().then(renderPrices);
+{ const n = new URLSearchParams(location.search).get("next"); if (n) setTimeout(() => openNext(n), 300); }

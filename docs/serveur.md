@@ -194,7 +194,7 @@ Olivier reçoit un jeton modérateur pour le même salon (lien dans son e-mail d
 
 ### Les fichiers
 1. **Jamais de fichier public.** Les productions sont stockées hors du site (un stockage privé). Seul le module gratuit peut avoir un lien stable, et il est tatoué « Free sample ».
-2. **Tatouage à la livraison.** Après `payment.complete`, le serveur fait des copies au nom de l'acheteur (nom, e-mail, référence de commande) avec `tatouer.py` de l'atelier, ou la même logique. Il les inscrit au registre des licences, puis envoie les liens. Aucun fichier ne part sans tatouage.
+2. **Tatouage à la livraison, sans intervention.** Le stockage privé reçoit les dossiers `livraison/boutique/stock-prive/<produit>/` de l'atelier (un dossier par identifiant de `js/products.js`, avec `manifeste.json` : rôle, taille et SHA-256 de chaque fichier). Après `payment.complete`, le serveur exécute `livrer_cours.py` de l'atelier, ou la même logique : contrôle des empreintes, copies au nom de l'acheteur (nom, e-mail, référence de commande) avec `tatouer.py`, inscription au registre des licences, `.zip` de la commande, puis envoi des liens. Olivier n'intervient pas. Aucun fichier ne part sans tatouage, et un dossier sans adresse du site (`"adresse": ""` dans le manifeste) ne se vend pas.
 3. **Liens personnels.** Liens signés (HMAC), liés à la commande, valables 7 jours et 5 téléchargements, puis renouvelables sur demande de l'acheteur.
 4. **Alerte de partage.** Une même commande téléchargée depuis plus de 5 adresses IP, ou plus de 3 pays, en 24 h suspend les liens et prévient Olivier.
 5. **Éditions web.** Elles s'ouvrent par un lien personnel, et chaque page servie est tatouée au vol. Le jeton n'est valable que pour sa commande.
