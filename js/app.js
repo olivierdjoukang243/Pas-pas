@@ -349,7 +349,7 @@ function methodSaving() {
 // ====== Levels ======
 function renderLevelTabs() {
   $("#levelTabs").innerHTML = LEVELS.map((l) => `<button role="tab" aria-selected="${l.code === state.level}" data-level="${l.code}" class="${l.status === "prep" ? "prep" : ""}" style="--h:${l.hue}">
-    <b>${l.code}</b><span>${l.status === "prep" ? "In preparation" : l.name}</span></button>`).join("");
+    <b>${l.name.replace(/ (\d)$/, "\u00a0$1")}</b><span>${l.code}${l.status === "prep" ? " · In preparation" : ""}</span></button>`).join("");
 }
 
 // Module titles come from the workshop export (js/modules.js), never typed here.
