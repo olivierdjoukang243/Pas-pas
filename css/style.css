@@ -291,15 +291,16 @@ details p { margin: .7em 0 0; color: #3b3f4a; }
 .sub { margin: 0; color: #3b3f4a; max-width: 62ch; }
 .level-tabs { display: grid; grid-template-columns: repeat(7, 1fr); gap: .5rem; }
 .level-tabs button { --h: 222; border: 2px solid var(--ligne); background: #fff; border-radius: 14px; padding: .7em .4em; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: .1em; color: var(--encre); }
-.level-tabs b { font-family: var(--serif); font-size: 1.5rem; color: hsl(var(--h) 55% 32%); }
-.level-tabs span { font-size: .72rem; color: var(--gris); text-align: center; }
+.level-tabs button { justify-content: center; }
+.level-tabs b { font-family: var(--serif); font-size: 1.15rem; line-height: 1.15; text-align: center; text-wrap: balance; color: hsl(var(--h) 55% 32%); }
+.level-tabs span { font-size: .72rem; font-weight: 600; letter-spacing: .04em; color: var(--gris); text-align: center; }
 .level-tabs button[aria-selected="true"] { background: hsl(var(--h) 55% 30%); border-color: hsl(var(--h) 55% 30%); }
 .level-tabs button[aria-selected="true"] b, .level-tabs button[aria-selected="true"] span { color: #fff; }
 .level-panel { margin-top: 1rem; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; }
 .lp-head { --h: 222; display: flex; justify-content: space-between; align-items: center; gap: 1.5em; flex-wrap: wrap; padding: 1.6em; color: #fff; background: linear-gradient(140deg, hsl(var(--h) 60% 30%), hsl(calc(var(--h) + 20) 55% 22%)); }
 .lp-title { display: flex; gap: 1em; align-items: center; min-width: 0; flex: 1 1 320px; }
-.lp-code { font-family: var(--serif); font-size: 3rem; font-weight: 700; line-height: 1; }
-.lp-title h3 { margin: 0; font-family: var(--serif); font-size: 1.5rem; }
+.lp-code { font-family: var(--serif); font-size: 1.6rem; opacity: .85; font-weight: 700; line-height: 1; }
+.lp-title h3 { margin: 0; font-family: var(--serif); font-size: 2rem; }
 .lp-title p { margin: .2em 0 0; opacity: .9; max-width: 55ch; }
 .lp-buy { display: flex; flex-direction: column; align-items: flex-start; gap: .35em; }
 .lp-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; opacity: .85; }
@@ -491,9 +492,10 @@ details.mods { margin: .5em 0 0; padding: 0; background: none; box-shadow: none;
   .hero-inner, .builder-inner, .box-inner { grid-template-columns: 1fr; }
   .steps { grid-template-columns: repeat(2, 1fr); }
   .promise-grid, .pay-grid { grid-template-columns: 1fr; }
-  .level-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .level-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .level-tabs button { min-width: 0; padding: .6em .2em; }
   .level-tabs span { font-size: .64rem; }
+  .level-tabs b { font-size: .84rem; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .inside-grid, .method, .sample, .live-steps { grid-template-columns: 1fr; }
   .mod-list { columns: 1; }
@@ -611,3 +613,10 @@ details.mods { margin: .5em 0 0; padding: 0; background: none; box-shadow: none;
 .plan-offer { margin-top: 1em; padding: 1em 1.1em; border-radius: var(--radius); background: #f4f6fb; }
 .plan-offer h3 { margin: .2em 0 .4em; color: var(--bleu); font-size: 1.05rem; }
 .plan-offer p { font-size: .9rem; }
+
+/* "My courses": buyers sign in to read their courses (payment server, serveur/compte.py). */
+.account-link { margin-left: auto; display: inline-flex; align-items: center; gap: .45em; padding: .5em 1em; border: 2px solid var(--bleu); border-radius: 999px; color: var(--bleu); font-weight: 600; font-size: .92rem; text-decoration: none; white-space: nowrap; }
+.account-link::before { content: ""; width: .95em; height: .95em; background: currentColor; -webkit-mask: radial-gradient(circle at 50% 30%, #000 28%, transparent 30%), radial-gradient(ellipse at 50% 100%, #000 45%, transparent 47%); mask: radial-gradient(circle at 50% 30%, #000 28%, transparent 30%), radial-gradient(ellipse at 50% 100%, #000 45%, transparent 47%); }
+.account-link:hover { background: var(--bleu); color: #fff; }
+.account-link[hidden] { display: none; }
+@media (max-width: 640px) { .account-link { padding: .4em .8em; font-size: .85rem; } }

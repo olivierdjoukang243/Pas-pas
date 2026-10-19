@@ -141,7 +141,7 @@ function setCountry(name, manual) {
   if ($("#checkoutForm")) { renderResidenceCheckout(); renderPayOptions(); }
   if (manual) {
     const methods = methodsFor(name).map(([, m]) => m.label).join(", ");
-    announce(`Country of residence: ${name}. Prices in ${CURRENCIES[state.currency].label}${before !== state.currency ? " (updated)" : ""}. Payment: ${methods}.`);
+    announce(`Your country is now set to ${name}. Prices are shown in ${CURRENCIES[state.currency].label}${before !== state.currency ? " (updated)" : ""}, and you can pay with ${methods}.`);
     flashUpdated();
   }
 }
@@ -197,7 +197,7 @@ function pickerFill(box, q = "") {
   const list = options.filter((o) => !f || fold(o.label + " " + (o.keys || "")).includes(f));
   box.querySelector(".picker-list").innerHTML = list.length
     ? list.map((o, i) => `<li role="option" data-value="${esc(o.value)}" aria-selected="${o.value === v}" class="${i === 0 && f ? "active" : ""}">${esc(o.label)}${o.hint ? ` <small>${esc(o.hint)}</small>` : ""}</li>`).join("")
-    : `<li class="none">No match</li>`;
+    : `<li class="none">No matches</li>`;
 }
 function pickerOpen(box, open) {
   document.querySelectorAll(".picker-pop:not([hidden])").forEach((p) => { if (p.parentElement !== box) { p.hidden = true; p.parentElement.querySelector(".picker-btn").setAttribute("aria-expanded", "false"); } });
@@ -247,23 +247,23 @@ function renderCurrencyPicker() {
   const box = $("#currencyPicker");
   if (!box) return;
   box.innerHTML = pickerHTML("currency", { label: "Currency", value: state.currency,
-    options: Object.entries(CURRENCIES).map(([k, c]) => ({ value: k, label: c.label, hint: c.perUSD ? "indicative" : "", keys: currencyName(k) })),
+    options: Object.entries(CURRENCIES).map(([k, c]) => ({ value: k, label: c.label, hint: c.perUSD ? "estimate" : "", keys: currencyName(k) })),
     onChange: (v) => {
       state.currency = v; store.set("currencyChoice", v);
       renderCurrencyPicker(); renderPrices(); if ($("#checkoutForm")) renderPayDetails();
-      announce(`Prices now shown in ${CURRENCIES[v].label}${["USD", "XAF", "XOF"].includes(v) ? "" : " (indicative; you pay in US dollars or FCFA)"}.`);
+      announce(`Prices are now shown in ${CURRENCIES[v].label}.${["USD", "XAF", "XOF"].includes(v) ? "" : " These are estimates. You'll be charged in US dollars or FCFA."}`);
       flashUpdated();
     } });
 }
 
-const residenceNote = () => countryChosen() ? "chosen by you" : "detected automatically";
+const residenceNote = () => countryChosen() ? "your choice" : "detected automatically";
 
 function renderResidence() {
   const box = $("#residenceLine");
   if (!box) return;
   box.innerHTML = `<div class="res-field"><span class="res-label" id="resCountryLabel">Your country of residence <small>(${residenceNote()})</small></span>
     ${pickerHTML("resCountry", { label: "Country of residence", options: COUNTRY_OPTIONS(), value: state.country, onChange: (v) => setCountry(v, true) })}</div>
-    <span>Payment methods shown: ${methodsFor(state.country).map(([, m]) => m.label).join(", ")}.</span>`;
+    <span>Ways to pay: ${methodsFor(state.country).map(([, m]) => m.label).join(", ")}.</span>`;
   renderPayLocal();
 }
 
@@ -276,9 +276,9 @@ function renderPayCurrency() {
   const c = state.currency, label = CURRENCIES[c].label;
   const exact = c === "USD" || ((c === "XAF" || c === "XOF") && localFCFA());
   box.innerHTML = `<h3>Your currency: ${esc(label)}</h3><p>${c === "USD"
-    ? "Prices are shown in US dollars, the currency card and PayPal payments are charged in."
-    : exact ? `Prices are shown in ${esc(label)}: the exact price paid with your local payment methods. Card and PayPal are charged in US dollars.`
-    : `Prices in ${esc(label)} are estimates${CURRENCIES[c].perUSD ? ", updated daily" : ""}. Card and PayPal are charged in US dollars; your bank converts the amount.`}
+    ? "Prices are shown in US dollars, the currency used for card and PayPal payments."
+    : exact ? `Prices are shown in ${esc(label)}. This is the exact amount you'll pay with local payment methods. Card and PayPal payments are charged in US dollars.`
+    : `Prices in ${esc(label)} are estimates${CURRENCIES[c].perUSD ? ", updated daily" : ""}. Card and PayPal payments are charged in US dollars, and your bank handles the conversion.`}
     You can change the currency at the top of the page.</p>`;
 }
 
@@ -290,7 +290,7 @@ function renderPayLocal() {
   box.hidden = !local.length;
   if (!local.length) return;
   box.innerHTML = `<h3>${esc(state.country)}</h3>
-    <p>${local.map(([, m]) => m.label).join(" or ")}, charged in ${local.some(([, m]) => m.phone) ? "FCFA" : "local currency"}. You confirm the payment on your phone.</p>
+    <p>Pay with ${local.map(([, m]) => m.label).join(" or ")} in ${local.some(([, m]) => m.phone) ? "FCFA" : "local currency"}, then confirm the payment on your phone.</p>
     <div class="chips">${local.map(([k, m]) => `<span class="chip chip-${k}">${m.label}</span>`).join("")}</div>`;
 }
 
@@ -321,6 +321,9 @@ function amount(usd, xaf, currency = state.currency) {
   return "≈ " + fmtMoney(usd * CURRENCIES[currency].perUSD, currency);
 }
 const price = (p) => amount(p.usd, p.xaf);
+// Short product name for notes: "A1 Part 1", "A0".
+const shortName = (x) => (x.kind === "part" ? `${x.level} Part ${x.part}` : x.level);
+
 // Pre-order: not deliverable yet, paid now and sent as soon as it is ready (policies, 2-3).
 const isPre = (p) => p.ready === false && !!p.preorder;
 const buyable = (p) => p.ready !== false || isPre(p);
@@ -328,7 +331,7 @@ const buyLabel = (p) => isPre(p) ? "Pre-order" : "Buy";
 // The parts of a pack already deliverable: sent at once with a pre-order of the pack.
 const readyParts = (p) => p.kind === "level" ? PRODUCTS.filter((x) => x.level === p.level && x.kind === "part" && x.ready !== false)
   : p.kind === "method" ? PRODUCTS.filter((x) => ["part", "level"].includes(x.kind) && x.ready !== false && !(x.kind === "part" && PRODUCTS.some((l) => l.kind === "level" && l.level === x.level && l.ready !== false))) : [];
-const PRE_NOTE = "Delivered by email as soon as it is ready. Cancel for a full refund until then.";
+const PRE_NOTE = "We'll email your files as soon as they're ready, and you can cancel for a full refund until then.";
 
 // Savings are computed from the catalogue, never typed by hand.
 function levelSaving(code) {
@@ -346,7 +349,7 @@ function methodSaving() {
 // ====== Levels ======
 function renderLevelTabs() {
   $("#levelTabs").innerHTML = LEVELS.map((l) => `<button role="tab" aria-selected="${l.code === state.level}" data-level="${l.code}" class="${l.status === "prep" ? "prep" : ""}" style="--h:${l.hue}">
-    <b>${l.code}</b><span>${l.status === "prep" ? "In preparation" : l.name}</span></button>`).join("");
+    <b>${l.name.replace(/ (\d)$/, "\u00a0$1")}</b><span>${l.code}${l.status === "prep" ? " · In preparation" : ""}</span></button>`).join("");
 }
 
 // Module titles come from the workshop export (js/modules.js), never typed here.
@@ -367,8 +370,8 @@ function modulesHTML(p) {
   const count = groups.reduce((s, g) => s + g.data.modules.length, 0);
   const lists = groups.map((g) => `<ol class="mod-list" start="${g.offset + 1}">
       ${g.data.modules.map((m) => `<li>${m.titre}</li>`).join("")}
-    </ol>${g.data.bilan ? `<p class="mod-bilan">${/^level check/i.test(g.data.bilan.titre) ? g.data.bilan.titre : `Level check · ${g.data.bilan.titre}`}</p>` : ""}`).join("");
-  return `<details class="mods"><summary>See the ${count} modules</summary>${lists}</details>`;
+    </ol>${g.data.bilan ? `<p class="mod-bilan">${/^level check/i.test(g.data.bilan.titre) ? g.data.bilan.titre : `Progress test · ${g.data.bilan.titre}`}</p>` : ""}`).join("");
+  return `<details class="mods"><summary>See all ${count} modules</summary>${lists}</details>`;
 }
 
 function productRow(p) {
@@ -376,14 +379,14 @@ function productRow(p) {
   return `<li class="prod">
     <div class="prod-body">
       <strong>${p.name}</strong>
-      <small>${p.contents}${saving ? ` · <span class="ok">save ${amount(saving.usd, saving.xaf)} vs two parts</span>` : ""}</small>
+      <small>${p.contents}${saving ? ` · <span class="ok">save ${amount(saving.usd, saving.xaf)} vs. buying both parts</span>` : ""}</small>
       <p>${p.desc}</p>
       ${modulesHTML(p)}
     </div>
     <div class="prod-buy">
       <span class="price">${price(p)}</span>
       ${!buyable(p) ? `<span class="tag soon">In preparation</span>` : `<button class="btn ${p.kind === "level" ? "btn-primary" : "btn-ghost"} mini" data-buy="${p.id}">${buyLabel(p)}</button>`}
-      ${isPre(p) ? `<span class="pre-note">${readyParts(p).length ? `${readyParts(p).map((x) => x.name.split(" — ")[0].replace("French ", "")).join(", ")} sent at once, the rest as soon as it is illustrated. Cancel for a refund of what is not yet sent.` : `Being illustrated · ${PRE_NOTE}`}</span>` : ""}
+      ${isPre(p) ? `<span class="pre-note">${readyParts(p).length ? `You get ${readyParts(p).map((x) => shortName(x)).join(", ")} right away, and the rest follows as soon as it's illustrated. You can cancel for a refund on anything not yet sent.` : `Illustrations are in progress. ${PRE_NOTE}`}</span>` : ""}
     </div>
   </li>`;
 }
@@ -395,7 +398,7 @@ function renderLevelPanel() {
       <div class="lp-title"><span class="lp-code">${l.code}</span><div><h3>${l.name}</h3><p>${l.status === "prep" ? l.note : LEVEL_INTRO[l.code]}</p></div></div>
     </div>`;
   if (l.status === "prep") {
-    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} is not on sale yet. The levels on sale today run from A0 to B1.</p>
+    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} isn't on sale yet. Levels A0 to B1 are available now.</p>
       <button class="btn btn-ghost mini" data-level="B1">See B1</button></div>`;
   } else {
     $("#levelPanel").innerHTML = head + `<ol class="prods">${products.map(productRow).join("")}</ol>`;
@@ -410,27 +413,27 @@ function renderMethod() {
       <p class="eyebrow">Best value</p>
       <h2>The Complete Method</h2>
       <p>${m.desc}</p>
-      <p class="method-meta">${m.contents} · <span>${amount(s.usd, s.xaf)} less than the four levels bought separately</span></p>
+      <p class="method-meta">${m.contents} · <span>${amount(s.usd, s.xaf)} less than buying the four levels separately</span></p>
     </div>
     <div class="method-buy">
       <span class="price">${price(m)}</span>
       ${!buyable(m) ? `<span class="tag soon">In preparation: on sale once every level is illustrated</span>` : `<button class="btn btn-light" data-buy="${m.id}">${isPre(m) ? "Pre-order the Complete Method" : "Buy the Complete Method"}</button>`}
-      ${isPre(m) ? `<span class="pre-note light">${readyParts(m).map((x) => x.name.split(" — ")[0].replace("French ", "")).join(" and ")} sent at once, each other part as soon as it is illustrated. Cancel for a refund of what is not yet sent.</span>` : ""}
+      ${isPre(m) ? `<span class="pre-note light">You get ${readyParts(m).map((x) => shortName(x)).join(" and ")} right away, and each remaining part follows as soon as it's illustrated. You can cancel for a refund on anything not yet sent.</span>` : ""}
     </div>`;
 }
 
 // Categories, not brands: what each kind of tool usually offers.
 function renderCompare() {
   const rows = [
-    ["How you pay", `One payment, from ${price(byId("a0-complete"))}. The files are yours`, "Monthly or yearly subscription", "Per hour, every time"],
+    ["How you pay", `One payment, from ${price(byId("a0-complete"))}, and the files are yours to keep`, "Monthly or yearly subscription", "Pay by the hour, every lesson"],
     ["Grammar explained in English", "Yes, in every module", "Short tips, mostly practice", "Depends on the tutor"],
-    ["Step-by-step path with level checks", "56 modules, 7 level checks, A0 to B1", "Yes, inside the app", "Depends on the tutor"],
-    ["Works offline", "PDF and MP3 on any device", "Partly, in the app", "No"],
-    ["Answer keys you keep", "Every exercise", "Instant marking, nothing to keep", "Depends on the tutor"],
+    ["Step-by-step course with progress tests", "56 modules, 7 progress tests, A0 to B1", "Yes, in the app", "Depends on the tutor"],
+    ["Works offline", "PDFs and MP3s on any device", "Partly, in the app", "No"],
+    ["Answer keys to keep", "For every exercise", "Instant grading, nothing to keep", "Depends on the tutor"],
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
-    ["Exam practice papers", "DELF A1 to B2 and the five TCF, timed like the real exam", "Rarely", "Depends on the tutor"],
-    ["Try before you buy", "Module 1 free, in full", "Free version or trial, then subscription", "Sometimes a trial lesson"],
-    ["Pay the way your country pays", "Card and PayPal everywhere, plus the local methods of your country", "Card or app store", "Varies"],
+    ["Exam practice tests", "DELF A1 to B2 and all five TCF versions, timed like the real exam", "Rarely", "Depends on the tutor"],
+    ["Try before you buy", "All of Module 1, free", "Free version or trial, then a subscription", "Sometimes a trial lesson"],
+    ["Pay the way you're used to", "Card and PayPal worldwide, plus local payment methods where you live", "Card or app store", "Varies"],
   ];
   $("#compareTable").innerHTML = `<table class="compare">
     <thead><tr><th scope="col"><span class="sr-only">Feature</span></th><th scope="col" class="us">Pas à Pas FRENCH</th><th scope="col">Language apps</th><th scope="col">Hourly tutors</th></tr></thead>
@@ -446,9 +449,9 @@ function examFormat(f) {
 
 function formatHTML(x) {
   if (!x) return "";
-  return `<details class="exam-format"><summary>Paper format</summary>
-    <table>${x.papers.map((p) => `<tr><th>${p.name}<span>${p.time}${p.marks ? ` · /${p.marks}` : ""}${p.prep ? `<br>preparation ${p.prep}` : ""}</span></th><td>${p.detail}</td></tr>`).join("")}</table>
-    <p>${x.written ? `Written papers: ${x.written} in one sitting. ` : ""}${x.pass}.</p>
+  return `<details class="exam-format"><summary>Test format</summary>
+    <table>${x.papers.map((p) => `<tr><th>${p.name}<span>${p.time}${p.marks ? ` · /${p.marks}` : ""}${p.prep ? `<br>preparation time: ${p.prep}` : ""}</span></th><td>${p.detail}</td></tr>`).join("")}</table>
+    <p>${x.written ? `Written sections: ${x.written} in one sitting. ` : ""}${x.pass}.</p>
     ${x.nclc ? `<p class="nclc-target"><strong>${x.nclc.target}</strong></p>
     <div class="nclc-wrap"><table class="nclc"><tr><th>NCLC</th>${x.nclc.rows.map((r) => `<th>${r.name}</th>`).join("")}</tr>
     ${x.nclc.levels.map((l, i) => `<tr${l === "7" ? ' class="t7"' : ""}><th>${l}</th>${x.nclc.rows.map((r) => `<td>${r.scores[i]}</td>`).join("")}</tr>`).slice().reverse().join("")}</table></div>
@@ -464,7 +467,7 @@ function renderExams() {
     <p>${p.desc}</p>
     ${formatHTML(examFormat(p.format))}
     <div class="exam-buy"><span class="price">${price(p)}</span>${buyable(p) ? `<button class="btn btn-primary mini" data-buy="${p.id}">${buyLabel(p)}</button>` : `<span class="exam-wait">Not on sale yet</span>`}</div>
-    ${isPre(p) ? `<p class="pre-note">The papers are being written. ${PRE_NOTE}</p>` : ""}
+    ${isPre(p) ? `<p class="pre-note">The tests are being written. ${PRE_NOTE}</p>` : ""}
   </div>`).join("") + EXAMS_SOON.map((e) => `<div class="pay-card exam-card">
     <span class="tag soon">Coming soon</span>
     <h3>${e.name}</h3>
@@ -483,16 +486,16 @@ function renderLive() {
   </div>`).join("");
   const plans = LIVE.filter((p) => p.plan), box = $("#livePlans");
   if (!box || !plans.length) return;
-  box.innerHTML = `<div class="plans-head"><p class="eyebrow">Plans</p><h3>Learn every week, and pay less per lesson</h3>
-    <p>Book your lessons as you go over 2 months. The plan renews every 2 months with a fresh set of lessons; cancel the renewal at any time, in one click.</p></div>
+  box.innerHTML = `<div class="plans-head"><p class="eyebrow">Plans</p><h3>Learn every week and pay less per lesson</h3>
+    <p>Book your lessons whenever it suits you over each 2-month period. The plan then renews with a fresh set of lessons, and you can cancel the renewal at any time in one click.</p></div>
     <div class="plans">${plans.map((p) => { const save = Math.round(100 * (1 - p.usd / p.lessons / one.usd));
       return `<div class="pay-card plan-card${p.best ? " best" : ""}">${p.best ? `<span class="tag best">Most popular</span>` : ""}
-      <h4>${p.name.split(" · ")[0]}</h4><p class="plan-n"><b>${p.lessons} lessons</b> of 60 min every 2 months · ${p.contents.toLowerCase()}</p>
+      <h4>${p.name.split(" · ")[0]}</h4><p class="plan-n"><b>${p.lessons} lessons</b> of 60 minutes every 2 months · ${p.contents.toLowerCase()}</p>
       <p class="plan-price"><span class="price">${price(p)}</span> <small>every 2 months</small></p>
-      <p class="plan-per">${amount(p.usd / p.lessons, p.xaf / p.lessons)} a lesson · <span class="ok">save ${save}%</span></p>
+      <p class="plan-per">${amount(p.usd / p.lessons, p.xaf / p.lessons)} per lesson · <span class="ok">save ${save}%</span></p>
       <p>${p.desc}</p>
-      <button class="btn ${p.best ? "btn-primary" : "btn-ghost"} mini" data-book="${p.id}">Start with this plan</button></div>`; }).join("")}</div>
-    <p class="note">Unused lessons do not carry over to the next 2 months: book them as you go. We remind you 7 days before each renewal.</p>`;
+      <button class="btn ${p.best ? "btn-primary" : "btn-ghost"} mini" data-book="${p.id}">Choose this plan</button></div>`; }).join("")}</div>
+    <p class="note">Unused lessons don't carry over to the next 2-month period, so book them as you go. We'll remind you 7 days before each renewal.</p>`;
 }
 
 // Amounts written in the page text follow the chosen currency too, computed from the catalogue.
@@ -515,9 +518,9 @@ const whatsappLink = (text) => `https://wa.me/${SHOP.whatsapp}?text=${encodeURIC
 
 function contactHTML() {
   const bits = [];
-  if (SHOP.email) bits.push(`email <a href="mailto:${SHOP.email}">${SHOP.email}</a>`);
-  if (SHOP.whatsapp) bits.push(`WhatsApp <a href="https://wa.me/${SHOP.whatsapp}" target="_blank" rel="noopener">+${SHOP.whatsapp}</a>`);
-  return bits.length ? `To order before online payment opens: ${bits.join(" or ")}.` : "";
+  if (SHOP.email) bits.push(`by email at <a href="mailto:${SHOP.email}">${SHOP.email}</a>`);
+  if (SHOP.whatsapp) bits.push(`on WhatsApp at <a href="https://wa.me/${SHOP.whatsapp}" target="_blank" rel="noopener">+${SHOP.whatsapp}</a>`);
+  return bits.length ? `Until online payment opens, you can order ${bits.join(" or ")}.` : "";
 }
 
 // Cameroon: MTN MoMo, Orange Money, card and PayPal. Elsewhere: card and PayPal.
@@ -535,7 +538,8 @@ function openBuy(id, draft = null) {
     <h2>${p.name}</h2>
     <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} your time · ${draft.minutes} min · ${draft.need}` : p.contents}</p>
     <div class="form-grid">
-      <label for="coEmail">Email (to receive your ${p.kind === "live" ? "booking confirmation" : "files"})<input id="coEmail" name="email" type="email" required autocomplete="email" value="${draft ? draft.email : ""}"></label>
+      ${p.kind === "live" ? "" : `<label for="coName">Your name (printed on your files)<input id="coName" name="name" type="text" maxlength="80" autocomplete="name"></label>`}
+      <label for="coEmail">Email (your ${p.kind === "live" ? "booking confirmation" : "files"} will be sent here)<input id="coEmail" name="email" type="email" required autocomplete="email" value="${draft ? draft.email : ""}"></label>
       <div id="coResidence"></div>
     </div>
     <p class="eyebrow pm-title">Payment method</p>
@@ -543,13 +547,13 @@ function openBuy(id, draft = null) {
     <div id="payDetails"></div>
     <div class="totals" id="coTotals"></div>
     <label class="check"><input type="checkbox" name="terms" id="coTerms"> ${p.kind === "live"
-      ? (p.plan ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a>. I understand that my plan renews every 2 months at ${price(p)} until I cancel it, and that unused lessons do not carry over.`
-        : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a> (free rescheduling up to 24 h before).`)
-      : pre ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I understand that this is a pre-order: the files are sent as soon as they are ready, and I can cancel for a full refund until then.`
-      : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I ask for immediate delivery of the files and understand that I then lose my right of withdrawal.`}</label>
+      ? (p.plan ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a>. I understand that my plan renews every 2 months at ${price(p)} until I cancel it, and that unused lessons don't carry over.`
+        : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a> (free rescheduling up to 24 hours before the lesson).`)
+      : pre ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I understand that this is a pre-order. The files will be sent as soon as they're ready, and I can cancel for a full refund until then.`
+      : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I want the files delivered immediately, and I understand that this means I lose my right of withdrawal.`}</label>
     <p class="form-error" id="formError" hidden></p>
     <button class="btn btn-primary btn-block" id="payBtn"></button>
-    <p class="note">${p.plan ? `Payment confirms your first lesson and starts your plan. It renews every 2 months at ${price(p)}; cancel the renewal at any time from “My live lessons”. We remind you 7 days before each renewal.` : p.kind === "live" ? "Payment confirms the session and reserves the time for you." : pre ? `Pre-order. ${PRE_NOTE} If it is not delivered within 90 days, you are refunded unless you choose to wait.` : "Sales are final: the files are delivered instantly. A faulty file is replaced."}</p>
+    <p class="note">${p.plan ? `Payment confirms your first lesson and starts your plan, which renews every 2 months at ${price(p)}. You can cancel the renewal at any time from “My live lessons”, and we'll remind you 7 days before each renewal.` : p.kind === "live" ? "Payment confirms your lesson and holds the time for you." : pre ? `This is a pre-order. ${PRE_NOTE} If it isn't delivered within 90 days, you'll be refunded unless you choose to wait.` : "Because the files are delivered instantly, all sales are final. If a file is faulty, we'll replace it."}</p>
   </form>`);
   renderResidenceCheckout();
   renderPayOptions();
@@ -565,7 +569,7 @@ function renderPayDetails() {
   const p = byId($("#checkoutForm").dataset.product);
   const country = $("#coCountry").value;
   const m = PAY_METHODS[document.querySelector('input[name="pay"]:checked').value];
-  $("#payDetails").innerHTML = m.phone ? `<label for="coMomo">${m.label} number
+  $("#payDetails").innerHTML = m.phone ? `<label for="coMomo">${m.label} phone number
       <input id="coMomo" name="momo" type="tel" required inputmode="tel" placeholder="6XX XX XX XX" autocomplete="tel"></label>` : "";
   const charged = country === "Cameroon" || m.phone ? fmtXAF(p.xaf) : fmtUSD(p.usd);
   const shown = price(p);
@@ -580,32 +584,33 @@ function submitCheckout(form) {
   const m = PAY_METHODS[data.get("pay")];
   const err = $("#formError");
   let msg = "";
-  if (!form.coEmail.value || !form.coEmail.checkValidity()) msg = "Enter a valid email address: your files are sent there.";
+  if (!form.coEmail.value || !form.coEmail.checkValidity()) msg = "Please enter a valid email address so we can send you your order.";
   else if (!form.coTerms.checked) msg = "Please accept the terms of sale to continue.";
-  else if (m.phone && !CM_MOBILE.test(String(data.get("momo")).replace(/[\s.-]/g, ""))) msg = `Enter a Cameroon mobile number for ${m.label}: 9 digits starting with 6, e.g. 677 12 34 56.`;
+  else if (m.phone && !CM_MOBILE.test(String(data.get("momo")).replace(/[\s.-]/g, ""))) msg = `Please enter a Cameroonian mobile number for ${m.label}. It should have 9 digits and start with 6 (for example, 677 12 34 56).`;
   if (msg) { err.textContent = msg; err.hidden = false; return; }
 
   if (data.get("country") !== state.country) setCountry(data.get("country"), true);
   const inFCFA = state.country === "Cameroon" || m.phone;
   const charged = inFCFA ? fmtXAF(p.xaf) : fmtUSD(p.usd);
-  const order = { product: p.id, email: data.get("email"), country: state.country, method: data.get("pay"),
+  const order = { product: p.id, email: data.get("email"), name: String(data.get("name") || (checkoutDraft && checkoutDraft.name) || "").trim(),
+    country: state.country, method: data.get("pay"),
     phone: m.phone ? String(data.get("momo")).replace(/[\s.-]/g, "") : "",
     currency: inFCFA ? "XAF" : "USD", amount: inFCFA ? p.xaf : p.usd, preorder: isPre(p), booking: checkoutDraft };
 
   // Live payment: the server creates the Notch Pay transaction and sends back its page.
-  if (SHOP.api) return payOnline(order);
+  if (PAY_API) return payOnline(order);
   // Demo: nothing is charged; a live lesson is booked in this browser only.
   if (DEMO) {
     if (checkoutDraft) return bookedScreen(confirmBooking(checkoutDraft, "demo"));
     return openModal(`<div class="checkout"><p class="eyebrow">Demo · nothing was charged</p><h2>Payment accepted</h2>
-      <p>In the live shop, ${p.name} would now be ${order.preorder ? "reserved for" : "sent to"} ${order.email}${order.preorder ? ", and sent as soon as it is ready" : ""}.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
+      <p>In the real shop, ${p.name} would now be ${order.preorder ? "reserved for" : "sent to"} ${order.email}${order.preorder ? ", and sent as soon as it's ready" : ""}.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
   }
   const contact = contactHTML();
-  const wa = SHOP.whatsapp ? whatsappLink(`Hello, I'd like to ${order.preorder ? "pre-order" : "buy"} "${p.name}" (${charged}), paying by ${m.label}. My email: ${data.get("email")}`) : "";
+  const wa = SHOP.whatsapp ? whatsappLink(`Hello, I'd like to ${order.preorder ? "pre-order" : "buy"} "${p.name}" (${charged}), paying with ${m.label}. My email: ${data.get("email")}`) : "";
   openModal(`<div class="checkout">
-    <h2>Online payment opens soon</h2>
-    <p>Nothing has been charged. Payment by ${m.label} is not active on the site yet.</p>
-    ${wa ? `<a class="btn btn-wa" href="${wa}" target="_blank" rel="noopener">Send this order on WhatsApp</a>` : ""}
+    <h2>Online payment is coming soon</h2>
+    <p>Payment by ${m.label} isn't available on the site yet, so you haven't been charged.</p>
+    ${wa ? `<a class="btn btn-wa" href="${wa}" target="_blank" rel="noopener">Send this order via WhatsApp</a>` : ""}
     ${contact ? `<p>${contact}</p>` : ""}
     <button class="btn btn-ghost" data-modal-close>Close</button>
   </div>`);
@@ -615,32 +620,51 @@ async function payOnline(order) {
   const btn = $("#payBtn"), err = $("#formError");
   btn.disabled = true; btn.textContent = "Opening the secure payment page…";
   try {
-    const r = await fetch(`${SHOP.api}/checkout`, { method: "POST", headers: { "Content-Type": "application/json" },
+    const r = await fetch(`${PAY_API}/checkout`, { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...order, return_url: location.href.split(/[?#]/)[0] }) });
-    const d = await r.json();
-    if (!r.ok || !d.authorization_url) throw new Error(d.error || "no payment page");
+    const d = await r.json().catch(() => ({}));
+    // A refusal explained by the server (method not open yet, wrong number…) is shown as is.
+    if (!r.ok && d.error) { err.textContent = d.error; err.hidden = false; btn.disabled = false; renderPayDetails(); return; }
+    if (!d.authorization_url) throw new Error("no payment page");
     location.href = d.authorization_url;
   } catch (e) {
-    err.textContent = "The payment page could not be opened. Nothing was charged. Please try again in a moment.";
+    err.textContent = "We couldn't open the payment page. You haven't been charged. Please try again in a moment.";
     err.hidden = false; btn.disabled = false; renderPayDetails();
   }
 }
 
-// Back from the payment page: the server tells whether the payment is complete.
+// Back from the payment page: the server tells whether the payment is complete. The files take a
+// few seconds to prepare (watermarked for the buyer): the page waits for them, then offers the course.
 async function checkReturn() {
   const ref = new URLSearchParams(location.search).get("paid");
-  if (!ref || !SHOP.api) return;
+  if (!ref || !PAY_API) return;
   history.replaceState(null, "", location.pathname + location.hash);
   try {
-    const d = await (await fetch(`${SHOP.api}/payments/${encodeURIComponent(ref)}`)).json();
+    let d;
+    for (let i = 0; i < 15; i++) {
+      d = await (await fetch(`${PAY_API}/payments/${encodeURIComponent(ref)}`)).json();
+      if (d.status !== "complete" || d.booking || d.preorder || d.delivery !== "preparing") break;
+      if (i === 0) openModal(`<div class="checkout"><h2>Payment received</h2><p>We're adding your name to your files. This only takes a few seconds…</p></div>`);
+      await new Promise((r) => setTimeout(r, 2000));
+    }
     if (d.status !== "complete") {
-      return openModal(`<div class="checkout"><h2>Payment not completed</h2><p>Nothing was charged. You can try again.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
+      return openModal(`<div class="checkout"><h2>Payment not completed</h2><p>You haven't been charged, and you can try again whenever you're ready.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
     }
     if (d.booking) return bookedScreen(confirmBooking(d.booking, "paid", ref));
-    openModal(`<div class="checkout"><h2>Thank you</h2><p>Payment received. ${d.preorder ? `Your pre-order is confirmed: the files will be sent to ${esc(d.email)} as soon as they are ready. You can cancel for a full refund until then.` : `Your files are on their way to ${esc(d.email)}.`}</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
+    if (d.preorder) return openModal(`<div class="checkout"><h2>Thank you</h2><p>Your payment went through and your pre-order is confirmed. We'll send the files to ${esc(d.email)} as soon as they're ready, and you can cancel for a full refund until then.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
+    if (d.account_url) return openModal(`<div class="checkout"><h2>Thank you</h2><p>Your payment went through and your course is ready. Start reading online now, and pick up where you left off at any time over the next 12 months. We've also emailed the link and the download to ${esc(d.email)}.</p>
+      <a class="btn btn-primary" href="${esc(d.account_url)}">Open my course</a> <button class="btn btn-ghost" data-modal-close>Later</button></div>`);
+    openModal(`<div class="checkout"><h2>Thank you</h2><p>Your payment went through. Your files will be emailed to ${esc(d.email)} shortly.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
   } catch {
-    openModal(`<div class="checkout"><h2>Checking your payment…</h2><p>We could not confirm it yet. You will receive an email as soon as it is confirmed.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
+    openModal(`<div class="checkout"><h2>Checking your payment…</h2><p>We can't confirm it just yet. You'll get an email as soon as it goes through.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
   }
+}
+
+// Buyers come back to their courses ("My courses", top right), once the payment server exists:
+// they sign in with the email used at checkout and receive a sign-in link (no password).
+if (PAY_API && $("#accountLink")) {
+  $("#accountLink").href = `${PAY_API}/account`;
+  $("#accountLink").hidden = false;
 }
 
 // ====== Placement test ======
@@ -671,8 +695,8 @@ function renderTestStep() {
   openModal(`<form class="quiz" id="testForm" autocomplete="off">
     <div class="quiz-head"><span class="eyebrow">Level test · step ${testStep + 1} of ${steps.length}</span><span class="chip">${step.name}</span></div>
     <div class="bar"><span style="width:${(testStep / steps.length) * 100}%"></span></div>
-    ${testStep === 0 ? `<p class="quiz-note">Type the answer only. Accents and capitals are not marked. Leave it empty if you don't know.</p>` : ""}
-    ${testStep === 1 ? `<p class="quiz-note">From here, instructions are in French, as in the course. Read the example: it shows what to write.</p>` : ""}
+    ${testStep === 0 ? `<p class="quiz-note">Type just the answer. Accents and capital letters don't matter, and you can leave a question blank if you don't know.</p>` : ""}
+    ${testStep === 1 ? `<p class="quiz-note">From here on, the instructions are in French, just as in the course. The example shows you what to write.</p>` : ""}
     ${testDraw.map((t, i) => `<div class="quiz-q" lang="fr">
       <p class="quiz-inst">${esc(t.instruction)}</p>
       <p class="quiz-ex"><b lang="en">Example</b> ${esc(t.example[0])} → <strong>${esc(t.example[1])}</strong></p>
@@ -705,13 +729,13 @@ function testResult(finishedAll) {
   const live = byId("live-60");
   openModal(`<div class="quiz quiz-result">
     <p class="eyebrow">Your result</p>
-    <h2>${finishedAll ? "You have reached the end of <em>B1</em>" : `Start with <em>${last.step.name}</em>`}</h2>
-    <p>${passedSteps.length ? `You passed ${passedSteps.join(", ")}. ` : ""}${finishedAll ? "B2, C1 and C2 are in preparation. Meanwhile, a live lesson with Olivier is the best next step." : `At this step you had ${last.right} of ${last.total} right.`}</p>
-    ${!finishedAll && last.wrong.length ? `<p class="quiz-note">This pack teaches, among others:</p><ul class="quiz-skills">${last.wrong.map((w) => `<li>${esc(w.skill)}</li>`).join("")}</ul>` : ""}
+    <h2>${finishedAll ? "You've reached the end of <em>B1</em>" : `Start with <em>${last.step.name}</em>`}</h2>
+    <p>${passedSteps.length ? `You passed ${passedSteps.join(", ")}. ` : ""}${finishedAll ? "B2, C1 and C2 are in preparation. In the meantime, a live lesson with Olivier is the best next step." : `You got ${last.right} out of ${last.total} right at this step.`}</p>
+    ${!finishedAll && last.wrong.length ? `<p class="quiz-note">Among other things, this course covers:</p><ul class="quiz-skills">${last.wrong.map((w) => `<li>${esc(w.skill)}</li>`).join("")}</ul>` : ""}
     <ul class="pick-list">${(p ? (p.ready === false ? [p, live] : [p]) : [live]).map((x) => `<li><span>${x.name}</span><span><strong>${price(x)}</strong> ${!buyable(x) ? `<span class="tag soon">In preparation</span>` : `<button class="btn btn-primary mini" ${x.kind === "live" ? `data-book="${x.id}"` : `data-buy="${x.id}"`}>${x.kind === "live" ? "Book" : buyLabel(x)}</button>`}</span></li>`).join("")}</ul>
-    ${p && p.ready === false ? `<p class="quiz-note">${isPre(p) ? `This pack is being illustrated: pre-order it now and it is sent as soon as it is ready, with a full refund if you cancel before.` : "This pack is being illustrated and is not on sale yet."} Meanwhile, a live lesson with Olivier can work on exactly these points.</p>` : ""}
+    ${p && p.ready === false ? `<p class="quiz-note">${isPre(p) ? `This course is still being illustrated. Pre-order it now and we'll send it as soon as it's ready, with a full refund if you cancel before then.` : "This course is still being illustrated and isn't on sale yet."} In the meantime, a live lesson with Olivier can focus on exactly these points.</p>` : ""}
     <div class="hero-cta tight">
-      ${p ? `<button class="btn btn-ghost" data-goto-level="${p.level}">See all ${p.level} packs</button>` : ""}
+      ${p ? `<button class="btn btn-ghost" data-goto-level="${p.level}">See all ${p.level} courses</button>` : ""}
       <button class="link-btn" data-test>Retake the test</button>
     </div>
   </div>`);
@@ -730,26 +754,26 @@ function openFree() {
   openModal(`<form class="checkout" id="freeForm" novalidate>
     <p class="eyebrow">Free · A0 Module 1${DEMO ? " · demo" : ""}</p>
     <h2>Letters, Vowels and Introducing Yourself</h2>
-    <p>The full first module, free: the PDF with its MP3 audio, and the web edition to do online. It arrives in your inbox within a minute.</p>
+    <p>Get the complete first module free: the PDF with MP3 audio, plus a web version you can work through online. It arrives in your inbox within a minute.</p>
     <div class="form-grid">
       <label for="frName">First name<input id="frName" name="name" autocomplete="given-name"></label>
       <label for="frEmail">Email<input id="frEmail" name="email" type="email" required autocomplete="email"></label>
     </div>
-    <label class="check"><input type="checkbox" name="marketing"> Also send me French tips and news from Pas à Pas FRENCH. Unsubscribe in one click.</label>
+    <label class="check"><input type="checkbox" name="marketing"> Also send me French tips and news from Pas à Pas FRENCH. You can unsubscribe at any time in one click.</label>
     <p class="form-error" id="freeError" hidden></p>
     <button class="btn btn-primary btn-block" id="freeBtn">Send me Module 1</button>
-    <p class="note">No card, nothing to pay. Your address is used as described in our <a href="policies.html#privacy" target="_blank">privacy policy</a>.</p>
+    <p class="note">No card needed and nothing to pay. We use your email address as described in our <a href="policies.html#privacy" target="_blank">privacy policy</a>.</p>
   </form>`);
 }
 
 async function submitFree(form) {
   const err = $("#freeError"), btn = $("#freeBtn");
-  if (!form.frEmail.value || !form.frEmail.checkValidity()) { err.textContent = "Enter a valid email address: the module is sent there."; err.hidden = false; return; }
+  if (!form.frEmail.value || !form.frEmail.checkValidity()) { err.textContent = "Please enter a valid email address so we can send you the module."; err.hidden = false; return; }
   const req = { email: form.frEmail.value.trim(), name: form.frName.value.trim(), marketing: form.marketing.checked,
     country: state.country, currency: state.currency };
   const sent = (note = "") => openModal(`<div class="checkout"><p class="eyebrow">Free · A0 Module 1${note}</p><h2>Check your inbox</h2>
-    <p>Module 1 is on its way to ${esc(req.email)}. If it is not there in a few minutes, look in the spam or promotions folder.</p>
-    <p>While you wait: find your level with the free test.</p>
+    <p>Module 1 is on its way to ${esc(req.email)}. If it isn't there in a few minutes, check your spam or promotions folder.</p>
+    <p>While you wait, why not find your level with the free test?</p>
     <div class="hero-cta tight"><button class="btn btn-primary" data-test>Take the level test</button><button class="btn btn-ghost" data-modal-close>Close</button></div></div>`);
   if (SHOP.api) {
     btn.disabled = true; btn.textContent = "Sending…";
@@ -758,13 +782,13 @@ async function submitFree(form) {
       if (!r.ok) throw new Error();
       return sent();
     } catch {
-      err.textContent = "The module could not be sent just now. Please try again in a moment."; err.hidden = false;
+      err.textContent = "We couldn't send the module just now. Please try again in a moment."; err.hidden = false;
       btn.disabled = false; btn.textContent = "Send me Module 1"; return;
     }
   }
   if (DEMO) return sent(" · demo, nothing was sent");
   const contact = contactHTML();
-  openModal(`<div class="checkout"><h2>Opening soon</h2><p>The free module will be sent automatically as soon as the shop opens.</p>
+  openModal(`<div class="checkout"><h2>Coming soon</h2><p>The free module will be sent automatically once the shop opens.</p>
     ${contact ? `<p>${contact}</p>` : ""}<button class="btn btn-ghost" data-modal-close>Close</button></div>`);
 }
 
@@ -791,7 +815,7 @@ function renderReviews() {
   if (!reviewList.length) { $("#reviews").hidden = true; return; }
   const list = [...reviewList].sort((a, b) => String(b.date).localeCompare(String(a.date)));
   const avg = list.reduce((t, r) => t + r.rating, 0) / list.length;
-  $("#reviewSummary").textContent = `${avg.toFixed(1)} out of 5 · ${list.length} review${list.length > 1 ? "s" : ""} from verified buyers, all published, good or bad.`;
+  $("#reviewSummary").textContent = `${avg.toFixed(1)} out of 5 from ${list.length} review${list.length > 1 ? "s" : ""} by verified buyers. Every review is published, good or bad.`;
   $("#reviewList").innerHTML = list.map((r) => `<figure class="review">
     <div class="stars" aria-label="${r.rating} out of 5">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
     <blockquote>${esc(r.text)}</blockquote>
@@ -816,15 +840,15 @@ function openReview(token) {
     <p class="eyebrow">Your review${DEMO ? " · demo" : ""}</p>
     <h2>How is your French going?</h2>
     <div class="star-pick" role="radiogroup" aria-label="Rating">${[1, 2, 3, 4, 5].map((n) => `<label><input type="radio" name="rating" value="${n}"><span aria-hidden="true">★</span><span class="sr-only">${n} star${n > 1 ? "s" : ""}</span></label>`).join("")}</div>
-    <label for="rvText">Your review<textarea id="rvText" name="text" rows="5" maxlength="1200" placeholder="What you liked, what was hard, what you can do now."></textarea></label>
+    <label for="rvText">Your review<textarea id="rvText" name="text" rows="5" maxlength="1200" placeholder="What did you like? What was hard? What can you do now?"></textarea></label>
     <div class="form-grid">
       <label for="rvName">First name<input id="rvName" name="name" autocomplete="given-name"></label>
       <label for="rvCountry">Country<input id="rvCountry" name="country" autocomplete="country-name" value="${esc(state.country === "Other country" ? "" : state.country)}"></label>
     </div>
-    <label class="check"><input type="checkbox" name="consent"> I agree that my review is published on this site with my first name and country.</label>
+    <label class="check"><input type="checkbox" name="consent"> I agree to have my review published on this site with my first name and country.</label>
     <p class="form-error" id="rvError" hidden></p>
     <button class="btn btn-primary btn-block">Publish my review</button>
-    <p class="note">Every review is published, good or bad. It is only held back for insults, links or contact details: <a href="policies.html#reviews" target="_blank">review rules</a>.</p>
+    <p class="note">Every review is published, good or bad. A review is only held back if it contains insults, links or contact details. See the <a href="policies.html#reviews" target="_blank">review rules</a>.</p>
   </form>`);
 }
 
@@ -839,13 +863,13 @@ async function submitReview(form) {
     try {
       const res = await fetch(`${SHOP.api}/reviews`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(r) });
       const out = await res.json().catch(() => ({}));
-      if (!res.ok) { err.innerHTML = esc(out.error || "Your review could not be published."); err.hidden = false; return; }
-    } catch { err.textContent = "Your review could not be sent just now. Please try again."; err.hidden = false; return; }
+      if (!res.ok) { err.innerHTML = esc(out.error || "We couldn't publish your review."); err.hidden = false; return; }
+    } catch { err.textContent = "We couldn't send your review just now. Please try again."; err.hidden = false; return; }
   } else if (DEMO) {
     store.set("demoReviews", [...store.get("demoReviews", []), { ...r, token: undefined, date: new Date().toISOString().slice(0, 10) }]);
   }
   history.replaceState(null, "", location.pathname + location.hash);
-  openModal(`<div class="checkout"><h2>Thank you</h2><p>Your review is published.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
+  openModal(`<div class="checkout"><h2>Thank you</h2><p>Your review has been published.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
   reviewList = typeof REVIEWS !== "undefined" ? [...REVIEWS] : [];
   loadReviews();
 }
