@@ -663,3 +663,12 @@ body { line-height: 1.65; }
 .exam-tabs button { border: 0; background: none; padding: .55em 1.3em; border-radius: 999px; font: 600 .95rem var(--sans); color: var(--bleu); cursor: pointer; }
 .exam-tabs button[aria-selected="true"] { background: var(--bleu); color: #fff; }
 #examSoon[data-show="delf"] .exam-card[data-group="tcf"], #examSoon[data-show="tcf"] .exam-card[data-group="delf"] { display: none; }
+
+/* ====== Views: one part of the site at a time ====== */
+.view-off { display: none !important; }
+main > section.view-first:not(.hero) { padding-top: 4rem; }
+main > section.block-band.view-first { margin-top: 0; }
+.nav a.on { background: var(--bleu); color: #fff; border-radius: 999px; }
+/* More air on the home page */
+.hero { padding-block: clamp(2.5rem, 7vw, 5.5rem); }
+.steps { margin-block: 1rem 2rem; gap: 1.5rem; }

@@ -7,6 +7,48 @@ const store = {
   set(key, value) { try { localStorage.setItem("pap_" + key, JSON.stringify(value)); } catch { /* storage unavailable */ } },
 };
 
+// ====== Views: the home page stays short; each menu entry opens its own part of the page ======
+// Every section stays in the page (search engines and no-JS visitors see it all); the script only
+// shows one view at a time: home, levels, inside, exams, live, author, faq (data-view in index.html).
+function viewOf(el) {
+  const s = el && el.closest && el.closest("main > section[data-view]");
+  return s ? s.dataset.view : null;
+}
+function showView(v) {
+  const sections = [...document.querySelectorAll("main > section[data-view]")];
+  if (!sections.length) return;
+  let first = true;
+  sections.forEach((s) => {
+    const on = s.dataset.view === v;
+    s.classList.toggle("view-off", !on);
+    s.classList.toggle("view-first", on && first && !s.hidden);
+    if (on && !s.hidden) first = false;
+  });
+  document.body.dataset.view = v;
+  document.querySelectorAll("nav.nav a[href^='#']").forEach((a) => {
+    const t = document.getElementById(a.getAttribute("href").slice(1));
+    a.classList.toggle("on", v !== "home" && viewOf(t) === v);
+  });
+  requestAnimationFrame(() => typeof clampAll === "function" && clampAll());
+}
+// Anything brought into view (a link, a button, ?next=) opens its view first.
+const nativeScroll = Element.prototype.scrollIntoView;
+Element.prototype.scrollIntoView = function (...args) {
+  const v = viewOf(this);
+  if (v && document.body.dataset.view !== v) showView(v);
+  return nativeScroll.apply(this, args);
+};
+function route() {
+  const id = decodeURIComponent(location.hash.slice(1));
+  const el = id ? document.getElementById(id) : null;
+  const v = viewOf(el) || "home";
+  showView(v);
+  if (!el || el.classList.contains("view-first")) window.scrollTo(0, 0);
+  else nativeScroll.call(el, { block: "start" });
+}
+window.addEventListener("hashchange", route);
+route();
+
 // ====== Currencies ======
 // USD and FCFA prices are fixed in the catalogue. XOF has the same parity as XAF.
 // EUR is derived from FCFA (fixed parity 655.957). The others are converted from USD at

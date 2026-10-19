@@ -11,7 +11,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231d2f6f'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>Pà</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261019k">
+  <link rel="stylesheet" href="css/style.css?v=20261019l">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"Course","name":"French Absolute Beginner (A0)","description":"Eight French modules and a progress test for English speakers starting from zero. Go from the alphabet to your first conversation, with grammar explained in English and audio included. Part of Pas à Pas FRENCH, a method from A0 to B1.","inLanguage":"en","provider":{"@type":"Person","name":"Olivier Djoukang"},"offers":{"@type":"Offer","category":"Paid","price":"19","priceCurrency":"USD"}}
   </script>
@@ -49,7 +49,7 @@
 </header>
 
 <main>
-  <section class="hero">
+  <section data-view="home" class="hero">
     <div class="container hero-inner">
       <div>
         <p class="eyebrow">French for English speakers</p>
@@ -77,14 +77,14 @@
     </div>
   </section>
 
-  <section class="steps container" aria-label="How it works">
+  <section data-view="home" class="steps container" aria-label="How it works">
     <div><b>1</b><h3>Find your level</h3><p>Take the free test, or start at A0 if French is new to you.</p></div>
     <div><b>2</b><h3>Choose your course</h3><p>One part of 8 modules, a full level, or the Complete Method.</p></div>
     <div><b>3</b><h3>Work module by module</h3><p>Grammar explained in English, exercises with answer keys, and a test scored out of 20.</p></div>
     <div><b>4</b><h3>Check your level</h3><p>Each part ends with a progress test that shows you what to review.</p></div>
   </section>
 
-  <section id="why" class="container block">
+  <section data-view="home" id="why" class="container block">
     <div class="block-head"><div><p class="eyebrow">Your reason to learn</p><h2 class="section-title">Whatever your reason for learning French, there's a clear place to start</h2>
       <p class="sub">These are the four goals Olivier hears most often from his online learners. Each one has its own route, and you can start on yours today.</p></div></div>
     <div class="motive-grid">
@@ -120,7 +120,7 @@
     <div class="motive-cta"><p>Not sure where you stand? The free level test gets harder step by step, then tells you which course to start with.</p><button class="btn btn-primary" data-test>Take the free level test</button></div>
   </section>
 
-  <section id="levels" class="container block">
+  <section data-view="levels" id="levels" class="container block">
     <div class="block-head">
       <div>
         <p class="eyebrow">Levels</p>
@@ -132,16 +132,12 @@
     <div class="level-panel" id="levelPanel" role="tabpanel"></div>
   </section>
 
-  <section class="container block">
+  <section data-view="levels" class="container block">
     <div class="method" id="methodBand"></div>
   </section>
 
-  <section id="compare" class="container block">
-    <div class="block-head"><div><p class="eyebrow">Why Pas à Pas</p><h2 class="section-title">How it compares</h2></div></div>
-    <div class="compare-wrap" id="compareTable"></div>
-  </section>
 
-  <section id="inside" class="block-band">
+  <section data-view="inside" id="inside" class="block-band">
     <div class="container block">
       <div class="block-head"><div><p class="eyebrow">What's inside</p><h2 class="section-title">Every module includes</h2></div></div>
       <div class="inside-grid">
@@ -189,7 +185,12 @@
     </div>
   </section>
 
-  <section id="exams" class="container block">
+  <section data-view="inside" id="compare" class="container block">
+    <div class="block-head"><div><p class="eyebrow">Why Pas à Pas</p><h2 class="section-title">How it compares</h2></div></div>
+    <div class="compare-wrap" id="compareTable"></div>
+  </section>
+
+  <section data-view="exams" id="exams" class="container block">
     <div class="block-head"><div><p class="eyebrow">Exam preparation</p><h2 class="section-title">DELF, DALF and TCF practice tests</h2>
       <p class="sub clamp-me">Original tests, written from scratch in the current official format of each exam. Each bundle gives you 4 complete practice tests, with no task repeated: the test papers, a marking guide with answers, transcripts and scoring grids, plus a web edition you take just like the real exam. Online, each paper has its own timer and closes when time is up, each recording plays only as many times as in the real exam, and your results appear after the last paper. The audio is built into the web edition and also comes as MP3 files for the printed tests. For writing and speaking, book a live lesson and Olivier will mark your work. To see exactly what an exam contains, open “Test format” on its card.</p></div></div>
     <div class="exam-guide">
@@ -227,7 +228,7 @@
     <div class="exam-soon" id="examSoon" data-show="delf"></div>
   </section>
 
-  <section id="live" class="block-band">
+  <section data-view="live" id="live" class="block-band">
     <div class="container block">
       <div class="block-head">
         <div>
@@ -248,7 +249,7 @@
     </div>
   </section>
 
-  <section id="author" class="container block">
+  <section data-view="author" id="author" class="container block">
     <div class="author">
       <div class="author-mark" aria-hidden="true">OD</div>
       <div>
@@ -260,7 +261,7 @@
     </div>
   </section>
 
-  <section id="pay" class="container block">
+  <section data-view="levels" id="pay" class="container block">
     <div class="block-head"><div><p class="eyebrow">Payment</p><h2 class="section-title">Pay from anywhere</h2>
       <p class="sub">At checkout, you'll only see the payment methods available in your country of residence. Card and PayPal payments are charged in US dollars, while local methods are charged in their own currency, at the price shown at checkout.</p></div></div>
     <div class="residence-line" id="residenceLine"></div>
@@ -276,12 +277,12 @@
     <p class="contact-line" id="contactLine" hidden></p>
   </section>
 
-  <section id="reviews" class="container block" hidden>
+  <section data-view="author" id="reviews" class="container block" hidden>
     <div class="block-head"><div><p class="eyebrow">Reviews</p><h2 class="section-title">What learners say</h2><p class="sub" id="reviewSummary"></p></div></div>
     <div class="reviews" id="reviewList"></div>
   </section>
 
-  <section class="container block">
+  <section data-view="home" class="container block">
     <div class="cta-band">
       <div>
         <h2>Not sure where to start?</h2>
@@ -294,7 +295,7 @@
     </div>
   </section>
 
-  <section id="faq" class="container faq">
+  <section data-view="faq" id="faq" class="container faq">
     <h2 class="section-title">Questions</h2>
     <div class="faq-groups">
     <div class="faq-group"><h3>The course</h3>
@@ -341,14 +342,14 @@
 
 <dialog id="modal" class="modal"><div id="modalBody"></div></dialog>
 
-<script src="js/shop.js?v=20261019k"></script>
-<script src="js/exam-formats.js?v=20261019k"></script>
-<script src="js/products.js?v=20261019k"></script>
-<script src="js/modules.js?v=20261019k"></script>
-<script src="js/leveltest.js?v=20261019k"></script>
-<script src="js/reviews.js?v=20261019k"></script>
-<script src="js/review-filter.js?v=20261019k"></script>
-<script src="js/app.js?v=20261019k"></script>
-<script src="js/live.js?v=20261019k"></script>
+<script src="js/shop.js?v=20261019l"></script>
+<script src="js/exam-formats.js?v=20261019l"></script>
+<script src="js/products.js?v=20261019l"></script>
+<script src="js/modules.js?v=20261019l"></script>
+<script src="js/leveltest.js?v=20261019l"></script>
+<script src="js/reviews.js?v=20261019l"></script>
+<script src="js/review-filter.js?v=20261019l"></script>
+<script src="js/app.js?v=20261019l"></script>
+<script src="js/live.js?v=20261019l"></script>
 </body>
 </html>
