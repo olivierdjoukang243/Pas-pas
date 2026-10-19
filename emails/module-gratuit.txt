@@ -1,9 +1,9 @@
 Hello {{NAME}},
 
-Here’s your free module: A0 Module 1 — Letters, Vowels and Introducing Yourself.
-It’s the full module, exactly as it appears in the course.
+Here’s your free module, A0 Module 1 — Letters, Vowels and Introducing Yourself.
+It’s the complete module, exactly as it appears in the course.
 
-Start the module online (it checks your answers and plays the audio on the page):
+Start the module online (your answers are checked as you go and the audio plays on the page):
 {{WEB_URL}}
 
 Prefer to work on paper?
@@ -11,21 +11,21 @@ Prefer to work on paper?
 {{AUDIO_LINKS}}
 
 How to get the most out of it
-1. Read the grammar section. It’s explained in English.
+1. Read the grammar section, which is explained in English.
 2. Do the exercises, then check your answers with the answer key.
 3. Listen to the dialogue and do the dictation.
 4. Finish with the final test (scored out of 20).
 
 Enjoyed Module 1? Seven more modules are waiting for you.
-The Absolute Beginner Course takes you from the alphabet to your first
-conversation. It includes 8 modules and a progress test that shows you what
-to review, all for {{A0_PRICE}}. You pay once, and the files are yours to keep.
+The full Absolute Beginner course takes you from the alphabet to your first
+conversation in 8 modules, with a progress test that shows you what to review.
+It’s {{A0_PRICE}}, paid once, and the files are yours to keep.
 See the A0 course: {{SITE_URL}}#levels
 
 Already know some French? Take the free level test to find out where to start:
 {{SITE_URL}}
-Would you like to talk with a teacher? You can book a live video lesson with me
-at a time that suits you, starting at {{LIVE_PRICE}}.
+Want to practice with a teacher? You can book a live video lesson with me
+at a time that suits you, from {{LIVE_PRICE}}.
 
 Bon courage, and see you in Module 2!
 Olivier Djoukang
