@@ -11,7 +11,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231d2f6f'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>Pà</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261019h">
+  <link rel="stylesheet" href="css/style.css?v=20261019m">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"Course","name":"French Absolute Beginner (A0)","description":"Eight French modules and a progress test for English speakers starting from zero. Go from the alphabet to your first conversation, with grammar explained in English and audio included. Part of Pas à Pas FRENCH, a method from A0 to B1.","inLanguage":"en","provider":{"@type":"Person","name":"Olivier Djoukang"},"offers":{"@type":"Offer","category":"Paid","price":"19","priceCurrency":"USD"}}
   </script>
@@ -49,7 +49,7 @@
 </header>
 
 <main>
-  <section class="hero">
+  <section data-view="home" class="hero">
     <div class="container hero-inner">
       <div>
         <p class="eyebrow">French for English speakers</p>
@@ -63,7 +63,7 @@
         <ul class="hero-proof">
           <li><strong>56</strong>modules</li>
           <li><strong>7</strong>progress tests</li>
-          <li><strong>A0 → B1</strong>B2 in preparation</li>
+          <li><strong>4 levels</strong>Beginner to Intermediate</li>
           <li><strong>7,800+</strong>lessons online since 2023</li>
         </ul>
       </div>
@@ -77,14 +77,14 @@
     </div>
   </section>
 
-  <section class="steps container" aria-label="How it works">
+  <section data-view="home" class="steps container" aria-label="How it works">
     <div><b>1</b><h3>Find your level</h3><p>Take the free test, or start at A0 if French is new to you.</p></div>
     <div><b>2</b><h3>Choose your course</h3><p>One part of 8 modules, a full level, or the Complete Method.</p></div>
     <div><b>3</b><h3>Work module by module</h3><p>Grammar explained in English, exercises with answer keys, and a test scored out of 20.</p></div>
     <div><b>4</b><h3>Check your level</h3><p>Each part ends with a progress test that shows you what to review.</p></div>
   </section>
 
-  <section id="why" class="container block">
+  <section data-view="home" id="why" class="container block">
     <div class="block-head"><div><p class="eyebrow">Your reason to learn</p><h2 class="section-title">Whatever your reason for learning French, there's a clear place to start</h2>
       <p class="sub">These are the four goals Olivier hears most often from his online learners. Each one has its own route, and you can start on yours today.</p></div></div>
     <div class="motive-grid">
@@ -120,28 +120,24 @@
     <div class="motive-cta"><p>Not sure where you stand? The free level test gets harder step by step, then tells you which course to start with.</p><button class="btn btn-primary" data-test>Take the free level test</button></div>
   </section>
 
-  <section id="levels" class="container block">
+  <section data-view="levels" id="levels" class="container block">
     <div class="block-head">
       <div>
         <p class="eyebrow">Levels</p>
         <h2 class="section-title">From A0 to B1, part by part</h2>
-        <p class="sub">Absolute Beginner (A0) is a single course of 8 modules, and each level from Beginner 1 (A1) to Intermediate 1 (B1) comes in two parts of 8 modules. A0 and A1 Part 1 are ready to download today. The other parts are already written and recorded, and we’re finishing the illustrations. Pre-order now to get each part the day it’s ready, or cancel any time before then for a full refund.</p>
+        <p class="sub clamp-me">Absolute Beginner (A0) is a single course of 8 modules, and each level from Beginner 1 (A1) to Intermediate 1 (B1) comes in two parts of 8 modules. A0 and A1 Part 1 are ready to download today. The other parts are already written and recorded, and we’re finishing the illustrations. Pre-order now to get each part the day it’s ready, or cancel any time before then for a full refund.</p>
       </div>
     </div>
     <div class="level-tabs" id="levelTabs" role="tablist" aria-label="Levels"></div>
     <div class="level-panel" id="levelPanel" role="tabpanel"></div>
   </section>
 
-  <section class="container block">
+  <section data-view="levels" class="container block">
     <div class="method" id="methodBand"></div>
   </section>
 
-  <section id="compare" class="container block">
-    <div class="block-head"><div><p class="eyebrow">Why Pas à Pas</p><h2 class="section-title">How it compares</h2></div></div>
-    <div class="compare-wrap" id="compareTable"></div>
-  </section>
 
-  <section id="inside" class="block-band">
+  <section data-view="inside" id="inside" class="block-band">
     <div class="container block">
       <div class="block-head"><div><p class="eyebrow">What's inside</p><h2 class="section-title">Every module includes</h2></div></div>
       <div class="inside-grid">
@@ -189,11 +185,17 @@
     </div>
   </section>
 
-  <section id="exams" class="container block">
+  <section data-view="inside" id="compare" class="container block">
+    <div class="block-head"><div><p class="eyebrow">Why Pas à Pas</p><h2 class="section-title">How it compares</h2></div></div>
+    <div class="compare-wrap" id="compareTable"></div>
+  </section>
+
+  <section data-view="exams" id="exams" class="container block">
     <div class="block-head"><div><p class="eyebrow">Exam preparation</p><h2 class="section-title">DELF, DALF and TCF practice tests</h2>
-      <p class="sub">Original tests, written from scratch in the current official format of each exam. Each bundle gives you 4 complete practice tests, with no task repeated: the test papers, a marking guide with answers, transcripts and scoring grids, plus a web edition you take just like the real exam. Online, each paper has its own timer and closes when time is up, each recording plays only as many times as in the real exam, and your results appear after the last paper. The audio is built into the web edition and also comes as MP3 files for the printed tests. For writing and speaking, book a live lesson and Olivier will mark your work. To see exactly what an exam contains, open “Test format” on its card.</p></div></div>
+      <p class="sub clamp-me">Original tests, written from scratch in the current official format of each exam. Each bundle gives you 4 complete practice tests, with no task repeated: the test papers, a marking guide with answers, transcripts and scoring grids, plus a web edition you take just like the real exam. Online, each paper has its own timer and closes when time is up, each recording plays only as many times as in the real exam, and your results appear after the last paper. The audio is built into the web edition and also comes as MP3 files for the printed tests. For writing and speaking, book a live lesson and Olivier will mark your work. To see exactly what an exam contains, open “Test format” on its card.</p></div></div>
     <div class="exam-guide">
-      <h3>Which exam do you need?</h3>
+      <details class="guide-fold">
+      <summary><h3>Which exam do you need?</h3></summary>
       <div class="goal-grid">
         <div class="goal"><h4>Study at a French-speaking university</h4><p><b>DELF B2</b> is the level many universities require of international students. In France, <b>DALF C1</b> or C2 exempts you from the language test for admission. To apply for the first year of an undergraduate degree in France, you need the <b>TCF DAP</b>.</p></div>
         <div class="goal"><h4>Immigration, residence or citizenship</h4><p>The <b>TCF Canada</b> and the <b>TCF Québec</b> give the French scores required for immigration applications (NCLC levels or the Québec scale). The <b>TCF IRN</b> is the test for residence permits and citizenship in France. Each program sets its own minimum level, so check the current rules with the relevant authority.</p></div>
@@ -202,6 +204,7 @@
       <div class="diploma-test">
         <p><b>Diploma or test?</b> DELF and DALF are diplomas, taken at the level you choose (A1 to B2 for the DELF, C1 or C2 for the DALF). To pass, you need 50 out of 100, with at least 5 out of 25 in each of the four skills, and the diploma is yours for life. The TCF is a test, so there’s no pass or fail. Instead, your score places you at a level from A1 to C2, and the certificate is valid for two years.</p>
       </div>
+      </details>
       <div class="ready-check">
         <div>
           <h3>Are you ready for the exam?</h3>
@@ -218,16 +221,20 @@
         </div>
       </div>
     </div>
-    <div class="exam-soon" id="examSoon"></div>
+    <div class="exam-tabs" role="tablist" aria-label="Exams">
+      <button type="button" role="tab" data-exam-tab="delf" aria-selected="true">DELF &amp; DALF</button>
+      <button type="button" role="tab" data-exam-tab="tcf" aria-selected="false">TCF</button>
+    </div>
+    <div class="exam-soon" id="examSoon" data-show="delf"></div>
   </section>
 
-  <section id="live" class="block-band">
+  <section data-view="live" id="live" class="block-band">
     <div class="container block">
       <div class="block-head">
         <div>
           <p class="eyebrow">Live lessons</p>
           <h2 class="section-title">Work face to face with Olivier</h2>
-          <p class="sub">One-to-one video lessons, right here on the site. Work through a point you're stuck on, practice speaking in real conversation, or prepare for an exam. Pick one of Olivier's open slots, shown live in your own time zone, and your lesson is booked as soon as you pay, with no waiting for a reply. You join from this page, and if you'd like to talk first, that's free.</p>
+          <p class="sub clamp-me">One-to-one video lessons, right here on the site. Work through a point you're stuck on, practice speaking in real conversation, or prepare for an exam. Pick one of Olivier's open slots, shown live in your own time zone, and your lesson is booked as soon as you pay, with no waiting for a reply. You join from this page, and if you'd like to talk first, that's free.</p>
         </div>
         <button class="btn btn-primary" data-book>Book a live lesson</button>
       </div>
@@ -242,7 +249,7 @@
     </div>
   </section>
 
-  <section id="author" class="container block">
+  <section data-view="author" id="author" class="container block">
     <div class="author">
       <div class="author-mark" aria-hidden="true">OD</div>
       <div>
@@ -254,7 +261,7 @@
     </div>
   </section>
 
-  <section id="pay" class="container block">
+  <section data-view="levels" id="pay" class="container block">
     <div class="block-head"><div><p class="eyebrow">Payment</p><h2 class="section-title">Pay from anywhere</h2>
       <p class="sub">At checkout, you'll only see the payment methods available in your country of residence. Card and PayPal payments are charged in US dollars, while local methods are charged in their own currency, at the price shown at checkout.</p></div></div>
     <div class="residence-line" id="residenceLine"></div>
@@ -270,12 +277,12 @@
     <p class="contact-line" id="contactLine" hidden></p>
   </section>
 
-  <section id="reviews" class="container block" hidden>
+  <section data-view="author" id="reviews" class="container block" hidden>
     <div class="block-head"><div><p class="eyebrow">Reviews</p><h2 class="section-title">What learners say</h2><p class="sub" id="reviewSummary"></p></div></div>
     <div class="reviews" id="reviewList"></div>
   </section>
 
-  <section class="container block">
+  <section data-view="home" class="container block">
     <div class="cta-band">
       <div>
         <h2>Not sure where to start?</h2>
@@ -288,28 +295,38 @@
     </div>
   </section>
 
-  <section id="faq" class="container faq">
+  <section data-view="faq" id="faq" class="container faq">
     <h2 class="section-title">Questions</h2>
-    <details><summary>Which level should I start with?</summary><p>Take the free level test above. If French is new to you, start with the A0 Absolute Beginner course.</p></details>
-    <details><summary>What do I get?</summary><p>You get two editions of every module. The PDF edition is ready to print and includes the answer key, MP3 audio files and a one-page summary sheet. The web edition works online on this site, with instant answer checking and the audio built in. There's no app to install and no subscription.</p></details>
-    <details><summary>Is there audio?</summary><p>Yes. The listening dialogue and the dictation in every module are recorded. They come as MP3 files with the PDF edition and are built into the page in the web edition.</p></details>
-    <details><summary>Do I need a teacher?</summary><p>No. Each course includes the full answer key, a self-assessment grid and a review plan, so you can study on your own. It also works well alongside lessons with any tutor.</p></details>
-    <details><summary>How long does a level take?</summary><p>Each module takes about four 40-minute study sessions, so at four sessions a week, an 8-module part takes about two months. Go at your own pace. The files are yours to keep.</p></details>
-    <details><summary>Is a full level cheaper than buying its two parts?</summary><p>Yes. A full level costs <span data-saving="level"></span> less than its two parts. The Complete Method costs <span data-saving="method"></span> less than buying the four levels separately.</p></details>
-    <details><summary>How can I pay?</summary><p>At checkout, you'll only see the methods available in your country of residence. Bank card (Visa, Mastercard) and PayPal are available everywhere and charged in US dollars. Where we offer them, you'll also see local methods for your country, such as mobile money. We detect your country automatically, but you can choose a different one.</p></details>
-    <details><summary>Is Module 1 really free?</summary><p>Yes. Enter your email and A0 Module 1 arrives in your inbox, with the PDF, its MP3 audio and the web edition. There's nothing to pay and no card needed.</p></details>
-    <details><summary>Which French exam should I take?</summary><p>It depends on your goal. For university, take the DELF B2 or DALF C1, or the TCF DAP for the first year of an undergraduate degree in France. For immigration, residence or citizenship, take the TCF Canada, the TCF Québec or the TCF IRN, depending on where you apply. For work or a personal goal, take a DELF diploma or the TCF tout public. The guide in the <a href="#exams">Exams</a> section explains each one, but the organization you apply to always has the final say.</p></details>
-    <details><summary>Is my level high enough for the exam?</summary><p>Take the free level test first. If you're below the level you need, practice tests alone won't close the gap. Work through the course from your current level, then train with the practice tests in the final weeks. A live lesson with Olivier can also show you where you stand in speaking and writing.</p></details>
-    <details><summary>How does the web edition of a practice test work?</summary><p>You take it in your browser, just like the real exam. A start page lists the papers and their timing, then each paper runs on its own timer. When time is up, the paper closes automatically and your answers are saved as they are. Each recording plays once, with no pausing or rewinding, and includes exactly as many listenings as the real exam: one for the TCF, two for the DELF. For speaking, a timer counts down your preparation and speaking time, and you can record yourself and listen back. If you reload the page, the timer picks up where it left off. Your results appear only after the last paper. Listening and reading are marked for you and show the level you reached, while writing and speaking are marked with the grids in the marking guide, or by Olivier in a live lesson. Afterwards, you can listen to every recording again to learn from it.</p></details>
-    <details><summary>Are the DELF, DALF and TCF practice tests official?</summary><p>No. They are original practice tests, written from scratch to follow the current format published by France Éducation international, with the same papers, timings, number of questions, question types and marks as the real exam. DELF, DALF and TCF are diplomas and tests of France Éducation international, and Pas à Pas FRENCH is independent and not endorsed by it. The levels and NCLC scores shown in the web editions are practice estimates, not official scores.</p></details>
-    <details><summary>How do live lessons work?</summary><p>Choose a 30- or 60-minute lesson, or a bundle of five, then pick one of Olivier's open slots. They come live from his calendar and are shown in your own time zone, from 3 hours to two weeks ahead, and the lesson is booked as soon as you pay. If none of the times work for you, suggest at least 3 times when you're free. Olivier marks the ones that suit him, then you choose one and pay. When it's time, come back to this page and press Join to open the video lesson, with a timer showing the time left. You're also welcome to message Olivier before booking, free of charge.</p></details>
-    <details><summary>How do the plans work?</summary><p>A plan gives you a set of 60-minute lessons every 2 months: 4 (one every two weeks), 8 (one a week) or 16 (two a week), and each lesson costs less than a single lesson bought on its own. You book them whenever it suits you, from the open slots in Olivier's calendar. After 2 months, the plan renews automatically at the same price with a fresh set of lessons, and any lessons you haven't booked by then don't carry over. You can cancel the renewal at any time in one click from “My live lessons”, and you keep your remaining lessons until the end of the 2 months. We send you a reminder 7 days before each renewal. <a href="policies.html#live">Plan rules</a>.</p></details>
-    <details><summary>What do I need for a live lesson?</summary><p>A computer or phone with a camera and microphone, and an up-to-date browser. When you join, the page checks your camera and microphone.</p></details>
-    <details><summary>Can I get a refund?</summary><p>The files are delivered instantly and can't be returned, so all sales are final. If a file is faulty, we'll replace it, or refund you if we can't. You can cancel a pre-order for a full refund at any time until it's sent. Not sure which level to start with? Take the level test, download Module 1 for free, or write to us before you buy. <a href="policies.html#withdrawal">Refund policy</a>.</p></details>
-    <details><summary>How does a pre-order work?</summary><p>Some products aren't finished yet: courses that are written and recorded but still being illustrated, and practice tests that are still being written. You pay the same price today, and the files are emailed to you the day they're ready, with any parts that are already finished sent right away. Until the files are sent, you can cancel for a full refund. If a pre-order isn't delivered within 90 days, we'll refund you, unless you choose to wait. <a href="policies.html#terms">Terms of sale</a>.</p></details>
-    <details><summary>I teach French on another platform. Can I buy?</summary><p>Yes. Teachers are welcome to buy any product for their personal use: to study the method, prepare their lessons and teach their own students. The license doesn't allow you to share, send or post the files, so each learner who wants them must buy their own copy. <a href="policies.html#licence">License</a>.</p></details>
-    <details><summary>Are the reviews real?</summary><p>Only buyers can leave a review, using a personal link sent after their order. Reviews are published automatically, good or bad, and the only things filtered out are insults, links and contact details. <a href="policies.html#reviews">Review rules</a>.</p></details>
-    <details><summary>What about B2, C1 and C2?</summary><p>The course currently runs from A0 to B1. A0 and A1 Part 1 are on sale now, and A1 Part 2, A2 and B1 will follow as their illustrations are finished. The B2, C1 and C2 courses are in preparation, and B2 Part 1 is being written. You can already pre-order practice tests for DELF A1 to B2 and for all five TCF exams (TCF Canada, TCF Québec, TCF tout public, TCF DAP and TCF IRN), while the DALF C1 and C2 practice tests are in preparation.</p></details>
+    <div class="faq-groups">
+    <div class="faq-group"><h3>The course</h3>
+      <details><summary>Which level should I start with?</summary><p>Take the free level test above. If French is new to you, start with the A0 Absolute Beginner course.</p></details>
+      <details><summary>What do I get?</summary><p>You get two editions of every module. The PDF edition is ready to print and includes the answer key, MP3 audio files and a one-page summary sheet. The web edition works online on this site, with instant answer checking and the audio built in. There's no app to install and no subscription.</p></details>
+      <details><summary>Is there audio?</summary><p>Yes. The listening dialogue and the dictation in every module are recorded. They come as MP3 files with the PDF edition and are built into the page in the web edition.</p></details>
+      <details><summary>Do I need a teacher?</summary><p>No. Each course includes the full answer key, a self-assessment grid and a review plan, so you can study on your own. It also works well alongside lessons with any tutor.</p></details>
+      <details><summary>How long does a level take?</summary><p>Each module takes about four 40-minute study sessions, so at four sessions a week, an 8-module part takes about two months. Go at your own pace. The files are yours to keep.</p></details>
+      <details><summary>What about B2, C1 and C2?</summary><p>The course currently runs from A0 to B1. A0 and A1 Part 1 are on sale now, and A1 Part 2, A2 and B1 will follow as their illustrations are finished. The B2, C1 and C2 courses are in preparation, and B2 Part 1 is being written. You can already pre-order practice tests for DELF A1 to B2 and for all five TCF exams (TCF Canada, TCF Québec, TCF tout public, TCF DAP and TCF IRN), while the DALF C1 and C2 practice tests are in preparation.</p></details>
+    </div>
+    <div class="faq-group"><h3>Exams</h3>
+      <details><summary>Which French exam should I take?</summary><p>It depends on your goal. For university, take the DELF B2 or DALF C1, or the TCF DAP for the first year of an undergraduate degree in France. For immigration, residence or citizenship, take the TCF Canada, the TCF Québec or the TCF IRN, depending on where you apply. For work or a personal goal, take a DELF diploma or the TCF tout public. The guide in the <a href="#exams">Exams</a> section explains each one, but the organization you apply to always has the final say.</p></details>
+      <details><summary>Is my level high enough for the exam?</summary><p>Take the free level test first. If you're below the level you need, practice tests alone won't close the gap. Work through the course from your current level, then train with the practice tests in the final weeks. A live lesson with Olivier can also show you where you stand in speaking and writing.</p></details>
+      <details><summary>How does the web edition of a practice test work?</summary><p>You take it in your browser, just like the real exam. A start page lists the papers and their timing, then each paper runs on its own timer. When time is up, the paper closes automatically and your answers are saved as they are. Each recording plays once, with no pausing or rewinding, and includes exactly as many listenings as the real exam: one for the TCF, two for the DELF. For speaking, a timer counts down your preparation and speaking time, and you can record yourself and listen back. If you reload the page, the timer picks up where it left off. Your results appear only after the last paper. Listening and reading are marked for you and show the level you reached, while writing and speaking are marked with the grids in the marking guide, or by Olivier in a live lesson. Afterwards, you can listen to every recording again to learn from it.</p></details>
+      <details><summary>Are the DELF, DALF and TCF practice tests official?</summary><p>No. They are original practice tests, written from scratch to follow the current format published by France Éducation international, with the same papers, timings, number of questions, question types and marks as the real exam. DELF, DALF and TCF are diplomas and tests of France Éducation international, and Pas à Pas FRENCH is independent and not endorsed by it. The levels and NCLC scores shown in the web editions are practice estimates, not official scores.</p></details>
+    </div>
+    <div class="faq-group"><h3>Live lessons</h3>
+      <details><summary>How do live lessons work?</summary><p>Choose a 30- or 60-minute lesson, or a bundle of five, then pick one of Olivier's open slots. They come live from his calendar and are shown in your own time zone, from 3 hours to two weeks ahead, and the lesson is booked as soon as you pay. If none of the times work for you, suggest at least 3 times when you're free. Olivier marks the ones that suit him, then you choose one and pay. When it's time, come back to this page and press Join to open the video lesson, with a timer showing the time left. You're also welcome to message Olivier before booking, free of charge.</p></details>
+      <details><summary>How do the plans work?</summary><p>A plan gives you a set of 60-minute lessons every 2 months: 4 (one every two weeks), 8 (one a week) or 16 (two a week), and each lesson costs less than a single lesson bought on its own. You book them whenever it suits you, from the open slots in Olivier's calendar. After 2 months, the plan renews automatically at the same price with a fresh set of lessons, and any lessons you haven't booked by then don't carry over. You can cancel the renewal at any time in one click from “My live lessons”, and you keep your remaining lessons until the end of the 2 months. We send you a reminder 7 days before each renewal. <a href="policies.html#live">Plan rules</a>.</p></details>
+      <details><summary>What do I need for a live lesson?</summary><p>A computer or phone with a camera and microphone, and an up-to-date browser. When you join, the page checks your camera and microphone.</p></details>
+    </div>
+    <div class="faq-group"><h3>Before you buy</h3>
+      <details><summary>Is Module 1 really free?</summary><p>Yes. Enter your email and A0 Module 1 arrives in your inbox, with the PDF, its MP3 audio and the web edition. There's nothing to pay and no card needed.</p></details>
+      <details><summary>Is a full level cheaper than buying its two parts?</summary><p>Yes. A full level costs <span data-saving="level"></span> less than its two parts. The Complete Method costs <span data-saving="method"></span> less than buying the four levels separately.</p></details>
+      <details><summary>How can I pay?</summary><p>At checkout, you'll only see the methods available in your country of residence. Bank card (Visa, Mastercard) and PayPal are available everywhere and charged in US dollars. Where we offer them, you'll also see local methods for your country, such as mobile money. We detect your country automatically, but you can choose a different one.</p></details>
+      <details><summary>Can I get a refund?</summary><p>The files are delivered instantly and can't be returned, so all sales are final. If a file is faulty, we'll replace it, or refund you if we can't. You can cancel a pre-order for a full refund at any time until it's sent. Not sure which level to start with? Take the level test, download Module 1 for free, or write to us before you buy. <a href="policies.html#withdrawal">Refund policy</a>.</p></details>
+      <details><summary>How does a pre-order work?</summary><p>Some products aren't finished yet: courses that are written and recorded but still being illustrated, and practice tests that are still being written. You pay the same price today, and the files are emailed to you the day they're ready, with any parts that are already finished sent right away. Until the files are sent, you can cancel for a full refund. If a pre-order isn't delivered within 90 days, we'll refund you, unless you choose to wait. <a href="policies.html#terms">Terms of sale</a>.</p></details>
+      <details><summary>I teach French on another platform. Can I buy?</summary><p>Yes. Teachers are welcome to buy any product for their personal use: to study the method, prepare their lessons and teach their own students. The license doesn't allow you to share, send or post the files, so each learner who wants them must buy their own copy. <a href="policies.html#licence">License</a>.</p></details>
+      <details><summary>Are the reviews real?</summary><p>Only buyers can leave a review, using a personal link sent after their order. Reviews are published automatically, good or bad, and the only things filtered out are insults, links and contact details. <a href="policies.html#reviews">Review rules</a>.</p></details>
+    </div>
+    </div>
   </section>
 </main>
 
@@ -325,14 +342,14 @@
 
 <dialog id="modal" class="modal"><div id="modalBody"></div></dialog>
 
-<script src="js/shop.js?v=20261019h"></script>
-<script src="js/exam-formats.js?v=20261019h"></script>
-<script src="js/products.js?v=20261019h"></script>
-<script src="js/modules.js?v=20261019h"></script>
-<script src="js/leveltest.js?v=20261019h"></script>
-<script src="js/reviews.js?v=20261019h"></script>
-<script src="js/review-filter.js?v=20261019h"></script>
-<script src="js/app.js?v=20261019h"></script>
-<script src="js/live.js?v=20261019h"></script>
+<script src="js/shop.js?v=20261019m"></script>
+<script src="js/exam-formats.js?v=20261019m"></script>
+<script src="js/products.js?v=20261019m"></script>
+<script src="js/modules.js?v=20261019m"></script>
+<script src="js/leveltest.js?v=20261019m"></script>
+<script src="js/reviews.js?v=20261019m"></script>
+<script src="js/review-filter.js?v=20261019m"></script>
+<script src="js/app.js?v=20261019m"></script>
+<script src="js/live.js?v=20261019m"></script>
 </body>
 </html>

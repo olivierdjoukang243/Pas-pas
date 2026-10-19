@@ -7,6 +7,48 @@ const store = {
   set(key, value) { try { localStorage.setItem("pap_" + key, JSON.stringify(value)); } catch { /* storage unavailable */ } },
 };
 
+// ====== Views: the home page stays short; each menu entry opens its own part of the page ======
+// Every section stays in the page (search engines and no-JS visitors see it all); the script only
+// shows one view at a time: home, levels, inside, exams, live, author, faq (data-view in index.html).
+function viewOf(el) {
+  const s = el && el.closest && el.closest("main > section[data-view]");
+  return s ? s.dataset.view : null;
+}
+function showView(v) {
+  const sections = [...document.querySelectorAll("main > section[data-view]")];
+  if (!sections.length) return;
+  let first = true;
+  sections.forEach((s) => {
+    const on = s.dataset.view === v;
+    s.classList.toggle("view-off", !on);
+    s.classList.toggle("view-first", on && first && !s.hidden);
+    if (on && !s.hidden) first = false;
+  });
+  document.body.dataset.view = v;
+  document.querySelectorAll("nav.nav a[href^='#']").forEach((a) => {
+    const t = document.getElementById(a.getAttribute("href").slice(1));
+    a.classList.toggle("on", v !== "home" && viewOf(t) === v);
+  });
+  requestAnimationFrame(() => typeof clampAll === "function" && clampAll());
+}
+// Anything brought into view (a link, a button, ?next=) opens its view first.
+const nativeScroll = Element.prototype.scrollIntoView;
+Element.prototype.scrollIntoView = function (...args) {
+  const v = viewOf(this);
+  if (v && document.body.dataset.view !== v) showView(v);
+  return nativeScroll.apply(this, args);
+};
+function route() {
+  const id = decodeURIComponent(location.hash.slice(1));
+  const el = id ? document.getElementById(id) : null;
+  const v = viewOf(el) || "home";
+  showView(v);
+  if (!el || el.classList.contains("view-first")) window.scrollTo(0, 0);
+  else nativeScroll.call(el, { block: "start" });
+}
+window.addEventListener("hashchange", route);
+route();
+
 // ====== Currencies ======
 // USD and FCFA prices are fixed in the catalogue. XOF has the same parity as XAF.
 // EUR is derived from FCFA (fixed parity 655.957). The others are converted from USD at
@@ -459,7 +501,7 @@ function formatHTML(x) {
 }
 
 function renderExams() {
-  $("#examSoon").innerHTML = EXAM_PACKS.map((p) => `<div class="pay-card exam-card">
+  $("#examSoon").innerHTML = EXAM_PACKS.map((p) => `<div class="pay-card exam-card" data-group="${p.level === "TCF" ? "tcf" : "delf"}">
     <span class="tag${isPre(p) ? " pre" : buyable(p) ? "" : " soon"}">${isPre(p) ? "Pre-order" : buyable(p) ? p.level : "In preparation"}</span>
     <h3>${p.exam}</h3>
     ${(examFormat(p.format) || {}).official ? `<p class="exam-official" lang="fr">${examFormat(p.format).official}</p>` : ""}
@@ -468,7 +510,7 @@ function renderExams() {
     ${formatHTML(examFormat(p.format))}
     <div class="exam-buy"><span class="price">${price(p)}</span>${buyable(p) ? `<button class="btn btn-primary mini" data-buy="${p.id}">${buyLabel(p)}</button>` : `<span class="exam-wait">Not on sale yet</span>`}</div>
     ${isPre(p) ? `<p class="pre-note">The tests are being written. ${PRE_NOTE}</p>` : ""}
-  </div>`).join("") + EXAMS_SOON.map((e) => `<div class="pay-card exam-card">
+  </div>`).join("") + EXAMS_SOON.map((e) => `<div class="pay-card exam-card" data-group="delf">
     <span class="tag soon">Coming soon</span>
     <h3>${e.name}</h3>
     <p class="exam-levels">${e.levels}</p>
@@ -929,7 +971,11 @@ function openNext(id) {
   if (id === "live") return bringIntoView($("#live"));
   const p = byId(id);
   if (!p) return;
-  if (p.kind === "exam") return bringIntoView($("#exams"));
+  if (p.kind === "exam") {
+    const tab = document.querySelector(`[data-exam-tab="${p.level === "TCF" ? "tcf" : "delf"}"]`);
+    if (tab) tab.click();
+    return bringIntoView($("#exams"));
+  }
   if (p.kind === "method") return bringIntoView($("#method") || $("#levels"));
   state.level = p.level; store.set("level", p.level); renderLevelTabs(); renderLevelPanel();
   const row = document.querySelector(`#levelPanel [data-buy="${p.id}"]`);
@@ -943,3 +989,33 @@ renderLevelTabs();
 renderPrices();
 refreshRates().then(renderPrices);
 { const n = new URLSearchParams(location.search).get("next"); if (n) setTimeout(() => openNext(n), 300); }
+
+// ====== Long texts: first lines shown, "Read more" unfolds the rest (nothing is removed) ======
+const CLAMPED = ".prod-body > p, .exam-card > p:not(.exam-levels):not(.exam-official):not(.pre-note), .motive > p:not(.motive-tag):not(.motive-path), .clamp-me";
+function clampAll() {
+  document.querySelectorAll(CLAMPED).forEach((el) => {
+    if (el.dataset.clamped || !el.offsetParent) return;
+    el.dataset.clamped = "1";
+    el.classList.add("clamp");
+    if (el.scrollHeight <= el.clientHeight + 2) { el.classList.remove("clamp"); return; }
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "more-btn"; b.textContent = "Read more"; b.setAttribute("aria-expanded", "false");
+    b.addEventListener("click", () => {
+      const open = el.classList.toggle("open");
+      b.textContent = open ? "Show less" : "Read more";
+      b.setAttribute("aria-expanded", String(open));
+    });
+    el.after(b);
+  });
+}
+new MutationObserver(() => requestAnimationFrame(clampAll)).observe(document.body, { childList: true, subtree: true });
+clampAll();
+
+// Exam cards: DELF & DALF or TCF, one family at a time (every card stays on the page).
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-exam-tab]");
+  if (!t) return;
+  document.querySelectorAll("[data-exam-tab]").forEach((b) => b.setAttribute("aria-selected", String(b === t)));
+  $("#examSoon").dataset.show = t.dataset.examTab;
+  requestAnimationFrame(clampAll);
+});
