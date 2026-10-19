@@ -151,12 +151,12 @@ function renderInstant() {
     <h2>Choose how to pay</h2>
     <p class="note ok" role="status">Your ${minutes}-minute lesson: ${when}. <button type="button" class="link-btn" data-back-time>Change the time</button></p>
     <p class="note">Your lesson is booked as soon as the payment goes through.</p>
-    <div class="pay-methods book-len" role="radiogroup" aria-label="Option">
-      ${offers.map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> <span class="pm-t">${x.name}<b>${price(x)}${x.plan ? " every 2 months" : ""}</b>${PACK_SIZE[x.id] ? `<small>this lesson + ${PACK_SIZE[x.id] - 1} more to book within 2 months</small>` : ""}</span></label>`).join("")}
+    <div class="pay-methods book-len" role="radiogroup" aria-label="Payment option">
+      ${offers.map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> <span class="pm-t">${x.name}<b>${price(x)}${x.plan ? " every 2 months" : ""}</b>${PACK_SIZE[x.id] ? `<small>this lesson plus ${PACK_SIZE[x.id] - 1} more to book within 2 months</small>` : ""}</span></label>`).join("")}
     </div>
     ${details}
     <p class="form-error" id="bkError" hidden></p>
-    ${PACK_SIZE[booking.product] ? `<p class="note">Book the other ${PACK_SIZE[booking.product] - 1} lessons whenever you like over the next 2 months, from “My live lessons”.${p.plan ? " The plan renews every 2 months. You can cancel the renewal at any time, in one click." : ""}</p>` : ""}
+    ${PACK_SIZE[booking.product] ? `<p class="note">You can book the other ${PACK_SIZE[booking.product] - 1} lessons from “My live lessons” whenever you like over the next 2 months.${p.plan ? " The plan renews every 2 months, and you can cancel the renewal at any time in one click." : ""}</p>` : ""}
     <button class="btn btn-primary btn-block">Continue to payment · ${price(p)}${p.plan ? " every 2 months" : ""}</button>`;
     return;
   }
@@ -167,7 +167,7 @@ function renderInstant() {
   $("#bookForm").innerHTML = `
     <p class="eyebrow">${booking.credit ? "Book with your lesson pack" : "Step 1 of 2 · choose a time"}${DEMO ? " · demo" : ""}</p>
     <h2>${PACK_SIZE[booking.product] && !booking.credit ? "Pick a time for your first lesson" : "Pick a time that works for you"}</h2>
-    <p>These are Olivier's available times, updated live and shown in <strong>your local time (${zoneLabel()})</strong>. Choose one${booking.credit ? " and confirm it" : " and pay on the next step"}. Your lesson is booked instantly, with no waiting for a reply.</p>
+    <p>Here are Olivier's open times, updated live and shown in <strong>your local time (${zoneLabel()})</strong>. Pick one${booking.credit ? " and confirm it" : " and pay on the next step"}. Your lesson is booked instantly, so there's no waiting for a reply.</p>
     ${booking.credit ? `<p class="note">Lesson ${booking.credit.used + 1} of ${booking.credit.total} in your pack. No payment needed.</p>` : fixed ? `<p class="note">${p.name}: ${minutes}-minute lessons.</p>` : `
     <div class="pay-methods book-len" role="radiogroup" aria-label="Lesson length">
       ${[30, 60].map((m) => `<label class="pm"><input type="radio" name="minutes" value="${m}" ${m === minutes ? "checked" : ""}> ${m} minutes</label>`).join("")}
@@ -176,7 +176,7 @@ function renderInstant() {
       <label for="bkNeed">What would you like to work on?<select id="bkNeed" name="need">${LIVE_NEEDS.map((x) => `<option ${x === booking.need ? "selected" : ""}>${x}</option>`).join("")}</select></label>
       <label for="bkLevel">Your level<select id="bkLevel" name="level"><option>I don't know yet</option>${LEVELS.map((l) => `<option ${l.code === booking.level ? "selected" : ""}>${l.code}</option>`).join("")}</select></label>
     </div>
-    ${freeSlots === null ? `<p class="note" role="status">Loading Olivier's available times…</p>` : !all.length ? `<p class="note" role="status">No ${minutes}-minute times available in the next ${LIVE_CONFIG.instant.horizonDays} days.</p>` : `
+    ${freeSlots === null ? `<p class="note" role="status">Loading Olivier's available times…</p>` : !all.length ? `<p class="note" role="status">There are no ${minutes}-minute times available in the next ${LIVE_CONFIG.instant.horizonDays} days.</p>` : `
     <p class="eyebrow pm-title">Available times · ${minutes}-minute lesson</p>
     <div class="chips-row" role="group" aria-label="Day">${days.map((d) => `<button type="button" class="slot ${d === booking.day ? "on" : ""}" data-day="${d}">${d}</button>`).join("")}</div>
     <div class="chips-row" id="bkTimes" role="group" aria-label="Start times">${times.map((t) => `<button type="button" class="slot ${t === booking.slot ? "on" : ""}" aria-pressed="${t === booking.slot}" data-pick="${t}">${localTime(t)}</button>`).join("")}</div>
@@ -184,7 +184,7 @@ function renderInstant() {
     ${booking.credit ? details : ""}
     <p class="form-error" id="bkError" hidden></p>
     <button class="btn btn-primary btn-block" ${booking.slot ? "" : "disabled"}>${booking.credit ? "Confirm this time" : "Next: choose how to pay"}</button>
-    <p class="note">None of these times work for you? <button type="button" class="link-btn" data-propose>Suggest your own times</button>${talk ? ` · Want to talk first? ${talk}` : ""}</p>`;
+    <p class="note">None of these times work for you? <button type="button" class="link-btn" data-propose>Suggest your own times</button>${talk ? ` Want to talk first? ${talk}` : ""}</p>`;
 }
 
 function submitInstant(form) {
@@ -194,7 +194,7 @@ function submitInstant(form) {
   const err = $("#bkError");
   if (!booking.slot) { err.textContent = "Please choose a time."; err.hidden = false; return; }
   if (!booking.credit && booking.stage !== "pay") { booking.stage = "pay"; renderBooking(); return bringIntoView($("#bookForm")); }
-  if (!booking.name || !form.bkEmail.checkValidity() || !booking.email) { err.textContent = "Enter your name and a valid email address."; err.hidden = false; return; }
+  if (!booking.name || !form.bkEmail.checkValidity() || !booking.email) { err.textContent = "Please enter your name and a valid email address."; err.hidden = false; return; }
   const draft = { product: booking.product, need: booking.need, level: booking.level, start: booking.slot,
     minutes: LIVE_MINUTES[booking.product], name: booking.name, email: booking.email, zone: visitorZone(), instant: true };
   if (booking.credit) return useCredit(booking.credit.id, draft);
@@ -218,17 +218,17 @@ function pruneTimes(times, minutes, all) {
 // Why a time cannot be added, or "" when it can.
 function blockedReason(t, minutes) {
   if (booking.times.includes(t)) return "";
-  if (booking.times.some((x) => clash(x, t, minutes))) return `overlaps a ${minutes}-minute lesson you've already chosen`;
-  if (perDay(booking.times, localDay(t)) >= LIVE_CONFIG.maxPerDay) return `you've already chosen ${LIVE_CONFIG.maxPerDay} times on this day`;
+  if (booking.times.some((x) => clash(x, t, minutes))) return `Overlaps a ${minutes}-minute lesson you've already chosen`;
+  if (perDay(booking.times, localDay(t)) >= LIVE_CONFIG.maxPerDay) return `You've already chosen ${LIVE_CONFIG.maxPerDay} times on this day`;
   return "";
 }
 
 function bookingStatus(n, nd) {
   const C = LIVE_CONFIG;
-  const got = `${n} time${n === 1 ? "" : "s"} over ${nd} day${nd === 1 ? "" : "s"}`;
-  if (n < C.minTimes) return { ok: false, text: `${got} · choose ${C.minTimes - n} more to send your request` };
-  if (n >= C.goodTimes && nd >= C.goodDays) return { ok: true, text: `${got} · ready to send` };
-  return { ok: true, text: `${got} · you can send now, but ${C.goodTimes} times over ${C.goodDays} days give Olivier the best chance of finding one that works` };
+  const got = `${n} time${n === 1 ? "" : "s"} chosen over ${nd} day${nd === 1 ? "" : "s"}`;
+  if (n < C.minTimes) return { ok: false, text: `${got}. Add ${C.minTimes - n} more to send your request.` };
+  if (n >= C.goodTimes && nd >= C.goodDays) return { ok: true, text: `${got}. Ready to send.` };
+  return { ok: true, text: `${got}. You can send them now, but ${C.goodTimes} times over ${C.goodDays} days give Olivier the best chance of finding one that works.` };
 }
 
 // The next day after `day` that still has room, or null.
@@ -259,7 +259,7 @@ function renderBooking(next) {
   $("#bookForm").innerHTML = `
     <p class="eyebrow">${booking.credit ? "Book with your lesson pack" : "Book a live lesson"}${DEMO ? " · demo" : ""}</p>
     <h2>When are you free?</h2>
-    <p>Suggest at least <strong>${LIVE_CONFIG.minTimes} start times</strong>, with no more than ${LIVE_CONFIG.maxPerDay} per day. ${LIVE_CONFIG.goodTimes} times over ${LIVE_CONFIG.goodDays} different days give you the best chance. Olivier selects the ones that work for him, then you choose one and ${booking.credit ? "confirm it" : "pay to confirm it"}.</p>
+    <p>Suggest at least <strong>${LIVE_CONFIG.minTimes} start times</strong>, with no more than ${LIVE_CONFIG.maxPerDay} per day. Suggesting ${LIVE_CONFIG.goodTimes} times over ${LIVE_CONFIG.goodDays} different days gives you the best chance. Olivier will pick the ones that work for him, then you choose one and ${booking.credit ? "confirm it" : "pay to confirm it"}.</p>
     ${booking.credit ? `<p class="note">Lesson ${booking.credit.used + 1} of ${booking.credit.total} in your pack. No payment needed.</p>` : `
     <div class="pay-methods book-len" role="radiogroup" aria-label="Lesson">
       ${LIVE.filter((x) => !x.plan || x.id === booking.product).map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> ${x.name}<br><b>${price(x)}${x.plan ? " every 2 months" : ""}</b></label>`).join("")}
@@ -285,7 +285,7 @@ function renderBooking(next) {
         <button type="button" class="btn btn-ghost mini" data-dismiss-full>${ready ? "I'm done, keep my times" : "Close"}</button></div></div>`;
     })()}
     <p class="note ${ready ? "ok" : ""}" role="status">${status.text}</p>
-    ${chosen.length ? `<ul class="proposed">${chosen.map((t) => `<li>${localDay(t)}, ${localTime(t)}–${localTime(t + minutes * MIN)} <button type="button" class="link-btn" data-slot="${t}" aria-label="Remove">✕</button></li>`).join("")}</ul>` : ""}
+    ${chosen.length ? `<ul class="proposed">${chosen.map((t) => `<li>${localDay(t)}, ${localTime(t)}–${localTime(t + minutes * MIN)} <button type="button" class="link-btn" data-slot="${t}" aria-label="Remove this time">✕</button></li>`).join("")}</ul>` : ""}
     <div class="form-grid" id="bkDetails">
       <label for="bkName">Your name<input id="bkName" name="name" required autocomplete="name" value="${esc(booking.name || "")}"></label>
       <label for="bkEmail">Email<input id="bkEmail" name="email" type="email" required autocomplete="email" value="${esc(booking.email || "")}"></label>
@@ -315,7 +315,7 @@ async function submitBooking(form) {
   booking.email = String(d.get("email") || "").trim();
   const err = $("#bkError");
   if (booking.times.length < LIVE_CONFIG.minTimes) { err.textContent = `Please suggest at least ${LIVE_CONFIG.minTimes} times.`; err.hidden = false; return; }
-  if (!booking.name || !form.bkEmail.checkValidity() || !booking.email) { err.textContent = "Enter your name and a valid email address."; err.hidden = false; return; }
+  if (!booking.name || !form.bkEmail.checkValidity() || !booking.email) { err.textContent = "Please enter your name and a valid email address."; err.hidden = false; return; }
   const req = { product: booking.product, need: booking.need, level: booking.level, minutes: LIVE_MINUTES[booking.product],
     name: booking.name, email: booking.email, zone: visitorZone(), proposed: [...booking.times].sort((a, b) => a - b),
     credit: booking.credit ? booking.credit.id : null };
@@ -334,7 +334,7 @@ async function submitBooking(form) {
   }
   renderMySessions();
   openModal(`<div class="checkout"><p class="eyebrow">Sent${DEMO ? " · demo" : ""}</p><h2>Your times have been sent to Olivier</h2>
-    <p>He'll select the times that work for him. You'll then get an email asking you to choose one of them${booking.credit ? "" : " and pay to confirm it"}. Your request also appears under “My live lessons” on this page.</p>
+    <p>He'll pick the ones that work for him, and you'll then get an email asking you to choose one${booking.credit ? "" : " and pay to confirm it"}. You can also follow your request under “My live lessons” on this page.</p>
     ${DEMO ? `<p class="note">Demo: you can reply as Olivier from “My live lessons”.</p>` : ""}
     <button class="btn btn-primary" data-modal-close>Done</button></div>`);
 }
@@ -365,7 +365,7 @@ async function openAnswer(id, key) {
     <div class="answer-list">${r.proposed.map((t) => `<label class="pm"><input type="checkbox" name="t" value="${t}" ${(r.accepted || []).includes(t) ? "checked" : ""}> ${localDay(t)} · ${localTime(t)}–${localTime(t + r.minutes * MIN)}</label>`).join("")}</div>
     <p class="form-error" id="ansError" hidden></p>
     <button class="btn btn-primary btn-block">Send my reply</button>
-    <p class="note">The learner will choose one of the times you select${r.credit ? "" : " and then pay"}. If none of them work, leave them all unselected and the learner will be asked to suggest new times.</p>
+    <p class="note">The learner will choose one of the times you select${r.credit ? "" : " and then pay"}. If none of them work, leave every box unchecked and the learner will be asked to suggest new times.</p>
   </form>`);
 }
 
@@ -448,7 +448,7 @@ function planOffer(b) {
   const per = amount(plan.usd / plan.lessons, plan.xaf / plan.lessons);
   return `<div class="plan-offer"><p class="eyebrow">Keep up the momentum</p>
     <h3>${plan.lessons} lessons every 2 months, ${per} each instead of ${price(one)}</h3>
-    <p>Learners who meet a teacher every week remember what they learn. With the ${esc(plan.name.split(" · ")[0])}, you book each lesson whenever it suits you over 2 months. The plan renews automatically, and you can cancel the renewal at any time.</p>
+    <p>Meeting a teacher every week helps you remember what you learn. With the ${esc(plan.name.split(" · ")[0])}, you book each lesson whenever it suits you over 2 months. The plan renews automatically, and you can cancel the renewal at any time.</p>
     <div class="hero-cta tight"><button class="btn btn-primary" data-modal-close data-goto-plans>See the plans</button><button class="btn btn-ghost" data-modal-close>Not now</button></div></div>`;
 }
 
@@ -457,8 +457,8 @@ function bookedScreen(b) {
     <p class="eyebrow">${b.status === "demo" ? "Demo booking · nothing was charged" : "Booked"}</p>
     <h2>Your live lesson is booked</h2>
     <p><strong>${localDay(b.start)}, ${localTime(b.start)}</strong> your time (${b.zone}) · ${b.minutes} minutes.</p>
-    <p>Come back to this page at that time. The <strong>Join</strong> button becomes active ${LIVE_CONFIG.joinEarly} minutes before the start, in the “My live lessons” section.</p>
-    ${b.credit ? `<p class="note">${b.credit.plan ? "Your plan" : "Your lesson pack"}: ${b.credit.total - 1} more lesson${b.credit.total - 1 === 1 ? "" : "s"} to book whenever you like until ${localDay(b.credit.expires)}, from “My live lessons”.</p>` : ""}
+    <p>Come back to this page when it's time. The <strong>Join</strong> button in “My live lessons” becomes active ${LIVE_CONFIG.joinEarly} minutes before the start.</p>
+    ${b.credit ? `<p class="note">${b.credit.plan ? "Your plan" : "Your lesson pack"}: ${b.credit.total - 1} more lesson${b.credit.total - 1 === 1 ? "" : "s"} to book from “My live lessons” whenever you like until ${localDay(b.credit.expires)}.</p>` : ""}
     ${planOffer(b) || `<button class="btn btn-primary" data-modal-close>Done</button>`}
   </div>`);
 }
@@ -557,13 +557,13 @@ async function startVideo(b) {
       room.api.addListener("readyToClose", leaveRoom);
       return;
     } catch {
-      box.innerHTML = `<p class="room-msg">The video connection failed. Please reload the page or contact Olivier.</p>`;
+      box.innerHTML = `<p class="room-msg">We couldn't connect the video. Please reload the page or contact Olivier.</p>`;
       return;
     }
   }
   // No video service yet: check the camera and microphone, so the visitor is ready.
   box.innerHTML = `<video id="selfView" autoplay muted playsinline></video>
-    <p class="room-msg">${DEMO ? "Demo: once the video service is set up, your call with Olivier will connect here." : "Your call with Olivier will connect here."} The preview lets you check that your camera and microphone work.</p>`;
+    <p class="room-msg">${DEMO ? "Demo: once the video service is set up, your call with Olivier will connect here." : "Your call with Olivier will connect here."} Use the preview to check that your camera and microphone are working.</p>`;
   try {
     room.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     $("#selfView").srcObject = room.stream;
