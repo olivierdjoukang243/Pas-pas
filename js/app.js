@@ -657,11 +657,11 @@ async function checkReturn() {
   }
 }
 
-// Buyers come back to their courses from the menu ("My courses"), once the payment server exists.
-if (PAY_API && document.querySelector("nav.nav")) {
-  const a = document.createElement("a");
-  a.href = `${PAY_API}/account`; a.textContent = "My courses";
-  document.querySelector("nav.nav").appendChild(a);
+// Buyers come back to their courses ("My courses", top right), once the payment server exists:
+// they sign in with the email used at checkout and receive a sign-in link (no password).
+if (PAY_API && $("#accountLink")) {
+  $("#accountLink").href = `${PAY_API}/account`;
+  $("#accountLink").hidden = false;
 }
 
 // ====== Placement test ======

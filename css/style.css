@@ -611,3 +611,10 @@ details.mods { margin: .5em 0 0; padding: 0; background: none; box-shadow: none;
 .plan-offer { margin-top: 1em; padding: 1em 1.1em; border-radius: var(--radius); background: #f4f6fb; }
 .plan-offer h3 { margin: .2em 0 .4em; color: var(--bleu); font-size: 1.05rem; }
 .plan-offer p { font-size: .9rem; }
+
+/* "My courses": buyers sign in to read their courses (payment server, serveur/compte.py). */
+.account-link { margin-left: auto; display: inline-flex; align-items: center; gap: .45em; padding: .5em 1em; border: 2px solid var(--bleu); border-radius: 999px; color: var(--bleu); font-weight: 600; font-size: .92rem; text-decoration: none; white-space: nowrap; }
+.account-link::before { content: ""; width: .95em; height: .95em; background: currentColor; -webkit-mask: radial-gradient(circle at 50% 30%, #000 28%, transparent 30%), radial-gradient(ellipse at 50% 100%, #000 45%, transparent 47%); mask: radial-gradient(circle at 50% 30%, #000 28%, transparent 30%), radial-gradient(ellipse at 50% 100%, #000 45%, transparent 47%); }
+.account-link:hover { background: var(--bleu); color: #fff; }
+.account-link[hidden] { display: none; }
+@media (max-width: 640px) { .account-link { padding: .4em .8em; font-size: .85rem; } }
