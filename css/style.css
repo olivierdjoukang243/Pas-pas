@@ -620,3 +620,46 @@ details.mods { margin: .5em 0 0; padding: 0; background: none; box-shadow: none;
 .account-link:hover { background: var(--bleu); color: #fff; }
 .account-link[hidden] { display: none; }
 @media (max-width: 640px) { .account-link { padding: .4em .8em; font-size: .85rem; } }
+
+/* ====== Breathing room (19/10/2026): same content, more air ====== */
+body { line-height: 1.65; }
+.block { padding: 5rem 0 1.5rem; }
+.block-band { margin-top: 4rem; padding-bottom: 4rem; }
+.block-head { margin-bottom: 2.2rem; }
+.sub { line-height: 1.7; }
+.motive-grid { gap: 1.5rem; }
+.motive { padding: 1.6em 1.6em 1.4em; gap: .7em; }
+.motive p { line-height: 1.65; }
+.prod { padding: 1.6em 0; gap: 2em; }
+.prod-body { gap: .35em; }
+.prod-body p { line-height: 1.65; }
+#examSoon { gap: 1.5rem; }
+.exam-card { padding: 1.7em; gap: .8em; }
+.exam-card h3 { margin: .1em 0 0; }
+/* Long texts show their first lines; "Read more" unfolds them. Nothing is removed. */
+.clamp { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--lines, 3); line-clamp: var(--lines, 3); overflow: hidden; }
+.clamp.open { display: block; -webkit-line-clamp: unset; line-clamp: none; overflow: visible; }
+.sub.clamp { --lines: 3; }
+.more-btn { background: none; border: 0; padding: 0; margin: .4em 0 0; color: var(--bleu); font: 600 .9rem var(--sans); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; align-self: flex-start; }
+.more-btn:hover { color: var(--rouge); }
+@media (max-width: 640px) { .block { padding: 3.5rem 0 1rem; } .block-band { margin-top: 2.5rem; padding-bottom: 2.5rem; } }
+
+/* Folded guide in the exams section */
+.guide-fold { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 0 1.4em; }
+.guide-fold > summary { list-style: none; cursor: pointer; padding: 1.1em 0; display: flex; align-items: center; justify-content: space-between; gap: 1em; }
+.guide-fold > summary::-webkit-details-marker { display: none; }
+.guide-fold > summary::after { content: "+"; font: 600 1.5rem var(--sans); color: var(--bleu); line-height: 1; }
+.guide-fold[open] > summary::after { content: "−"; }
+.guide-fold > summary h3 { margin: 0; }
+.guide-fold[open] { padding-bottom: 1.4em; }
+.guide-fold .goal-grid { margin-bottom: 1.2em; }
+/* Questions in four groups, two columns on wide screens */
+.faq { max-width: 1200px; padding: 3rem 0 5rem; }
+.faq-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 2.5rem 2rem; align-items: start; }
+.faq-group h3 { margin: 0 0 .8em; font-family: var(--serif); color: var(--bleu); font-size: 1.25rem; }
+
+/* Exam families as tabs */
+.exam-tabs { display: inline-flex; gap: .3rem; padding: .3rem; background: #fff; border: 1px solid var(--ligne); border-radius: 999px; margin: .5rem 0 1.5rem; }
+.exam-tabs button { border: 0; background: none; padding: .55em 1.3em; border-radius: 999px; font: 600 .95rem var(--sans); color: var(--bleu); cursor: pointer; }
+.exam-tabs button[aria-selected="true"] { background: var(--bleu); color: #fff; }
+#examSoon[data-show="delf"] .exam-card[data-group="tcf"], #examSoon[data-show="tcf"] .exam-card[data-group="delf"] { display: none; }
