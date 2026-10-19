@@ -370,7 +370,7 @@ function modulesHTML(p) {
   const count = groups.reduce((s, g) => s + g.data.modules.length, 0);
   const lists = groups.map((g) => `<ol class="mod-list" start="${g.offset + 1}">
       ${g.data.modules.map((m) => `<li>${m.titre}</li>`).join("")}
-    </ol>${g.data.bilan ? `<p class="mod-bilan">${/^level check/i.test(g.data.bilan.titre) ? g.data.bilan.titre : `Level check · ${g.data.bilan.titre}`}</p>` : ""}`).join("");
+    </ol>${g.data.bilan ? `<p class="mod-bilan">${/^level check/i.test(g.data.bilan.titre) ? g.data.bilan.titre : `Progress test · ${g.data.bilan.titre}`}</p>` : ""}`).join("");
   return `<details class="mods"><summary>See all ${count} modules</summary>${lists}</details>`;
 }
 
@@ -427,7 +427,7 @@ function renderCompare() {
   const rows = [
     ["How you pay", `One payment, from ${price(byId("a0-complete"))}. The files are yours to keep`, "Monthly or yearly subscription", "Pay by the hour, every lesson"],
     ["Grammar explained in English", "Yes, in every module", "Short tips, mostly practice", "Depends on the tutor"],
-    ["Step-by-step course with level checks", "56 modules, 7 level checks, A0 to B1", "Yes, in the app", "Depends on the tutor"],
+    ["Step-by-step course with progress tests", "56 modules, 7 progress tests, A0 to B1", "Yes, in the app", "Depends on the tutor"],
     ["Works offline", "PDFs and MP3s on any device", "Partly, in the app", "No"],
     ["Answer keys to keep", "For every exercise", "Instant grading, nothing to keep", "Depends on the tutor"],
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],

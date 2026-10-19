@@ -18,7 +18,7 @@ How to get the most out of it
 
 Enjoyed Module 1? Seven more modules are waiting for you.
 The Absolute Beginner Course takes you from the alphabet to your first
-conversation. It includes 8 modules and a level check that shows you what
+conversation. It includes 8 modules and a progress test that shows you what
 to review, all for {{A0_PRICE}}. You pay once, and the files are yours to keep.
 See the A0 course: {{SITE_URL}}#levels
 
