@@ -16,6 +16,7 @@ const SHOP = {
 
 // Local test of the payment server (atelier: serveur/serveur.py, Notch Pay sandbox). Only when
 // the site is opened from Olivier's own computer, without ?demo, and while SHOP.api is empty:
-// the published site never calls 127.0.0.1. Only the payment uses it (checkout and return).
+// the published site never calls 127.0.0.1. Used by the payment (checkout and return), the stock
+// check ("Coming soon") and the free module.
 const PAY_API = SHOP.api || (["127.0.0.1", "localhost"].includes(location.hostname)
   && !/[?&]demo\b/.test(location.search) ? "http://127.0.0.1:8767" : "");
