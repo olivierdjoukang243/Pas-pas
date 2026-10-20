@@ -3,7 +3,7 @@
 const SHOP = {
   email: "hello@pasapasfrench.com", // contact address (Cloudflare Email Routing to Gmail)
   whatsapp: "",       // international format without "+", e.g. 2376XXXXXXXX
-  api: "",            // booking, payment and email server, e.g. "https://api.pasapasfrench.com"
+  api: "https://api.pasapasfrench.com", // payment, delivery and email server (serveur.py, hosted)
   // Seller identity shown in the policies (required by consumer law in many countries).
   // Since 18/10/2026 the seller is Olivier Djoukang in his own name: Notch Pay only opens
   // merchant accounts to individuals living in French-speaking Africa.
