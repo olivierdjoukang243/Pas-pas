@@ -431,7 +431,7 @@ function productRow(p) {
     <div class="prod-buy">
       <span class="price">${price(p)}</span>
       ${!buyable(p) ? `<span class="tag soon">${waitTag(p)}</span>` : `<button class="btn ${p.kind === "level" ? "btn-primary" : "btn-ghost"} mini" data-buy="${p.id}">${buyLabel(p)}</button>`}
-      ${isPre(p) ? `<span class="pre-note">${readyParts(p).length ? `You get ${readyParts(p).map((x) => shortName(x)).join(", ")} right away, and the rest follows as soon as it's illustrated. You can cancel for a refund on anything not yet sent.` : `Illustrations are in progress. ${PRE_NOTE}`}</span>` : ""}
+      ${isPre(p) ? `<span class="pre-note">${readyParts(p).length ? `${readyParts(p).map((x) => shortName(x)).join(", ")} can already be bought on its own. This pre-order sends the whole level as soon as the last part is illustrated, and you can cancel for a full refund until then.` : `Illustrations are in progress. ${PRE_NOTE}`}</span>` : ""}
     </div>
   </li>`;
 }
@@ -463,7 +463,7 @@ function renderMethod() {
     <div class="method-buy">
       <span class="price">${price(m)}</span>
       ${!buyable(m) ? `<span class="tag soon">${SOON.has(m.id) ? "Coming soon" : "In preparation: on sale once every level is illustrated"}</span>` : `<button class="btn btn-light" data-buy="${m.id}">${isPre(m) ? "Pre-order the Complete Method" : "Buy the Complete Method"}</button>`}
-      ${isPre(m) ? `<span class="pre-note light">You get ${readyParts(m).map((x) => shortName(x)).join(" and ")} right away, and each remaining part follows as soon as it's illustrated. You can cancel for a refund on anything not yet sent.</span>` : ""}
+      ${isPre(m) ? `<span class="pre-note light">${readyParts(m).map((x) => shortName(x)).join(", ")} can already be bought level by level. This pre-order sends the whole method as soon as the last level is illustrated, and you can cancel for a full refund until then.</span>` : ""}
     </div>`;
 }
 
