@@ -412,7 +412,7 @@ function modulesHTML(p) {
   const count = groups.reduce((s, g) => s + g.data.modules.length, 0);
   const lists = groups.map((g) => `<ol class="mod-list" start="${g.offset + 1}">
       ${g.data.modules.map((m) => `<li>${m.titre}</li>`).join("")}
-    </ol>${g.data.bilan ? `<p class="mod-bilan">${/^level check/i.test(g.data.bilan.titre) ? g.data.bilan.titre : `Progress test · ${g.data.bilan.titre}`}</p>` : ""}`).join("");
+    </ol>${g.data.bilan ? `<p class="mod-bilan">${/^level check/i.test(g.data.bilan.titre) ? g.data.bilan.titre.replace(/^level check/i, "Progress test") : `Progress test · ${g.data.bilan.titre}`}</p>` : ""}`).join("");
   return `<details class="mods"><summary>See all ${count} modules</summary>${lists}</details>`;
 }
 
