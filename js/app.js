@@ -368,11 +368,14 @@ const shortName = (x) => (x.kind === "part" ? `${x.level} Part ${x.part}` : x.le
 
 // Pre-order: not deliverable yet, paid now and sent as soon as it is ready (policies, 2-3).
 const isPre = (p) => p.ready === false && !!p.preorder;
-const buyable = (p) => p.ready !== false || isPre(p);
+// Ready on the site but not yet in the shop's stock (server /stock): shown "Coming soon", not sold.
+const SOON = new Set();
+const buyable = (p) => (p.ready !== false && !SOON.has(p.id)) || isPre(p);
+const waitTag = (p) => SOON.has(p.id) ? "Coming soon" : "In preparation";
 const buyLabel = (p) => isPre(p) ? "Pre-order" : "Buy";
 // The parts of a pack already deliverable: sent at once with a pre-order of the pack.
-const readyParts = (p) => p.kind === "level" ? PRODUCTS.filter((x) => x.level === p.level && x.kind === "part" && x.ready !== false)
-  : p.kind === "method" ? PRODUCTS.filter((x) => ["part", "level"].includes(x.kind) && x.ready !== false && !(x.kind === "part" && PRODUCTS.some((l) => l.kind === "level" && l.level === x.level && l.ready !== false))) : [];
+const readyParts = (p) => p.kind === "level" ? PRODUCTS.filter((x) => x.level === p.level && x.kind === "part" && x.ready !== false && !SOON.has(x.id))
+  : p.kind === "method" ? PRODUCTS.filter((x) => ["part", "level"].includes(x.kind) && x.ready !== false && !SOON.has(x.id) && !(x.kind === "part" && PRODUCTS.some((l) => l.kind === "level" && l.level === x.level && l.ready !== false))) : [];
 const PRE_NOTE = "We'll email your files as soon as they're ready, and you can cancel for a full refund until then.";
 
 // Savings are computed from the catalogue, never typed by hand.
@@ -427,7 +430,7 @@ function productRow(p) {
     </div>
     <div class="prod-buy">
       <span class="price">${price(p)}</span>
-      ${!buyable(p) ? `<span class="tag soon">In preparation</span>` : `<button class="btn ${p.kind === "level" ? "btn-primary" : "btn-ghost"} mini" data-buy="${p.id}">${buyLabel(p)}</button>`}
+      ${!buyable(p) ? `<span class="tag soon">${waitTag(p)}</span>` : `<button class="btn ${p.kind === "level" ? "btn-primary" : "btn-ghost"} mini" data-buy="${p.id}">${buyLabel(p)}</button>`}
       ${isPre(p) ? `<span class="pre-note">${readyParts(p).length ? `You get ${readyParts(p).map((x) => shortName(x)).join(", ")} right away, and the rest follows as soon as it's illustrated. You can cancel for a refund on anything not yet sent.` : `Illustrations are in progress. ${PRE_NOTE}`}</span>` : ""}
     </div>
   </li>`;
@@ -459,7 +462,7 @@ function renderMethod() {
     </div>
     <div class="method-buy">
       <span class="price">${price(m)}</span>
-      ${!buyable(m) ? `<span class="tag soon">In preparation: on sale once every level is illustrated</span>` : `<button class="btn btn-light" data-buy="${m.id}">${isPre(m) ? "Pre-order the Complete Method" : "Buy the Complete Method"}</button>`}
+      ${!buyable(m) ? `<span class="tag soon">${SOON.has(m.id) ? "Coming soon" : "In preparation: on sale once every level is illustrated"}</span>` : `<button class="btn btn-light" data-buy="${m.id}">${isPre(m) ? "Pre-order the Complete Method" : "Buy the Complete Method"}</button>`}
       ${isPre(m) ? `<span class="pre-note light">You get ${readyParts(m).map((x) => shortName(x)).join(" and ")} right away, and each remaining part follows as soon as it's illustrated. You can cancel for a refund on anything not yet sent.</span>` : ""}
     </div>`;
 }
@@ -502,7 +505,7 @@ function formatHTML(x) {
 
 function renderExams() {
   $("#examSoon").innerHTML = EXAM_PACKS.map((p) => `<div class="pay-card exam-card" data-group="${p.level === "TCF" ? "tcf" : "delf"}">
-    <span class="tag${isPre(p) ? " pre" : buyable(p) ? "" : " soon"}">${isPre(p) ? "Pre-order" : buyable(p) ? p.level : "In preparation"}</span>
+    <span class="tag${isPre(p) ? " pre" : buyable(p) ? "" : " soon"}">${isPre(p) ? "Pre-order" : buyable(p) ? p.level : waitTag(p)}</span>
     <h3>${p.exam}</h3>
     ${(examFormat(p.format) || {}).official ? `<p class="exam-official" lang="fr">${examFormat(p.format).official}</p>` : ""}
     <p class="exam-levels">${p.contents}</p>
@@ -817,14 +820,14 @@ async function submitFree(form) {
     <p>Module 1 is on its way to ${esc(req.email)}. If it isn't there in a few minutes, check your spam or promotions folder.</p>
     <p>While you wait, why not find your level with the free test?</p>
     <div class="hero-cta tight"><button class="btn btn-primary" data-test>Take the level test</button><button class="btn btn-ghost" data-modal-close>Close</button></div></div>`);
-  if (SHOP.api) {
+  if (PAY_API) {
     btn.disabled = true; btn.textContent = "Sending…";
     try {
-      const r = await fetch(`${SHOP.api}/free-module`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
-      if (!r.ok) throw new Error();
+      const r = await fetch(`${PAY_API}/free-module`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
+      if (!r.ok) throw { said: (await r.json().catch(() => ({}))).error };
       return sent();
-    } catch {
-      err.textContent = "We couldn't send the module just now. Please try again in a moment."; err.hidden = false;
+    } catch (e) {
+      err.textContent = (e && e.said) || "We couldn't send the module just now. Please try again in a moment."; err.hidden = false;
       btn.disabled = false; btn.textContent = "Send me Module 1"; return;
     }
   }
@@ -988,6 +991,11 @@ renderCurrencyPicker();
 renderLevelTabs();
 renderPrices();
 refreshRates().then(renderPrices);
+// The shop server says which ready courses aren't in stock yet: those show "Coming soon".
+if (PAY_API) fetch(`${PAY_API}/stock`).then((r) => r.json()).then((d) => {
+  (d.soon || []).forEach((id) => SOON.add(id));
+  if (SOON.size) { renderLevelPanel(); renderMethod(); renderCompare(); }
+}).catch(() => { /* the server refuses unstocked courses anyway */ });
 { const n = new URLSearchParams(location.search).get("next"); if (n) setTimeout(() => openNext(n), 300); }
 
 // ====== Long texts: first lines shown, "Read more" unfolds the rest (nothing is removed) ======
