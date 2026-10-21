@@ -602,7 +602,7 @@ function openBuy(id, draft = null) {
   openModal(`<form class="checkout" id="checkoutForm" data-product="${p.id}" novalidate>
     <p class="eyebrow">${pre ? t("Pre-order · ", "Précommande · ") : ""}${p.level === "A0–B1" ? "A0 to B1" : p.kind === "live" ? t("Live", "Cours en direct") : p.level}${DEMO ? " · demo" : ""}</p>
     <h2>${L(p, "name")}</h2>
-    <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} ${t("your time", "à votre heure")} · ${draft.minutes} min · ${draft.need}` : L(p, "contents")}</p>
+    <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} ${t("your time", "à votre heure")} · ${draft.minutes} min${draft.need ? ` · ${draft.need}` : ""}` : L(p, "contents")}</p>
     <div class="form-grid">
       ${p.kind === "live" ? "" : `<label for="coName">${t("Your name (printed on your files)", "Votre nom (imprimé sur vos fichiers)")}<input id="coName" name="name" type="text" maxlength="80" autocomplete="name"></label>`}
       <label for="coEmail">${p.kind === "live" ? t("Email (your booking confirmation will be sent here)", "E-mail (la confirmation de réservation y sera envoyée)") : t("Email (your files will be sent here)", "E-mail (vos fichiers y seront envoyés)")}<input id="coEmail" name="email" type="email" required autocomplete="email" value="${draft ? draft.email : ""}"></label>
