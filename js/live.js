@@ -14,7 +14,7 @@ const LIVE_CONFIG = {
   hours: ["06:00", "22:00"],    // Douala time: no lesson starts before 06:00 or ends after 22:00
   step: 30,                     // minutes between two possible start times
   noticeHours: 3,               // earliest start: 3 h ahead
-  horizonDays: 14,              // latest start: 2 weeks ahead
+  horizonDays: 30,              // latest start: one month ahead (direct.py, HORIZON_J)
   joinEarly: 10,                // the Join button opens 10 minutes before the start
 };
 
@@ -88,7 +88,7 @@ const bookingOn = () => !!(PAY_API || DEMO);
 // ---- choose a time, then pay ----------------------------------------------
 const NEEDS = FR && typeof LIVE_NEEDS_FR !== "undefined" ? LIVE_NEEDS_FR : LIVE_NEEDS;
 const LEVEL_UNKNOWN = t("I don't know yet", "Je ne sais pas encore");
-const booking = { product: "live-60", need: NEEDS[0], level: LEVEL_UNKNOWN, day: null, credit: null, slot: null, stage: "time" };
+const booking = { product: "live-60", need: "", level: LEVEL_UNKNOWN, day: null, week: 0, credit: null, slot: null, stage: "time" };
 
 function openBooking(product, credit = null, start = null) {
   if (!bookingOn()) {
@@ -112,6 +112,10 @@ function renderBooking() {
   const all = freeSlots || [];
   const days = [...new Set(all.map(localDay))];
   if (!days.includes(booking.day)) booking.day = days[0] || null;
+  // one week at a time, with ‹ › at the top left and right of the calendar
+  const weeks = Math.max(1, Math.ceil(days.length / 7));
+  if (booking.day) booking.week = Math.floor(days.indexOf(booking.day) / 7);
+  const shown = days.slice(booking.week * 7, booking.week * 7 + 7);
   if (booking.slot && !all.includes(booking.slot)) { booking.slot = null; booking.stage = "time"; }
   const details = `<div class="form-grid" id="bkDetails">
       <label for="bkName">${t("Your name", "Votre nom")}<input id="bkName" name="name" required autocomplete="name" value="${esc(booking.name || "")}"></label>
@@ -154,12 +158,15 @@ function renderBooking() {
       ${offers.map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> <span class="pm-t">${L(x, "name")}<b>${price(x)}</b>${PACK_SIZE[x.id] ? `<small>${t(`book the other ${PACK_SIZE[x.id] - 1} yourself within 2 months`, `les ${PACK_SIZE[x.id] - 1} autres à réserver vous-même sous 2 mois`)}</small>` : ""}</span></label>`).join("")}
     </div>`}
     <div class="form-grid">
-      <label for="bkNeed">${t("What would you like to work on?", "Que voulez-vous travailler ?")}<select id="bkNeed" name="need">${NEEDS.map((x) => `<option ${x === booking.need ? "selected" : ""}>${x}</option>`).join("")}</select></label>
+      <label for="bkNeed">${t("Is there a particular point you'd like to cover?", "Un point particulier que vous aimeriez aborder ?")} <span class="optional">${t("(optional)", "(facultatif)")}</span><select id="bkNeed" name="need"><option value="">${t("Nothing in particular", "Rien de particulier")}</option>${NEEDS.map((x) => `<option ${x === booking.need ? "selected" : ""}>${x}</option>`).join("")}</select></label>
       <label for="bkLevel">${t("Your level", "Votre niveau")}<select id="bkLevel" name="level"><option>${LEVEL_UNKNOWN}</option>${LEVELS.map((l) => `<option ${l.code === booking.level ? "selected" : ""}>${l.code}</option>`).join("")}</select></label>
     </div>
     ${freeSlots === null ? `<p class="note" role="status">${t("Loading Olivier's available times…", "Chargement des heures libres d'Olivier…")}</p>` : !all.length ? `<p class="note" role="status">${t(`There are no ${minutes}-minute times available in the next ${LIVE_CONFIG.horizonDays} days.`, `Aucune heure libre pour un cours de ${minutes} minutes dans les ${LIVE_CONFIG.horizonDays} prochains jours.`)}</p>` : `
     <p class="eyebrow pm-title">${t(`Available times · ${minutes}-minute lesson`, `Heures libres · cours de ${minutes} minutes`)}</p>
-    <div class="chips-row" role="group" aria-label="${t("Day", "Jour")}">${days.map((d) => `<button type="button" class="slot ${d === booking.day ? "on" : ""}" data-day="${d}">${d}</button>`).join("")}</div>
+    <div class="week-nav"><button type="button" class="week-btn" data-week="-1" aria-label="${t("Previous week", "Semaine précédente")}" ${booking.week ? "" : "disabled"}>‹</button>
+      <span>${shown[0]} – ${shown[shown.length - 1]}</span>
+      <button type="button" class="week-btn" data-week="1" aria-label="${t("Next week", "Semaine suivante")}" ${booking.week + 1 < weeks ? "" : "disabled"}>›</button></div>
+    <div class="chips-row" role="group" aria-label="${t("Day", "Jour")}">${shown.map((d) => `<button type="button" class="slot ${d === booking.day ? "on" : ""}" data-day="${d}">${d}</button>`).join("")}</div>
     <div class="chips-row" id="bkTimes" role="group" aria-label="${t("Start times", "Heures de début")}">${times.map((t) => `<button type="button" class="slot ${t === booking.slot ? "on" : ""}" aria-pressed="${t === booking.slot}" data-pick="${t}">${localTime(t)}</button>`).join("")}</div>
     ${booking.slot ? `<p class="note ok" role="status">${t("Your lesson:", "Votre cours :")} ${when}.</p>` : ""}`}
     ${booking.credit ? details : ""}
@@ -277,7 +284,7 @@ function renderMySessions() {
   if (box.hidden) return;
   box.innerHTML = `<h3>${t("My live lessons", "Mes cours en direct")} · demo</h3>
     ${list.map((b) => `<div class="session" data-session="${b.id}">
-      <div><strong>${localDay(b.start)} · ${localTime(b.start)}</strong><small>${b.minutes} min · ${b.need}</small></div>
+      <div><strong>${localDay(b.start)} · ${localTime(b.start)}</strong><small>${b.minutes} min${b.need ? ` · ${b.need}` : ""}</small></div>
       <span class="countdown" data-countdown="${b.id}"></span>
       <button class="btn btn-primary mini" data-join="${b.id}">${t("Join", "Rejoindre")}</button>
     </div>`).join("")}
@@ -312,7 +319,7 @@ function openRoom(id) {
   room = { b, stream: null, api: null };
   openModal(`<div class="room">
     <div class="room-top">
-      <div><p class="eyebrow">${t("Live lesson with Olivier", "Cours en direct avec Olivier")}</p><strong>${b.need}</strong></div>
+      <div><p class="eyebrow">${t("Live lesson with Olivier", "Cours en direct avec Olivier")}</p><strong>${b.need || t("Live lesson", "Cours en direct")}</strong></div>
       <div class="room-timer" id="roomTimer"></div>
       <button class="btn btn-ghost mini" data-leave>${t("Leave", "Quitter")}</button>
     </div>
@@ -360,11 +367,16 @@ function leaveRoom() {
 
 // ---- events ---------------------------------------------------------------
 document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-book],[data-day],[data-pick],[data-join],[data-leave],[data-book-credit],[data-cancel-plan],[data-goto-plans],[data-back-time]");
+  const el = e.target.closest("[data-book],[data-day],[data-week],[data-pick],[data-join],[data-leave],[data-book-credit],[data-cancel-plan],[data-goto-plans],[data-back-time]");
   if (!el) return;
   const d = el.dataset;
   if ("book" in d) openBooking(d.book || null);
   else if (d.day) { booking.day = d.day; renderBooking(); bringIntoView($("#bkTimes")); }
+  else if (d.week) {
+    const days = [...new Set((freeSlots || []).map(localDay))];
+    booking.week = Math.max(0, booking.week + Number(d.week));
+    booking.day = days[booking.week * 7] || booking.day; renderBooking();
+  }
   else if (d.pick) {
     booking.slot = Number(d.pick); renderBooking();
     const next = $("#bkDetails") || $("#bookForm button.btn-primary");

@@ -718,3 +718,11 @@ main > section.block-band.view-first { margin-top: 0; }
 @media (max-width: 560px) { .chat-bubble-label { display: none; } .chat-bubble { padding: .8em .95em; font-size: 1.1rem; } }
 @media (prefers-reduced-motion: reduce) { .dots i { animation: none; } }
 .chat-also { display: flex; flex-wrap: wrap; gap: .35em; align-items: center; margin-top: .6em; font-size: .8rem; color: var(--gris); }
+
+/* Booking calendar: one week at a time (js/live.js) */
+.week-nav { display: flex; align-items: center; justify-content: space-between; gap: .6em; margin: .4em 0; }
+.week-nav span { font-weight: 600; color: var(--bleu); text-align: center; }
+.week-btn { flex: none; width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--ligne); background: #fff; color: var(--bleu); font-size: 1.35rem; line-height: 1; cursor: pointer; }
+.week-btn:hover { border-color: var(--bleu); }
+.week-btn:disabled { opacity: .3; cursor: default; }
+.optional { color: var(--gris); font-weight: 400; }
