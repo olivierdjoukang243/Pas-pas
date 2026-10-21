@@ -380,6 +380,11 @@ document.addEventListener("click", (e) => {
   else if (d.cancelPlan) cancelPlan(d.cancelPlan);
   else if ("gotoPlans" in d) { const g = $("#livePlans"); if (g) g.scrollIntoView({ behavior: "smooth" }); }
 });
+// a live card opens with the keyboard too (Enter or Space)
+document.addEventListener("keydown", (e) => {
+  const c = e.target.closest && e.target.closest(".live-card[data-book]");
+  if (c && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openBooking(c.dataset.book); }
+});
 modal.addEventListener("change", (e) => {
   if (!$("#bookForm") || !e.target.closest("#bookForm")) return;
   if (e.target.name === "product" || e.target.name === "minutes") {

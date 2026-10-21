@@ -542,7 +542,8 @@ function renderExams() {
 
 function renderLive() {
   const one = byId("live-60");
-  $("#liveGrid").innerHTML = LIVE.filter((p) => !p.plan).map((p) => `<div class="pay-card live-card">
+  // the whole card opens the booking, with this formula already chosen
+  $("#liveGrid").innerHTML = LIVE.filter((p) => !p.plan).map((p) => `<div class="pay-card live-card" data-book="${p.id}" role="button" tabindex="0" aria-label="${t("Book", "Réserver")} : ${esc(L(p, "name"))}">
     <h3>${L(p, "name")}</h3>
     <p>${L(p, "desc")}</p>
     <div class="live-buy"><span class="price">${price(p)}</span><button class="btn btn-primary mini" data-book="${p.id}">${t("Book", "Réserver")}</button></div>
