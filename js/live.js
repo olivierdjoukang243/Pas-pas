@@ -90,13 +90,17 @@ const NEEDS = FR && typeof LIVE_NEEDS_FR !== "undefined" ? LIVE_NEEDS_FR : LIVE_
 const LEVEL_UNKNOWN = t("I don't know yet", "Je ne sais pas encore");
 const booking = { product: "live-60", need: NEEDS[0], level: LEVEL_UNKNOWN, day: null, credit: null, slot: null, stage: "time" };
 
-function openBooking(product, credit = null) {
+function openBooking(product, credit = null, start = null) {
   if (!bookingOn()) {
     return openModal(`<div class="checkout"><h2>${t("Booking is coming soon", "La réservation ouvre bientôt")}</h2><p>${t("You'll be able to book live lessons here very soon.", "Vous pourrez réserver vos cours en direct ici très bientôt.")}</p>${SHOP.email ? `<p>${t("Questions? Write to", "Une question ? Écrivez à")} <a href="mailto:${SHOP.email}">${SHOP.email}</a>.</p>` : ""}<button class="btn btn-ghost" data-modal-close>${t("Close", "Fermer")}</button></div>`);
   }
   Object.assign(booking, { product: product || booking.product, day: null, credit, slot: null, stage: "time" });
   openModal(`<form class="checkout book" id="bookForm" novalidate></form>`);
-  loadFree(LIVE_MINUTES[booking.product]).then(() => { if (modal.open && $("#bookForm")) renderBooking(); });
+  loadFree(LIVE_MINUTES[booking.product]).then(() => {
+    // a time already chosen in "My courses" (?book=…&start=…): selected, if it is still free
+    if (start && (freeSlots || []).includes(start)) { booking.slot = start; booking.day = localDay(start); }
+    if (modal.open && $("#bookForm")) renderBooking();
+  });
   renderBooking();
 }
 
@@ -399,3 +403,11 @@ modal.addEventListener("close", () => { if (room) leaveRoom(); });
 renderMySessions();
 setInterval(tick, 1000);
 checkReturn();
+// From "My courses" on the server: ?book=live-60&start=<ms> opens the booking with that time.
+{
+  const q = new URLSearchParams(location.search), id = q.get("book");
+  if (id && byId(id) && byId(id).kind === "live") {
+    history.replaceState(null, "", location.pathname + location.hash);
+    openBooking(id, null, Number(q.get("start")) || null);
+  }
+}
