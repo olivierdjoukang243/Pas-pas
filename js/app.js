@@ -532,7 +532,7 @@ function renderLive() {
   const plans = LIVE.filter((p) => p.plan), box = $("#livePlans");
   if (!box || !plans.length) return;
   box.innerHTML = `<div class="plans-head"><p class="eyebrow">Plans</p><h3>Learn every week and pay less per lesson</h3>
-    <p>Book your lessons whenever it suits you over each 2-month period. The plan then renews with a fresh set of lessons, and you can cancel the renewal at any time in one click.</p></div>
+    <p>Book your lessons yourself, whenever it suits you over each 2-month period. 7 days before the end, we email you a link to renew it with a fresh set of lessons. No renewal, no charge: it simply stops.</p></div>
     <div class="plans">${plans.map((p) => { const save = Math.round(100 * (1 - p.usd / p.lessons / one.usd));
       return `<div class="pay-card plan-card${p.best ? " best" : ""}">${p.best ? `<span class="tag best">Most popular</span>` : ""}
       <h4>${p.name.split(" · ")[0]}</h4><p class="plan-n"><b>${p.lessons} lessons</b> of 60 minutes every 2 months · ${p.contents.toLowerCase()}</p>
@@ -540,7 +540,7 @@ function renderLive() {
       <p class="plan-per">${amount(p.usd / p.lessons, p.xaf / p.lessons)} per lesson · <span class="ok">save ${save}%</span></p>
       <p>${p.desc}</p>
       <button class="btn ${p.best ? "btn-primary" : "btn-ghost"} mini" data-book="${p.id}">Choose this plan</button></div>`; }).join("")}</div>
-    <p class="note">Unused lessons don't carry over to the next 2-month period, so book them as you go. We'll remind you 7 days before each renewal.</p>`;
+    <p class="note">Unused lessons don't carry over to the next 2-month period, so book them as you go. You can stop the renewal at any time in one click from “My courses”.</p>`;
 }
 
 // Amounts written in the page text follow the chosen currency too, computed from the catalogue.
@@ -592,13 +592,13 @@ function openBuy(id, draft = null) {
     <div id="payDetails"></div>
     <div class="totals" id="coTotals"></div>
     <label class="check"><input type="checkbox" name="terms" id="coTerms"> ${p.kind === "live"
-      ? (p.plan ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a>. I understand that my plan renews every 2 months at ${price(p)} until I cancel it, and that unused lessons don't carry over.`
+      ? (p.plan ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a>. I understand that my plan lasts 2 months, that unused lessons don't carry over, and that I can renew it with the link emailed 7 days before the end (if I don't, it simply stops).`
         : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a> (free rescheduling up to 24 hours before the lesson).`)
       : pre ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I understand that this is a pre-order. The files will be sent as soon as they're ready, and I can cancel for a full refund until then.`
       : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I want the files delivered immediately, and I understand that this means I lose my right of withdrawal.`}</label>
     <p class="form-error" id="formError" hidden></p>
     <button class="btn btn-primary btn-block" id="payBtn"></button>
-    <p class="note">${p.plan ? `Payment confirms your first lesson and starts your plan, which renews every 2 months at ${price(p)}. You can cancel the renewal at any time from “My live lessons”, and we'll remind you 7 days before each renewal.` : p.kind === "live" ? "Payment confirms your lesson and holds the time for you." : pre ? `This is a pre-order. ${PRE_NOTE} If it isn't delivered within 90 days, you'll be refunded unless you choose to wait.` : "Because the files are delivered instantly, all sales are final. If a file is faulty, we'll replace it."}</p>
+    <p class="note">${p.plan ? `Payment confirms your first lesson and starts your plan for 2 months. You book the other lessons yourself in “My courses”. 7 days before the end, we email you a link to renew it at ${price(p)}.` : p.kind === "live" ? "Payment confirms your lesson and holds the time for you." : pre ? `This is a pre-order. ${PRE_NOTE} If it isn't delivered within 90 days, you'll be refunded unless you choose to wait.` : "Because the files are delivered instantly, all sales are final. If a file is faulty, we'll replace it."}</p>
   </form>`);
   renderResidenceCheckout();
   renderPayOptions();
@@ -689,13 +689,13 @@ async function checkReturn() {
     for (let i = 0; i < 15; i++) {
       d = await (await fetch(`${PAY_API}/payments/${encodeURIComponent(ref)}`)).json();
       if (d.status !== "complete" || d.booking || d.preorder || d.delivery !== "preparing") break;
-      if (i === 0) openModal(`<div class="checkout"><h2>Payment received</h2><p>We're adding your name to your files. This only takes a few seconds…</p></div>`);
+      if (i === 0) openModal(`<div class="checkout"><h2>Payment received</h2><p>${d.live ? "We're writing your lesson in Olivier's calendar." : "We're adding your name to your files."} This only takes a few seconds…</p></div>`);
       await new Promise((r) => setTimeout(r, 2000));
     }
     if (d.status !== "complete") {
       return openModal(`<div class="checkout"><h2>Payment not completed</h2><p>You haven't been charged, and you can try again whenever you're ready.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
     }
-    if (d.booking) return bookedScreen(confirmBooking(d.booking, "paid", ref));
+    if (d.booking) return paidBooking(d);
     if (d.preorder) return openModal(`<div class="checkout"><h2>Thank you</h2><p>Your payment went through and your pre-order is confirmed. We'll send the files to ${esc(d.email)} as soon as they're ready, and you can cancel for a full refund until then.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
     if (d.account_url) return openModal(`<div class="checkout"><h2>Thank you</h2><p>Your payment went through and your course is ready. Start reading online now, and pick up where you left off at any time over the next 12 months. We've also emailed the link and the download to ${esc(d.email)}.</p>
       <a class="btn btn-primary" href="${esc(d.account_url)}">Open my course</a> <button class="btn btn-ghost" data-modal-close>Later</button></div>`);
