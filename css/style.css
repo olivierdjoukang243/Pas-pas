@@ -672,3 +672,8 @@ main > section.block-band.view-first { margin-top: 0; }
 /* More air on the home page */
 .hero { padding-block: clamp(2.5rem, 7vw, 5.5rem); }
 .steps { margin-block: 1rem 2rem; gap: 1.5rem; }
+
+/* FR / EN: the other language of the site */
+.lang-link { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; min-width: 2.6em; padding: .45em .7em; border-radius: 999px; color: var(--bleu); font-weight: 700; font-size: .85rem; letter-spacing: .06em; text-decoration: none; border: 1.5px solid var(--ligne, #e7e1d6); }
+.lang-link:hover { border-color: var(--bleu); }
+.lang-link + .account-link { margin-left: .5em; }

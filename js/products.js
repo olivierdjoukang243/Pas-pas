@@ -77,6 +77,28 @@ const EXAMS_SOON = [
   { name: "DALF C1", format: ["dalf", "C1"], levels: "Advanced diploma · C1", note: "The diploma for university study and professional work. Practice tests in the current official format are on the way." },
   { name: "DALF C2", format: ["dalf", "C2"], levels: "Advanced diploma · C2", note: "The highest French-language diploma. Practice tests in the current official format are on the way." },
 ];
+// French site (fr/index.html): names and texts in French, same products and prices.
+const DELF_DESC_FR = (lvl) => `Quatre sujets complets du ${lvl} au format officiel actuel, sans aucune tâche répétée d'un sujet à l'autre. Chacun couvre la compréhension de l'oral, la compréhension des écrits, la production écrite et la production orale. Vous recevez aussi un guide de correction avec les réponses, les transcriptions et les grilles d'évaluation, et une version en ligne chronométrée qui se passe comme le vrai examen : chaque épreuve a son minuteur, chaque enregistrement ne s'écoute que le nombre de fois prévu le jour J, et la compréhension de l'oral et des écrits est notée sur 25 à la fin.`;
+const TCF_DESC_FR = (exam, co, st, ce, prods) => `Quatre sujets complets du ${exam} au format officiel, sans aucune question répétée d'un sujet à l'autre. Chaque sujet comprend ${co} questions de compréhension orale${st ? `, ${st} de structures de la langue` : ""} et ${ce} de compréhension écrite, de difficulté croissante, plus ${prods}. Vous recevez un guide de correction qui indique le niveau de chaque question, et une version en ligne chronométrée qui se passe comme le vrai test. À la fin, elle compte vos bonnes réponses niveau par niveau.`;
+const EXAM_FR = {
+  "delf-a1": { name: "DELF A1 — 4 sujets d'entraînement", contents: "4 sujets complets · les quatre compétences · audio inclus", desc: DELF_DESC_FR("DELF A1") },
+  "delf-a2": { name: "DELF A2 — 4 sujets d'entraînement", contents: "4 sujets complets · les quatre compétences · audio inclus", desc: DELF_DESC_FR("DELF A2") },
+  "delf-b1": { name: "DELF B1 — 4 sujets d'entraînement", contents: "4 sujets complets · les quatre compétences · audio inclus", desc: DELF_DESC_FR("DELF B1") },
+  "delf-b2": { name: "DELF B2 — 4 sujets d'entraînement", contents: "4 sujets complets · les quatre compétences · audio inclus", desc: DELF_DESC_FR("DELF B2") },
+  "tcf-canada": { name: "TCF Canada — 4 sujets d'entraînement", contents: "4 sujets complets, de A1 à C2 · les quatre compétences · audio inclus",
+    desc: TCF_DESC_FR("TCF Canada", 39, 0, 39, "les trois tâches d'expression écrite et les trois tâches d'expression orale").replace("niveau par niveau.", "niveau par niveau et vous donne une estimation NCLC.") },
+  "tcf-quebec": { name: "TCF Québec — 4 sujets d'entraînement", contents: "4 sujets complets, de A1 à C2 · les quatre compétences · audio inclus",
+    desc: TCF_DESC_FR("TCF Québec", 29, 0, 29, "les trois tâches d'expression écrite et les trois tâches d'expression orale") },
+  "tcf-tp": { name: "TCF tout public — 4 sujets d'entraînement", contents: "4 sujets complets, de A1 à C2 · cinq épreuves · audio inclus",
+    desc: TCF_DESC_FR("TCF tout public", 29, 18, 29, "les épreuves facultatives d'expression écrite et orale") },
+  "tcf-dap": { name: "TCF DAP — 4 sujets d'entraînement", contents: "4 sujets complets, de A1 à C2 · cinq épreuves · audio inclus",
+    desc: TCF_DESC_FR("TCF DAP", 29, 18, 29, "l'expression écrite obligatoire et l'expression orale facultative") },
+  "tcf-irn": { name: "TCF IRN — 4 sujets d'entraînement", contents: "4 sujets complets · les quatre compétences · audio inclus",
+    desc: TCF_DESC_FR("TCF IRN", 25, 0, 25, "les trois tâches d'expression écrite et les trois tâches d'expression orale, toutes sans préparation") },
+};
+EXAM_PACKS.forEach((p) => { p.fr = EXAM_FR[p.id]; });
+EXAMS_SOON[0].fr = { levels: "Diplôme avancé · C1", note: "Le diplôme des études universitaires et du travail en français. Des sujets au format officiel actuel sont en préparation." };
+EXAMS_SOON[1].fr = { levels: "Diplôme avancé · C2", note: "Le plus haut diplôme de langue française. Des sujets au format officiel actuel sont en préparation." };
 PRODUCTS.push(...EXAM_PACKS);
 
 // Live lessons with the author, one to one. Booked in two steps: a free exchange
@@ -100,4 +122,20 @@ const LIVE = [
     desc: "For an upcoming exam, a move or a new job. Two lessons a week is the fastest way to go from understanding French to speaking it with ease." },
 ];
 const LIVE_NEEDS = ["A grammar point or a module", "Speaking or pronunciation", "Conversation practice", "Exam preparation (DELF, DALF, TCF)", "Something else"];
+const LIVE_NEEDS_FR = ["Préparer l'expression orale d'un examen", "Préparer l'expression écrite d'un examen", "Faire le point sur mon niveau", "Conversation", "Autre chose"];
+const LIVE_FR = {
+  "live-30": { name: "Cours en direct · 30 minutes", contents: "En tête-à-tête avec Olivier",
+    desc: "Une séance courte et ciblée : une tâche d'examen, un point de grammaire, ou un entraînement à l'oral juste avant l'épreuve ou un entretien." },
+  "live-60": { name: "Cours en direct · 60 minutes", contents: "En tête-à-tête avec Olivier",
+    desc: "Une séance complète pour simuler une épreuve d'expression orale, corriger une production écrite avec la grille officielle, ou approfondir un point." },
+  "live-pack5": { name: "5 cours en direct · 60 minutes chacun", contents: "En tête-à-tête avec Olivier · à réserver sous 2 mois",
+    desc: "Une préparation construite autour de votre objectif. Nous fixons le plan au premier cours, et chaque cours est suivi d'un court bilan écrit." },
+  "plan-4": { name: "Formule Légère · 4 cours tous les 2 mois", contents: "Un cours toutes les deux semaines",
+    desc: "Juste ce qu'il faut pour garder le cap avant l'examen, avec un rendez-vous régulier pour parler, poser vos questions et travailler ce qui vous bloque." },
+  "plan-8": { name: "Formule Régulière · 8 cours tous les 2 mois", contents: "Un cours par semaine",
+    desc: "Un cours par semaine, c'est le rythme qui transforme l'entraînement en habitude. Vous progressez mois après mois, sans perdre l'élan." },
+  "plan-16": { name: "Formule Intensive · 16 cours tous les 2 mois", contents: "Deux cours par semaine",
+    desc: "Pour un examen proche, un départ ou un nouveau poste. Deux cours par semaine, c'est la voie la plus rapide vers une expression orale et écrite à la hauteur de l'épreuve." },
+};
+LIVE.forEach((p) => { p.fr = LIVE_FR[p.id]; });
 PRODUCTS.push(...LIVE);

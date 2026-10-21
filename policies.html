@@ -8,7 +8,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231d2f6f'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>Pà</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261020f">
+  <link rel="stylesheet" href="css/style.css?v=20261021b">
 </head>
 <body>
 
@@ -18,6 +18,7 @@
       <span class="logo-flag" aria-hidden="true"><i></i><i></i><i></i></span>
       Pas à Pas <span class="logo-sub">French</span>
     </a>
+    <a class="lang-link" href="fr/conditions.html" data-lang="fr" hreflang="fr" lang="fr" title="Version française">FR</a>
     <a class="btn btn-ghost mini" href="index.html">Back to the shop</a>
   </div>
 </header>
@@ -79,13 +80,13 @@
   <section id="live">
     <h2>5. Live lessons</h2>
     <ul>
-      <li><b>Booking.</b> You choose one of Olivier's open slots, shown in your own time zone, from 3 hours to two weeks ahead. The slot is held for you while you pay, and your payment confirms the lesson. If none of the times work for you, you can suggest at least 3 start times when you are free (no more than 3 per day, with no overlaps). Olivier marks the ones that work for him, then you choose one and pay. You can talk to Olivier before booking, free of charge.</li>
+      <li><b>Booking.</b> You choose one of Olivier's open slots, shown in your own time zone, from 3 hours to two weeks ahead. The slot is held for you while you pay, and your payment confirms the lesson. With a bundle or a plan, you book the following lessons yourself in “My courses”, from the same open slots. You can talk to Olivier before booking, free of charge.</li>
       <li><b>Where.</b> Lessons take place by video on this site. You need a camera, a microphone and an up-to-date browser. Lessons are not recorded.</li>
       <li><b>Rescheduling.</b> You can move a lesson once, free of charge, if you ask at least 24 hours before it starts.</li>
       <li><b>Late cancellation or no-show.</b> If you cancel less than 24 hours before a lesson, or miss it, the lesson counts as taken. If you arrive late, the lesson still ends at the scheduled time.</li>
       <li><b>If Olivier cancels</b>, or the lesson can't take place because of a problem on our side, you can choose either a new time or a full refund for that lesson.</li>
       <li><b>Bundles</b> of 5 lessons are valid for 2 months from the date of purchase. Any lessons not booked within that time are lost.</li>
-      <li><b>Plans.</b> A plan (4, 8 or 16 lessons of 60 minutes) runs in 2-month periods, and you book your lessons as you go during each period. Lessons not booked by the end of a period don't carry over. At the end of each period, the plan <b>renews automatically</b> with a fresh set of lessons, at the price shown when you subscribed, until you cancel it. We email you 7 days before each renewal. You can cancel the renewal at any time before the renewal date, in one click from “My live lessons” or by writing to us. You keep your remaining lessons until the end of the current period, and you won't be charged again. If a renewal is charged and you haven't booked any lessons in the new period, write to us within 7 days for a full refund of that renewal. If you pay by mobile money, each renewal is a payment request that you confirm on your phone.</li>
+      <li><b>Plans.</b> A plan (4, 8 or 16 lessons of 60 minutes) runs in 2-month periods, and you book your lessons as you go during each period. Lessons not booked by the end of a period don't carry over. 7 days before the end of each period, we email you a link to <b>renew</b> the plan for a new period with a fresh set of lessons, at the price shown when you subscribed. Nothing is charged automatically: if you don't pay, the plan simply stops at the end of the period. You can also stop the renewal reminders in one click from “My courses” or by writing to us; you keep your remaining lessons until the end of the current period. If you renew and haven't booked any lessons in the new period, write to us within 7 days for a full refund of that renewal.</li>
       <li><b>Conduct.</b> Lessons are based on mutual respect. Olivier may end a lesson without a refund if behavior becomes abusive.</li>
     </ul>
   </section>
@@ -113,7 +114,7 @@
       <li>Your <b>email address</b> and <b>name</b>: to deliver your files or the free module, confirm your lessons and reply to you. They are printed in the files you buy to protect them from illegal sharing, and are kept with your order in our license register.</li>
       <li>Your <b>country of residence</b>: to show your currency and the payment methods available in your country.</li>
       <li>Your <b>mobile money number</b>, if you pay that way: only to process that payment.</li>
-      <li>Your <b>lesson requests</b> (suggested times, topic, level): to organize your lessons.</li>
+      <li>Your <b>live lesson bookings</b> (times, topic, level): to organize your lessons.</li>
       <li>Your <b>review</b>, if you leave one.</li>
       <li><b>Marketing emails</b> (French tips and news) are sent only if you check the box to receive them. Every email has a one-click unsubscribe link.</li>
     </ul>
@@ -141,7 +142,8 @@
   </div>
 </footer>
 
-<script src="js/shop.js?v=20261020f"></script>
+<script src="js/shop.js?v=20261021b"></script>
+<script src="js/i18n.js?v=20261021b"></script>
 <script>
   const get = (path) => path.split(".").reduce((o, k) => (o || {})[k], SHOP) || "";
   document.querySelectorAll("[data-shop]").forEach((el) => { el.textContent = get(el.dataset.shop); });

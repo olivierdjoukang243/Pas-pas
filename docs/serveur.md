@@ -47,75 +47,36 @@ Le serveur est indispensable pour quatre raisons :
 
 ## Les routes
 
-### `GET /slots?minutes=60` — réservation immédiate
-Les heures de début libres pour une séance de cette durée. Le serveur les calcule à chaque
-appel depuis Google Agenda (API Calendar, `freebusy.query`, compte Google d'Olivier, adresse
-dans la variable d'environnement `AGENDA_OLIVIER`, jamais dans le code du site) :
-- agendas lus : l'agenda principal, où Preply écrit ses cours, et l'agenda secondaire
-  « Pas à Pas » (`AGENDA_PASAPAS`), où le serveur écrit les séances vendues ;
-- plages : 06:00–22:00 heure de Douala, tous les jours, moins tout ce qui est occupé ;
-- de 3 h à 14 jours à l'avance, pas de 30 min, 15 min de battement autour de chaque occupation
-  (`LIVE_CONFIG.instant` dans `js/live.js`) ;
-- moins les créneaux tenus pendant un paiement en cours.
+### `GET /slots?minutes=60` — les heures libres
+Le serveur (`serveur/direct.py` de l'atelier) les calcule depuis Google Agenda (API Calendar,
+`freeBusy`, compte Google d'Olivier, autorisation donnée par `autoriser_gmail.py`) :
+- agendas lus : l'agenda principal d'Olivier (`AGENDA_OLIVIER`) et l'agenda « Pas à Pas »
+  (`AGENDA_PASAPAS`, créé au premier besoin), où le serveur écrit les séances vendues ;
+- libre : toute heure sans événement, 06:00–22:00 heure de Douala, tous les jours ;
+- de 3 h à 14 jours à l'avance, pas de 30 min, 15 min de battement autour de chaque occupation ;
+- moins les heures tenues pendant un paiement en cours et les séances déjà réservées.
 ```json
 { "free": [1760630400000, 1760632200000] }
 ```
-**Paiement** : `POST /checkout` reçoit `booking.instant = true` et l'heure choisie. Le serveur
-revérifie qu'elle est libre (freebusy), la tient 15 min, puis, au webhook `payment.complete` :
-1. crée l'événement dans l'agenda **« Pas à Pas »**, qui n'est **pas** relié à Preply : rien ne
-   remonte vers Preply ;
-2. écrit à Olivier (e-mail, et WhatsApp si configuré) : « Séance Pas à Pas réservée : <jour>,
-   <heure> heure de Douala — bloquez ce créneau sur Preply » ;
-3. confirme à l'élève. Si l'heure a été prise entre-temps (cours Preply arrivé pendant le
-   paiement), l'élève choisit une autre heure ou il est remboursé.
-Une séance de pack (crédit) suit le même chemin, sans paiement.
+Olivier ne reçoit aucune demande d'heures : son agenda est la seule source de ses disponibilités.
+
+**Paiement** : `POST /checkout` reçoit `booking` (`start` en ms, `need`, `level`, `zone`, `name`).
+Le serveur revérifie l'heure (agenda relu), la tient 20 min (refus `409` sinon, rien n'est
+encaissé), puis, une fois le paiement relu chez Notch Pay :
+1. écrit l'événement dans l'agenda « Pas à Pas », avec le lien de la salle d'Olivier ;
+2. confirme à l'élève (e-mail) et prévient Olivier ;
+3. si l'heure a été prise pendant le paiement, l'élève en choisit une autre dans « My courses »,
+   ou il est remboursé.
 
 ### Forfaits et abonnements (`live-pack5`, `plan-4`, `plan-8`, `plan-16`)
-- Le premier paiement réserve la première séance et ouvre un crédit : 5, 4, 8 ou 16 séances de
-  60 min, valable **2 mois** à partir du paiement. Chaque séance suivante se réserve comme une
-  séance immédiate, sans paiement (crédit).
-- **Abonnement** (`plan-*`) : à l'échéance des 2 mois, le crédit repart à zéro avec un nouveau lot
-  de séances, au prix souscrit, jusqu'à résiliation ; les séances non réservées sont perdues.
-  - E-mail de rappel **7 jours avant** chaque renouvellement (date, montant, lien de résiliation).
-  - Carte et PayPal : prélèvement automatique, par un prestataire qui gère les paiements
-    récurrents (Paddle, Lemon Squeezy, Stripe Billing…). Notch Pay ne prélève pas sans accord.
-  - Mobile money : à l'échéance, une demande de paiement que l'élève confirme sur son téléphone ;
-    sans confirmation sous 3 jours, l'abonnement s'arrête.
-  - `POST /plans/:id/cancel` : arrête le prochain renouvellement ; les séances restantes restent
-    utilisables jusqu'à la fin de la période. Un clic, aucune question.
-  - Un renouvellement payé sans aucune séance réservée dans la nouvelle période est remboursé sur
-    demande dans les 7 jours (`policies.html`, section 5).
-
-### `GET /slots/taken`
-Les créneaux déjà réservés, pour que le site ne les propose plus.
-```json
-{ "taken": [ { "start": 1760630400000, "end": 1760634000000 } ] }
-```
-
-### `POST /lesson-requests`
-L'élève propose ses heures. Le site exige au moins 3 heures de début, 3 au plus par jour, sans chevauchement compte tenu de la durée de la séance (6 sur 3 jours sont conseillées, pas exigées) ; le serveur le vérifie de nouveau.
-```json
-{ "product": "live-60", "need": "…", "level": "A2", "minutes": 60, "name": "…", "email": "…",
-  "zone": "Europe/London", "proposed": [1760630400000, …], "credit": null }
-```
-Le serveur :
-1. enregistre la demande ;
-2. crée deux clés au hasard, une pour Olivier et une pour l'élève ;
-3. envoie à Olivier `demande-creneaux-olivier.html`, avec le lien `<site>/?olivier=<id>&key=<clé Olivier>` ;
-4. répond `{ "id": "…", "key": "<clé élève>" }`.
-
-`credit` vaut l'identifiant d'un pack payé, qu'il faut vérifier, ou `null`.
-
-### `GET /lesson-requests/:id?key=…`
-La demande, lue par Olivier (avec sa clé) ou par l'élève (avec la sienne). Elle renvoie les champs ci-dessus, plus `status` (`pending`, `answered` ou `declined`) et `accepted` (les heures cochées par Olivier).
-
-### `POST /lesson-requests/:id/answer`
-Olivier coche ses heures : `{ "key": "<clé Olivier>", "accepted": [1760630400000, …] }`. Le serveur :
-- enregistre les heures cochées ;
-- si au moins une heure est cochée, envoie à l'élève `creneaux-confirmes.html`, avec le lien `<site>/?lesson=<id>&key=<clé élève>` ;
-- si aucune n'est cochée, demande à l'élève de proposer d'autres heures.
-
-L'élève choisit ensuite une des heures, puis paie par `/checkout`. Pour une séance d'un pack, il n'y a pas de paiement : le serveur confirme directement.
+- Le premier paiement réserve la première séance et ouvre un crédit (`lessons` de
+  `js/products.js`), valable **2 mois**. L'élève réserve lui-même les suivantes dans
+  « My courses » (`/account/book/<commande>`), parmi les mêmes heures libres, sans paiement.
+- **Abonnement** : 7 jours avant la fin, un e-mail avec un lien de paiement
+  (`/account/renew/<commande>`, signé) ; payé, un nouveau crédit commence à la fin du
+  précédent ; sans paiement, l'abonnement s'arrête. Rien n'est prélevé automatiquement.
+- « Stop the renewal » dans « My courses » arrête les rappels ; les séances restantes restent
+  utilisables jusqu'à la fin de la période.
 
 ### `POST /checkout`
 Envoyé par le site au clic sur « Pay ».
@@ -152,7 +113,9 @@ Lu par le site au retour de la page de paiement.
 ```json
 { "status": "complete", "email": "…", "booking": { …la réservation… } }
 ```
-`status` vaut `complete`, `pending` ou `failed`. Une séance n'apparaît dans « My live lessons » que si `complete`.
+`status` vaut `complete`, `pending` ou `failed`. Pour un cours en direct payé, `live` vaut `true` et
+`booking` donne `{ "booked": true, "start", "minutes", "lessons", "until" }`, `{ "booked": false }`
+(heure prise pendant le paiement) ou `{ "renewed": true }` ; `account_url` connecte à « My courses ».
 
 ### `POST /free-module`
 Le formulaire « Get Module 1 free ».
@@ -183,12 +146,11 @@ La publication est **automatique, sans intervention d'Olivier** :
 
 Réponse : `201`, ou `{ "error": "…" }` avec un code 4xx.
 
-### `GET /sessions/:id/token`
-Lu au clic sur « Join ». Il n'est servi que pour une séance payée, de 10 minutes avant le début jusqu'à la fin.
-```json
-{ "room": "pasapas-<id>", "jwt": "<jeton JaaS signé avec la clé privée du compte>" }
-```
-Olivier reçoit un jeton modérateur pour le même salon (lien dans son e-mail de confirmation).
+### La salle vidéo : `/account/lesson/<séance>`
+Une page du serveur, dans « My courses » : la salle JaaS (8x8) s'ouvre 10 minutes avant le début,
+avec un jeton signé par le serveur (`JAAS_APP_ID`, `JAAS_KID`, clé privée `donnees/jaas.pem`).
+Olivier entre par son propre lien (`?k=<clé>`, dans l'événement de l'agenda et son e-mail), en
+modérateur.
 
 ## Protection contre la fraude
 

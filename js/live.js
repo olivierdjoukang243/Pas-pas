@@ -1,30 +1,21 @@
-// ====== Live lessons: instant booking, request, payment, countdown, video room ======
-// Book now (default, needs SHOP.api or ?demo): the learner sees Olivier's real free times, read by
-// the server from his Google Calendar (his Preply lessons included), picks one, pays: booked.
-// The server writes the lesson in a separate "Pas à Pas" calendar, never linked to Preply, and
-// notifies Olivier, who blocks the time on Preply himself (docs/serveur.md, GET /slots).
-// Propose times (fallback, when no free time suits):
-// 1. The learner proposes at least 3 start times (at most 3 a day; 6 over 3 days advised), in their own time zone.
-// 2. Olivier ticks the times that suit him (link in his email: ?olivier=<id>&key=<key>).
-// 3. The learner gets an email (?lesson=<id>&key=<key>), picks one of those times and pays.
-//    A pack session needs no payment. Payment confirms the session.
-// 4. At the time, the learner presses Join: the video lesson opens here, with a timer.
+// ====== Live lessons: choose a time, pay, booked; then "My courses" ======
+// The learner picks one of Olivier's free times, read live by the payment server from his Google
+// Calendar (GET /slots: any hour without an event, 06:00–22:00 Douala time, from 3 h to 2 weeks
+// ahead), then pays: the server holds the time during the payment and writes the lesson in a
+// separate "Pas à Pas" calendar. A pack or a plan: its first lesson is chosen here, the others
+// are booked by the learner in "My courses" on the server, where the video room also opens.
+// Olivier's calendar is the only source of his free times: no times are suggested to him.
 //
-// Without a server (SHOP.api empty) nothing is sent for real. Add ?demo to the address to
-// try the whole flow in this browser, Olivier's side included.
+// Without a server (PAY_API empty) nothing is booked. Add ?demo to the address to try the
+// whole flow in this browser.
 
 const LIVE_CONFIG = {
   utcOffset: 1,                 // Douala: UTC+1, no daylight saving
-  hours: ["06:00", "22:00"],    // Douala time: no lesson starts before 06:00 or ends after 22:00 (Olivier sleeps 22:00–06:00)
+  hours: ["06:00", "22:00"],    // Douala time: no lesson starts before 06:00 or ends after 22:00
   step: 30,                     // minutes between two possible start times
-  noticeHours: 24,              // earliest start: 24 h ahead
-  horizonDays: 21,              // latest start: 3 weeks ahead
-  minTimes: 3,                  // the request can be sent from 3 proposed times…
-  goodTimes: 6, goodDays: 3,    // …but 6 over 3 days give Olivier the best chance, and the page says so
-  maxPerDay: 3,                 // at most 3 times a day, so the times are really spread out
+  noticeHours: 3,               // earliest start: 3 h ahead
+  horizonDays: 14,              // latest start: 2 weeks ahead
   joinEarly: 10,                // the Join button opens 10 minutes before the start
-  instant: { noticeHours: 3, horizonDays: 14, bufferMin: 15 },   // Book now: from 3 h ahead, 2 weeks, 15 min between lessons
-  video: { appId: "" },         // JaaS (8x8) app id, e.g. "vpaas-magic-cookie-…"; needs SHOP.api for the token
 };
 
 const LIVE_MINUTES = { "live-30": 30, "live-60": 60, "live-pack5": 60, "plan-4": 60, "plan-8": 60, "plan-16": 60 };
@@ -37,24 +28,24 @@ const isPlan = (id) => !!(byId(id) || {}).plan;
 const H = 3600e3, MIN = 60e3, DAY = 24 * H;
 const pad = (n) => String(n).padStart(2, "0");
 const hm = (s) => { const [h, m] = s.split(":").map(Number); return h * 60 + m; };
-// The site is in English: days in English ("Fri 16 Oct"), times in the visitor's usual clock (13:00 or 1:00 PM).
-const localDay = (ms) => new Date(ms).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+// Days in the page language ("Fri 16 Oct", "ven. 16 oct."), times in the visitor's usual clock (13:00 or 1:00 PM).
+const localDay = (ms) => new Date(ms).toLocaleDateString(t("en-GB", "fr-FR"), { weekday: "short", day: "numeric", month: "short" });
 // The browser's own language decides 13:00 or 1:00 PM; an unusual tag (e.g. "en-US@posix") falls back to 24 h.
 const TIME_LOCALE = (() => { try { new Date().toLocaleTimeString(navigator.language); return navigator.language; } catch { return "en-GB"; } })();
 const localTime = (ms) => new Date(ms).toLocaleTimeString(TIME_LOCALE, { hour: "2-digit", minute: "2-digit" });
-function visitorZone() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return "your time"; } }
+function visitorZone() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return t("your time", "votre heure"); } }
 // What the visitor reads: "GMT+1", not a system name such as "Etc/GMT-1"
 function zoneLabel() {
   try { return new Intl.DateTimeFormat("en", { timeZoneName: "shortOffset" }).formatToParts(new Date()).find((x) => x.type === "timeZoneName").value; }
-  catch { return "your time zone"; }
+  catch { return t("your time zone", "votre fuseau horaire"); }
 }
 function duration(ms) {
   const s = Math.max(0, Math.round(ms / 1000));
   const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
-  return d ? `${d} d ${h} h` : h ? `${h} h ${pad(m)} min` : `${pad(m)}:${pad(sec)}`;
+  return d ? `${d} ${t("d", "j")} ${h} h` : h ? `${h} h ${pad(m)} min` : `${pad(m)}:${pad(sec)}`;
 }
 
-// ---- bookings (server when configured, this browser otherwise) ----------
+// ---- demo bookings (this browser only, ?demo) ---------------------------
 const bookings = () => store.get("bookings", []);
 const saveBookings = (list) => store.set("bookings", list);
 
@@ -62,9 +53,8 @@ function overlaps(start, minutes) {
   return bookings().some((b) => b.status !== "cancelled" && start < b.start + b.minutes * MIN && b.start < start + minutes * MIN);
 }
 
-// Every start time a learner may propose for a session of `minutes`: within the lesson hours
-// (Douala), from now + notice to the horizon, outside sessions already booked.
-function candidateTimes(minutes, taken = []) {
+// Demo: every start time within the lesson hours (Douala), from now + notice to the horizon.
+function candidateTimes(minutes) {
   const now = Date.now(), off = LIVE_CONFIG.utcOffset * H, out = [];
   const today = new Date(now + off);
   const [a, b] = LIVE_CONFIG.hours.map(hm);
@@ -72,92 +62,76 @@ function candidateTimes(minutes, taken = []) {
     const day = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + i);
     for (let t = a; t + minutes <= b; t += LIVE_CONFIG.step) {
       const start = day + t * MIN - off;
-      if (start < now + LIVE_CONFIG.noticeHours * H) continue;
-      if (overlaps(start, minutes) || taken.some((x) => start < x.end && x.start < start + minutes * MIN)) continue;
+      if (start < now + LIVE_CONFIG.noticeHours * H || overlaps(start, minutes)) continue;
       out.push(start);
     }
   }
   return out;
 }
 
-// ---- requests (server when configured, this browser otherwise) ---------
-const requests = () => store.get("requests", []);
-const saveRequests = (list) => store.set("requests", list);
-const upsertRequest = (r) => saveRequests([...requests().filter((x) => x.id !== r.id), r]);
-const daysOf = (times) => new Set(times.map(localDay)).size;
-
-// ---- book now: Olivier's free times, from his calendar -------------------
+// ---- Olivier's free times, from his calendar ------------------------------
 let freeSlots = null;                 // start times (ms) free for the chosen length, or null while loading
 async function loadFree(minutes) {
   freeSlots = null;
-  if (SHOP.api) {
+  if (DEMO) {
+    // demo: every time of the lesson hours from 3 h ahead, minus a pretend busy pattern
+    freeSlots = candidateTimes(minutes).filter((t) => (Math.floor(t / (90 * MIN)) % 3) !== 0);
+  } else if (PAY_API) {
     try {
-      const r = await fetch(`${SHOP.api}/slots?minutes=${minutes}`);
+      const r = await fetch(`${PAY_API}/slots?minutes=${minutes}`);
       freeSlots = ((await r.json()).free || []).map(Number).filter((t) => t > Date.now());
     } catch { freeSlots = []; }
-  } else if (DEMO) {
-    // demo: every time of the lesson hours from 3 h ahead, minus a pretend busy pattern
-    const C = LIVE_CONFIG, keep = { ...C };
-    C.noticeHours = C.instant.noticeHours; C.horizonDays = C.instant.horizonDays;
-    freeSlots = candidateTimes(minutes).filter((t) => (Math.floor(t / (90 * MIN)) % 3) !== 0);
-    Object.assign(C, keep);
   } else freeSlots = [];
 }
-const instantOn = () => !!(SHOP.api || DEMO);
+const bookingOn = () => !!(PAY_API || DEMO);
 
-// ---- step 1: the learner proposes times -------------------------------
-const booking = { product: "live-60", need: LIVE_NEEDS[0], level: "I don't know yet", day: null, times: [], credit: null, mode: "now", slot: null, stage: "time" };
-let takenFromServer = [];
+// ---- choose a time, then pay ----------------------------------------------
+const NEEDS = FR && typeof LIVE_NEEDS_FR !== "undefined" ? LIVE_NEEDS_FR : LIVE_NEEDS;
+const LEVEL_UNKNOWN = t("I don't know yet", "Je ne sais pas encore");
+const booking = { product: "live-60", need: NEEDS[0], level: LEVEL_UNKNOWN, day: null, credit: null, slot: null, stage: "time" };
 
-async function loadTaken() {
-  if (!SHOP.api) return;
-  try {
-    const r = await fetch(`${SHOP.api}/slots/taken`);
-    takenFromServer = (await r.json()).taken || [];
-  } catch { takenFromServer = []; }
-}
-
-function openBooking(product, credit = null, mode = null) {
-  Object.assign(booking, { product: product || booking.product, day: null, times: [], credit, slot: null,
-    mode: mode || (instantOn() ? "now" : "propose"), stage: "time" });
+function openBooking(product, credit = null) {
+  if (!bookingOn()) {
+    return openModal(`<div class="checkout"><h2>${t("Booking is coming soon", "La réservation ouvre bientôt")}</h2><p>${t("You'll be able to book live lessons here very soon.", "Vous pourrez réserver vos cours en direct ici très bientôt.")}</p>${SHOP.email ? `<p>${t("Questions? Write to", "Une question ? Écrivez à")} <a href="mailto:${SHOP.email}">${SHOP.email}</a>.</p>` : ""}<button class="btn btn-ghost" data-modal-close>${t("Close", "Fermer")}</button></div>`);
+  }
+  Object.assign(booking, { product: product || booking.product, day: null, credit, slot: null, stage: "time" });
   openModal(`<form class="checkout book" id="bookForm" novalidate></form>`);
-  if (booking.mode === "now") {
-    loadFree(LIVE_MINUTES[booking.product]).then(() => { if (modal.open && $("#bookForm")) renderBooking(); });
-  } else loadTaken().then(() => { if (modal.open && $("#bookForm")) renderBooking(); });
+  loadFree(LIVE_MINUTES[booking.product]).then(() => { if (modal.open && $("#bookForm")) renderBooking(); });
   renderBooking();
 }
 
-// Book now, in two steps: 1. the time (and the length of the lesson), 2. the formula and
-// the payment. The price comes once the learner has a time of their own (or the pack credit).
-function renderInstant() {
+// In two steps: 1. the time (and the length of the lesson), 2. the formula and the payment.
+// The price comes once the learner has a time of their own (or the demo pack credit).
+function renderBooking() {
   if ($("#bkName")) { booking.name = $("#bkName").value; booking.email = $("#bkEmail").value; }
   const minutes = LIVE_MINUTES[booking.product], p = byId(booking.product);
   const all = freeSlots || [];
   const days = [...new Set(all.map(localDay))];
   if (!days.includes(booking.day)) booking.day = days[0] || null;
   if (booking.slot && !all.includes(booking.slot)) { booking.slot = null; booking.stage = "time"; }
-  const talk = talkFirstLinks();
   const details = `<div class="form-grid" id="bkDetails">
-      <label for="bkName">Your name<input id="bkName" name="name" required autocomplete="name" value="${esc(booking.name || "")}"></label>
-      <label for="bkEmail">Email<input id="bkEmail" name="email" type="email" required autocomplete="email" value="${esc(booking.email || "")}"></label>
+      <label for="bkName">${t("Your name", "Votre nom")}<input id="bkName" name="name" required autocomplete="name" value="${esc(booking.name || "")}"></label>
+      <label for="bkEmail">${t("Email", "E-mail")}<input id="bkEmail" name="email" type="email" required autocomplete="email" value="${esc(booking.email || "")}"></label>
     </div>`;
-  const when = booking.slot ? `<strong>${localDay(booking.slot)}, ${localTime(booking.slot)}–${localTime(booking.slot + minutes * MIN)}</strong> your time` : "";
+  const when = booking.slot ? `<strong>${localDay(booking.slot)}, ${localTime(booking.slot)}–${localTime(booking.slot + minutes * MIN)}</strong> ${t("your time", "à votre heure")}` : "";
 
   if (booking.stage === "pay" && booking.slot && !booking.credit) {
     // step 2: how to pay for it, with the price
     const offers = LIVE.filter((x) => LIVE_MINUTES[x.id] === minutes);
+    const every = t(" every 2 months", " tous les 2 mois");
     $("#bookForm").innerHTML = `
-    <p class="eyebrow">Step 2 of 2 · payment${DEMO ? " · demo" : ""}</p>
-    <h2>Choose how to pay</h2>
-    <p class="note ok" role="status">Your ${minutes}-minute lesson: ${when}. <button type="button" class="link-btn" data-back-time>Change the time</button></p>
-    <p class="note">Your lesson is booked as soon as the payment goes through.</p>
-    <div class="pay-methods book-len" role="radiogroup" aria-label="Payment option">
-      ${offers.map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> <span class="pm-t">${x.name}<b>${price(x)}${x.plan ? " every 2 months" : ""}</b>${PACK_SIZE[x.id] ? `<small>this lesson plus ${PACK_SIZE[x.id] - 1} more to book within 2 months</small>` : ""}</span></label>`).join("")}
+    <p class="eyebrow">${t("Step 2 of 2 · payment", "Étape 2 sur 2 · paiement")}${DEMO ? " · demo" : ""}</p>
+    <h2>${t("Choose how to pay", "Choisissez votre formule")}</h2>
+    <p class="note ok" role="status">${t(`Your ${minutes}-minute lesson`, `Votre cours de ${minutes} minutes`)} : ${when}. <button type="button" class="link-btn" data-back-time>${t("Change the time", "Changer l'heure")}</button></p>
+    <p class="note">${t("Your lesson is booked as soon as the payment goes through.", "Votre cours est réservé dès que le paiement est passé.")}</p>
+    <div class="pay-methods book-len" role="radiogroup" aria-label="${t("Payment option", "Formule")}">
+      ${offers.map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> <span class="pm-t">${L(x, "name")}<b>${price(x)}${x.plan ? every : ""}</b>${PACK_SIZE[x.id] ? `<small>${t(`this lesson plus ${PACK_SIZE[x.id] - 1} more to book within 2 months`, `ce cours et ${PACK_SIZE[x.id] - 1} autres à réserver sous 2 mois`)}</small>` : ""}</span></label>`).join("")}
     </div>
     ${details}
     <p class="form-error" id="bkError" hidden></p>
-    ${PACK_SIZE[booking.product] ? `<p class="note">You can book the other ${PACK_SIZE[booking.product] - 1} lessons from “My live lessons” whenever you like over the next 2 months.${p.plan ? " The plan renews every 2 months, and you can cancel the renewal at any time in one click." : ""}</p>` : ""}
-    <button class="btn btn-primary btn-block">Continue to payment · ${price(p)}${p.plan ? " every 2 months" : ""}</button>`;
+    ${PACK_SIZE[booking.product] ? `<p class="note">${t(`You book the other ${PACK_SIZE[booking.product] - 1} lessons yourself in “My courses”, whenever you like over the next 2 months.${p.plan ? " 7 days before the end, we email you a link to renew the plan for 2 more months. If you don't renew, it simply stops." : ""}`,
+      `Vous réservez vous-même les ${PACK_SIZE[booking.product] - 1} autres cours dans « Mes cours », quand vous voulez pendant 2 mois.${p.plan ? " 7 jours avant la fin, vous recevez un lien pour renouveler la formule pour 2 mois. Sans renouvellement, elle s'arrête simplement." : ""}`)}</p>` : ""}
+    <button class="btn btn-primary btn-block">${t("Continue to payment", "Continuer vers le paiement")} · ${price(p)}${p.plan ? every : ""}</button>`;
     return;
   }
 
@@ -165,265 +139,50 @@ function renderInstant() {
   const times = all.filter((t) => localDay(t) === booking.day);
   const fixed = booking.credit || PACK_SIZE[booking.product];      // a pack or a plan: 60 minutes
   $("#bookForm").innerHTML = `
-    <p class="eyebrow">${booking.credit ? "Book with your lesson pack" : "Step 1 of 2 · choose a time"}${DEMO ? " · demo" : ""}</p>
-    <h2>${PACK_SIZE[booking.product] && !booking.credit ? "Pick a time for your first lesson" : "Pick a time that works for you"}</h2>
-    <p>Here are Olivier's open times, updated live and shown in <strong>your local time (${zoneLabel()})</strong>. Pick one${booking.credit ? " and confirm it" : " and pay on the next step"}. Your lesson is booked instantly, so there's no waiting for a reply.</p>
-    ${booking.credit ? `<p class="note">Lesson ${booking.credit.used + 1} of ${booking.credit.total} in your pack. No payment needed.</p>` : fixed ? `<p class="note">${p.name}: ${minutes}-minute lessons.</p>` : `
-    <div class="pay-methods book-len" role="radiogroup" aria-label="Lesson length">
+    <p class="eyebrow">${booking.credit ? t("Book with your lesson pack", "Réserver avec votre forfait") : t("Step 1 of 2 · choose a time", "Étape 1 sur 2 · choisissez l'heure")}${DEMO ? " · demo" : ""}</p>
+    <h2>${PACK_SIZE[booking.product] && !booking.credit ? t("Pick a time for your first lesson", "Choisissez l'heure de votre premier cours") : t("Pick a time that works for you", "Choisissez l'heure qui vous convient")}</h2>
+    <p>${t(`Here are Olivier's open times, updated live and shown in <strong>your local time (${zoneLabel()})</strong>. Pick one${booking.credit ? " and confirm it" : " and pay on the next step"}. Your lesson is booked instantly, so there's no waiting for a reply.`,
+      `Voici les heures libres d'Olivier, à jour en direct et affichées <strong>à votre heure locale (${zoneLabel()})</strong>. Choisissez-en une${booking.credit ? " et confirmez" : ", puis payez à l'étape suivante"}. Le cours est réservé aussitôt : pas besoin d'attendre une réponse.`)}</p>
+    ${booking.credit ? `<p class="note">${t(`Lesson ${booking.credit.used + 1} of ${booking.credit.total} in your pack. No payment needed.`, `Cours ${booking.credit.used + 1} sur ${booking.credit.total} de votre forfait. Rien à payer.`)}</p>` : fixed ? `<p class="note">${L(p, "name")} : ${t(`${minutes}-minute lessons`, `cours de ${minutes} minutes`)}.</p>` : `
+    <div class="pay-methods book-len" role="radiogroup" aria-label="${t("Lesson length", "Durée du cours")}">
       ${[30, 60].map((m) => `<label class="pm"><input type="radio" name="minutes" value="${m}" ${m === minutes ? "checked" : ""}> ${m} minutes</label>`).join("")}
     </div>`}
     <div class="form-grid">
-      <label for="bkNeed">What would you like to work on?<select id="bkNeed" name="need">${LIVE_NEEDS.map((x) => `<option ${x === booking.need ? "selected" : ""}>${x}</option>`).join("")}</select></label>
-      <label for="bkLevel">Your level<select id="bkLevel" name="level"><option>I don't know yet</option>${LEVELS.map((l) => `<option ${l.code === booking.level ? "selected" : ""}>${l.code}</option>`).join("")}</select></label>
+      <label for="bkNeed">${t("What would you like to work on?", "Que voulez-vous travailler ?")}<select id="bkNeed" name="need">${NEEDS.map((x) => `<option ${x === booking.need ? "selected" : ""}>${x}</option>`).join("")}</select></label>
+      <label for="bkLevel">${t("Your level", "Votre niveau")}<select id="bkLevel" name="level"><option>${LEVEL_UNKNOWN}</option>${LEVELS.map((l) => `<option ${l.code === booking.level ? "selected" : ""}>${l.code}</option>`).join("")}</select></label>
     </div>
-    ${freeSlots === null ? `<p class="note" role="status">Loading Olivier's available times…</p>` : !all.length ? `<p class="note" role="status">There are no ${minutes}-minute times available in the next ${LIVE_CONFIG.instant.horizonDays} days.</p>` : `
-    <p class="eyebrow pm-title">Available times · ${minutes}-minute lesson</p>
-    <div class="chips-row" role="group" aria-label="Day">${days.map((d) => `<button type="button" class="slot ${d === booking.day ? "on" : ""}" data-day="${d}">${d}</button>`).join("")}</div>
-    <div class="chips-row" id="bkTimes" role="group" aria-label="Start times">${times.map((t) => `<button type="button" class="slot ${t === booking.slot ? "on" : ""}" aria-pressed="${t === booking.slot}" data-pick="${t}">${localTime(t)}</button>`).join("")}</div>
-    ${booking.slot ? `<p class="note ok" role="status">Your lesson: ${when}.</p>` : ""}`}
+    ${freeSlots === null ? `<p class="note" role="status">${t("Loading Olivier's available times…", "Chargement des heures libres d'Olivier…")}</p>` : !all.length ? `<p class="note" role="status">${t(`There are no ${minutes}-minute times available in the next ${LIVE_CONFIG.horizonDays} days.`, `Aucune heure libre pour un cours de ${minutes} minutes dans les ${LIVE_CONFIG.horizonDays} prochains jours.`)}</p>` : `
+    <p class="eyebrow pm-title">${t(`Available times · ${minutes}-minute lesson`, `Heures libres · cours de ${minutes} minutes`)}</p>
+    <div class="chips-row" role="group" aria-label="${t("Day", "Jour")}">${days.map((d) => `<button type="button" class="slot ${d === booking.day ? "on" : ""}" data-day="${d}">${d}</button>`).join("")}</div>
+    <div class="chips-row" id="bkTimes" role="group" aria-label="${t("Start times", "Heures de début")}">${times.map((t) => `<button type="button" class="slot ${t === booking.slot ? "on" : ""}" aria-pressed="${t === booking.slot}" data-pick="${t}">${localTime(t)}</button>`).join("")}</div>
+    ${booking.slot ? `<p class="note ok" role="status">${t("Your lesson:", "Votre cours :")} ${when}.</p>` : ""}`}
     ${booking.credit ? details : ""}
     <p class="form-error" id="bkError" hidden></p>
-    <button class="btn btn-primary btn-block" ${booking.slot ? "" : "disabled"}>${booking.credit ? "Confirm this time" : "Next: choose how to pay"}</button>
-    <p class="note">None of these times work for you? <button type="button" class="link-btn" data-propose>Suggest your own times</button>${talk ? ` Want to talk first? ${talk}` : ""}</p>`;
+    <button class="btn btn-primary btn-block" ${booking.slot ? "" : "disabled"}>${booking.credit ? t("Confirm this time", "Confirmer cette heure") : t("Next: choose how to pay", "Suivant : la formule et le paiement")}</button>
+    <p class="note">${t("These are all of Olivier's open times. New ones appear as his calendar changes.", "Ce sont toutes les heures libres d'Olivier. D'autres apparaissent quand son agenda change.")}</p>`;
 }
 
-function submitInstant(form) {
+function submitBooking(form) {
   const d = new FormData(form);
   booking.name = String(d.get("name") || "").trim();
   booking.email = String(d.get("email") || "").trim();
   const err = $("#bkError");
-  if (!booking.slot) { err.textContent = "Please choose a time."; err.hidden = false; return; }
+  if (!booking.slot) { err.textContent = t("Please choose a time.", "Choisissez une heure."); err.hidden = false; return; }
   if (!booking.credit && booking.stage !== "pay") { booking.stage = "pay"; renderBooking(); return bringIntoView($("#bookForm")); }
-  if (!booking.name || !form.bkEmail.checkValidity() || !booking.email) { err.textContent = "Please enter your name and a valid email address."; err.hidden = false; return; }
+  if (!booking.name || !form.bkEmail.checkValidity() || !booking.email) { err.textContent = t("Please enter your name and a valid email address.", "Entrez votre nom et une adresse e-mail valide."); err.hidden = false; return; }
   const draft = { product: booking.product, need: booking.need, level: booking.level, start: booking.slot,
     minutes: LIVE_MINUTES[booking.product], name: booking.name, email: booking.email, zone: visitorZone(), instant: true };
   if (booking.credit) return useCredit(booking.credit.id, draft);
   openBuy(booking.product, draft);                    // payment; the server holds the time while it is paid
 }
 
-// Two proposed times may not overlap: a lesson of `minutes` starting at one must end before the other.
-const clash = (a, b, minutes) => a !== b && Math.abs(a - b) < minutes * MIN;
-const perDay = (times, day) => times.filter((t) => localDay(t) === day).length;
-
-// Keeps the proposed times that still fit the rules, earliest first (after a change of lesson length).
-function pruneTimes(times, minutes, all) {
-  const kept = [];
-  for (const t of [...times].sort((a, b) => a - b)) {
-    if (!all.includes(t) || kept.some((k) => clash(k, t, minutes)) || perDay(kept, localDay(t)) >= LIVE_CONFIG.maxPerDay) continue;
-    kept.push(t);
-  }
-  return kept;
-}
-
-// Why a time cannot be added, or "" when it can.
-function blockedReason(t, minutes) {
-  if (booking.times.includes(t)) return "";
-  if (booking.times.some((x) => clash(x, t, minutes))) return `Overlaps a ${minutes}-minute lesson you've already chosen`;
-  if (perDay(booking.times, localDay(t)) >= LIVE_CONFIG.maxPerDay) return `You've already chosen ${LIVE_CONFIG.maxPerDay} times on this day`;
-  return "";
-}
-
-function bookingStatus(n, nd) {
-  const C = LIVE_CONFIG;
-  const got = `${n} time${n === 1 ? "" : "s"} chosen over ${nd} day${nd === 1 ? "" : "s"}`;
-  if (n < C.minTimes) return { ok: false, text: `${got}. Add ${C.minTimes - n} more to send your request.` };
-  if (n >= C.goodTimes && nd >= C.goodDays) return { ok: true, text: `${got}. Ready to send.` };
-  return { ok: true, text: `${got}. You can send them now, but ${C.goodTimes} times over ${C.goodDays} days give Olivier the best chance of finding one that works.` };
-}
-
-// The next day after `day` that still has room, or null.
-function nextOpenDay(days, day, minutes) {
-  const all = candidateTimes(minutes, takenFromServer);
-  for (const d of days.slice(days.indexOf(day) + 1)) {
-    if (perDay(booking.times, d) < LIVE_CONFIG.maxPerDay && all.some((t) => localDay(t) === d && !blockedReason(t, minutes))) return d;
-  }
-  return null;
-}
-
-// `next`: what to bring into view after this render: "times", "full", "details" or nothing.
-function renderBooking(next) {
-  if (booking.mode === "now") return renderInstant();
-  // keep what the learner already typed: the form is drawn again at every choice
-  if ($("#bkName")) { booking.name = $("#bkName").value; booking.email = $("#bkEmail").value; }
-  const minutes = LIVE_MINUTES[booking.product];
-  const all = candidateTimes(minutes, takenFromServer);
-  booking.times = pruneTimes(booking.times, minutes, all);
-  const days = [...new Set(all.map(localDay))];
-  if (!days.includes(booking.day)) booking.day = days[0] || null;
-  const times = all.filter((t) => localDay(t) === booking.day);
-  const n = booking.times.length, nd = daysOf(booking.times);
-  const status = bookingStatus(n, nd), ready = status.ok;
-  const p = byId(booking.product);
-  const talk = talkFirstLinks();
-  const chosen = [...booking.times].sort((x, y) => x - y);
-  $("#bookForm").innerHTML = `
-    <p class="eyebrow">${booking.credit ? "Book with your lesson pack" : "Book a live lesson"}${DEMO ? " · demo" : ""}</p>
-    <h2>When are you free?</h2>
-    <p>Suggest at least <strong>${LIVE_CONFIG.minTimes} start times</strong>, with no more than ${LIVE_CONFIG.maxPerDay} per day. Suggesting ${LIVE_CONFIG.goodTimes} times over ${LIVE_CONFIG.goodDays} different days gives you the best chance. Olivier will pick the ones that work for him, then you choose one and ${booking.credit ? "confirm it" : "pay to confirm it"}.</p>
-    ${booking.credit ? `<p class="note">Lesson ${booking.credit.used + 1} of ${booking.credit.total} in your pack. No payment needed.</p>` : `
-    <div class="pay-methods book-len" role="radiogroup" aria-label="Lesson">
-      ${LIVE.filter((x) => !x.plan || x.id === booking.product).map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> ${x.name}<br><b>${price(x)}${x.plan ? " every 2 months" : ""}</b></label>`).join("")}
-    </div>`}
-    <div class="form-grid">
-      <label for="bkNeed">What would you like to work on?<select id="bkNeed" name="need">${LIVE_NEEDS.map((x) => `<option ${x === booking.need ? "selected" : ""}>${x}</option>`).join("")}</select></label>
-      <label for="bkLevel">Your level<select id="bkLevel" name="level"><option>I don't know yet</option>${LEVELS.map((l) => `<option ${l.code === booking.level ? "selected" : ""}>${l.code}</option>`).join("")}</select></label>
-    </div>
-    <p class="eyebrow pm-title">Choose start times · your local time (${zoneLabel()})</p>
-    <p class="note">Each time is the start of a ${minutes}-minute lesson. Times that would overlap one you've already chosen are grayed out.</p>
-    <div class="chips-row" role="group" aria-label="Day">${days.map((d) => {
-      const k = perDay(booking.times, d), full = k >= LIVE_CONFIG.maxPerDay;
-      const cls = d === booking.day ? "on" : full ? "day-full" : k ? "day-has" : "";
-      return `<button type="button" class="slot ${cls}" data-day="${d}" ${k ? `title="${k} time${k > 1 ? "s" : ""} chosen on this day"` : ""}>${d}${k ? ` · ${k}/${LIVE_CONFIG.maxPerDay}` : ""}</button>`; }).join("")}</div>
-    <div class="chips-row" id="bkTimes" role="group" aria-label="Start times">${times.map((t) => {
-      const why = blockedReason(t, minutes), on = booking.times.includes(t);
-      return `<button type="button" class="slot ${on ? "on" : ""}" aria-pressed="${on}" data-slot="${t}" ${why ? `disabled title="${esc(why)}"` : ""}>${localTime(t)}</button>`; }).join("")}</div>
-    ${(() => {
-      if (booking.dismissFull === booking.day || perDay(booking.times, booking.day) < LIVE_CONFIG.maxPerDay) return "";
-      const next = nextOpenDay(days, booking.day, minutes);
-      return `<div class="day-full-msg" role="status"><p><b>${booking.day} is full</b> (${LIVE_CONFIG.maxPerDay} times chosen). ${next ? `Choose another day to suggest more times.` : "No other day has room left."}</p>
-        <div class="day-full-actions">${next ? `<button type="button" class="btn btn-primary mini" data-day="${next}">Continue on ${next}</button>` : ""}
-        <button type="button" class="btn btn-ghost mini" data-dismiss-full>${ready ? "I'm done, keep my times" : "Close"}</button></div></div>`;
-    })()}
-    <p class="note ${ready ? "ok" : ""}" role="status">${status.text}</p>
-    ${chosen.length ? `<ul class="proposed">${chosen.map((t) => `<li>${localDay(t)}, ${localTime(t)}–${localTime(t + minutes * MIN)} <button type="button" class="link-btn" data-slot="${t}" aria-label="Remove this time">✕</button></li>`).join("")}</ul>` : ""}
-    <div class="form-grid" id="bkDetails">
-      <label for="bkName">Your name<input id="bkName" name="name" required autocomplete="name" value="${esc(booking.name || "")}"></label>
-      <label for="bkEmail">Email<input id="bkEmail" name="email" type="email" required autocomplete="email" value="${esc(booking.email || "")}"></label>
-    </div>
-    <p class="form-error" id="bkError" hidden></p>
-    <button class="btn btn-primary btn-block" ${ready ? "" : "disabled"}>Send my times to Olivier</button>
-    <p class="note">${booking.credit ? "" : `Nothing to pay now. You'll pay ${price(p)} once Olivier has replied and you've chosen your time. `}${talk ? `Want to talk first? ${talk}` : ""}</p>`;
-  if (next === "times") bringIntoView($("#bkTimes"));
-  else if (next === "full") bringIntoView($(".day-full-msg"));
-  else if (next === "details") {
-    const empty = [$("#bkName"), $("#bkEmail")].find((x) => !x.value);
-    bringIntoView($("#bkDetails"), empty || null);
-  }
-}
-
-function talkFirstLinks() {
-  const text = `Hello Olivier, before I book a live lesson, I'd like to talk about: ${booking.need} (level: ${booking.level}).`;
-  const bits = [];
-  if (SHOP.whatsapp) bits.push(`on <a href="${whatsappLink(text)}" target="_blank" rel="noopener">WhatsApp</a>`);
-  if (SHOP.email) bits.push(`by <a href="mailto:${SHOP.email}?subject=${encodeURIComponent("Live lesson")}&body=${encodeURIComponent(text)}">email</a>`);
-  return bits.length ? `Message Olivier ${bits.join(" or ")}. It's free.` : "";
-}
-
-async function submitBooking(form) {
-  const d = new FormData(form);
-  booking.name = String(d.get("name") || "").trim();
-  booking.email = String(d.get("email") || "").trim();
-  const err = $("#bkError");
-  if (booking.times.length < LIVE_CONFIG.minTimes) { err.textContent = `Please suggest at least ${LIVE_CONFIG.minTimes} times.`; err.hidden = false; return; }
-  if (!booking.name || !form.bkEmail.checkValidity() || !booking.email) { err.textContent = "Please enter your name and a valid email address."; err.hidden = false; return; }
-  const req = { product: booking.product, need: booking.need, level: booking.level, minutes: LIVE_MINUTES[booking.product],
-    name: booking.name, email: booking.email, zone: visitorZone(), proposed: [...booking.times].sort((a, b) => a - b),
-    credit: booking.credit ? booking.credit.id : null };
-  if (SHOP.api) {
-    try {
-      const r = await fetch(`${SHOP.api}/lesson-requests`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
-      const out = await r.json();
-      if (!r.ok || !out.id) throw new Error();
-      upsertRequest({ ...req, id: out.id, key: out.key, status: "pending", accepted: null });
-    } catch { err.textContent = "We couldn't send your times just now. Please try again in a moment."; err.hidden = false; return; }
-  } else if (DEMO) {
-    upsertRequest({ ...req, id: "REQ-" + Date.now().toString(36).toUpperCase(), key: "demo", status: "pending", accepted: null });
-  } else {
-    const talk = talkFirstLinks();
-    return openModal(`<div class="checkout"><h2>Booking is coming soon</h2><p>You'll be able to book live lessons here as soon as the site opens.</p>${talk ? `<p>${talk}</p>` : ""}<button class="btn btn-ghost" data-modal-close>Close</button></div>`);
-  }
-  renderMySessions();
-  openModal(`<div class="checkout"><p class="eyebrow">Sent${DEMO ? " · demo" : ""}</p><h2>Your times have been sent to Olivier</h2>
-    <p>He'll pick the ones that work for him, and you'll then get an email asking you to choose one${booking.credit ? "" : " and pay to confirm it"}. You can also follow your request under “My live lessons” on this page.</p>
-    ${DEMO ? `<p class="note">Demo: you can reply as Olivier from “My live lessons”.</p>` : ""}
-    <button class="btn btn-primary" data-modal-close>Done</button></div>`);
-}
-
-// ---- step 2: Olivier ticks the times that suit him ---------------------
-async function fetchRequest(id, key) {
-  if (SHOP.api) {
-    const r = await fetch(`${SHOP.api}/lesson-requests/${encodeURIComponent(id)}?key=${encodeURIComponent(key)}`);
-    if (!r.ok) throw new Error();
-    return r.json();
-  }
-  const r = requests().find((x) => x.id === id);
-  if (!r) throw new Error();
-  return r;
-}
-
-async function openAnswer(id, key) {
-  let r;
-  try { r = await fetchRequest(id, key); } catch {
-    return openModal(`<div class="checkout"><h2>Request not found</h2><p>This link is no longer valid.</p><button class="btn btn-ghost" data-modal-close>Close</button></div>`);
-  }
-  const p = byId(r.product);
-  openModal(`<form class="checkout" id="answerForm" data-id="${esc(r.id)}" data-key="${esc(key)}">
-    <p class="eyebrow">Olivier · lesson request${DEMO ? " · demo" : ""}</p>
-    <h2>${esc(r.name)} · ${p ? esc(p.name) : ""}</h2>
-    <p>${esc(r.need)} · level ${esc(r.level)} · ${r.minutes} min · learner's time zone: ${esc(r.zone)}</p>
-    <p class="eyebrow pm-title">Select the times that work for you · your local time</p>
-    <div class="answer-list">${r.proposed.map((t) => `<label class="pm"><input type="checkbox" name="t" value="${t}" ${(r.accepted || []).includes(t) ? "checked" : ""}> ${localDay(t)} · ${localTime(t)}–${localTime(t + r.minutes * MIN)}</label>`).join("")}</div>
-    <p class="form-error" id="ansError" hidden></p>
-    <button class="btn btn-primary btn-block">Send my reply</button>
-    <p class="note">The learner will choose one of the times you select${r.credit ? "" : " and then pay"}. If none of them work, leave every box unchecked and the learner will be asked to suggest new times.</p>
-  </form>`);
-}
-
-async function submitAnswer(form) {
-  const accepted = [...form.querySelectorAll('input[name="t"]:checked')].map((x) => Number(x.value));
-  const { id, key } = form.dataset;
-  if (SHOP.api) {
-    try {
-      const r = await fetch(`${SHOP.api}/lesson-requests/${encodeURIComponent(id)}/answer`, { method: "POST",
-        headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key, accepted }) });
-      if (!r.ok) throw new Error();
-    } catch { $("#ansError").textContent = "We couldn't send your reply. Please try again."; $("#ansError").hidden = false; return; }
-  } else {
-    const r = requests().find((x) => x.id === id);
-    if (r) upsertRequest({ ...r, accepted, status: accepted.length ? "answered" : "declined" });
-  }
-  renderMySessions();
-  openModal(`<div class="checkout"><h2>Reply sent</h2><p>${accepted.length ? `The learner can now choose from ${accepted.length} time${accepted.length > 1 ? "s" : ""}.` : "The learner will be asked to suggest new times."}</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
-}
-
-// ---- step 3: the learner picks one of Olivier's times, then pays -------
-async function openChoice(id, key) {
-  let r;
-  try { r = await fetchRequest(id, key); } catch {
-    return openModal(`<div class="checkout"><h2>Request not found</h2><p>This link is no longer valid. You can suggest new times.</p><button class="btn btn-primary" data-book>Suggest times</button></div>`);
-  }
-  upsertRequest({ ...requests().find((x) => x.id === r.id), ...r, key });
-  const free = (r.accepted || []).filter((t) => t > Date.now() + 2 * H && !overlaps(t, r.minutes));
-  if (!free.length) {
-    return openModal(`<div class="checkout"><h2>${r.accepted && r.accepted.length ? "These times have passed" : "None of your times worked for Olivier"}</h2>
-      <p>Suggest new times. It only takes a minute.</p><button class="btn btn-primary" data-book="${r.credit ? "live-pack5" : r.product}">Suggest new times</button></div>`);
-  }
-  const p = byId(r.product);
-  openModal(`<form class="checkout" id="choiceForm" data-id="${esc(r.id)}">
-    <p class="eyebrow">Olivier has replied${DEMO ? " · demo" : ""}</p>
-    <h2>Choose your time</h2>
-    <div class="answer-list">${free.map((t, i) => `<label class="pm"><input type="radio" name="t" value="${t}" ${i ? "" : "checked"}> ${localDay(t)}, ${localTime(t)}–${localTime(t + r.minutes * MIN)}</label>`).join("")}</div>
-    <button class="btn btn-primary btn-block">${r.credit ? "Confirm this time" : `Continue to payment · ${price(p)}`}</button>
-  </form>`);
-}
-
-function submitChoice(form) {
-  const r = requests().find((x) => x.id === form.dataset.id);
-  const start = Number(form.querySelector('input[name="t"]:checked').value);
-  const draft = { product: r.product, need: r.need, level: r.level, start, minutes: r.minutes,
-    name: r.name, email: r.email, zone: r.zone, request: r.id };
-  if (r.credit) return useCredit(r.credit, draft);
-  openBuy(r.product, draft);                          // payment step, methods of the learner's country (app.js)
-}
-
-// Called by app.js once a session is paid (server) or in demo mode.
-function confirmBooking(draft, status, reference) {
-  const b = { ...draft, id: reference || "PAP-" + Date.now().toString(36).toUpperCase(), status, room: null };
+// Demo only: the lesson is kept in this browser.
+function confirmBooking(draft, status) {
+  const b = { ...draft, id: "PAP-" + Date.now().toString(36).toUpperCase(), status, room: null };
   const pack = PACK_SIZE[draft.product];
   if (pack) b.credit = { total: pack, used: 1, expires: addMonths(Date.now(), CREDIT_MONTHS),
     plan: isPlan(draft.product), renews: isPlan(draft.product) };
   saveBookings([...bookings(), b]);
-  if (draft.request) saveRequests(requests().filter((x) => x.id !== draft.request));
   renderMySessions();
   return b;
 }
@@ -435,7 +194,6 @@ function useCredit(packId, draft) {
   pack.credit.used++;
   list.push({ ...draft, id: `${packId}-${pack.credit.used}`, status: pack.status, fromPack: packId, room: null });
   saveBookings(list);
-  if (draft.request) saveRequests(requests().filter((x) => x.id !== draft.request));
   bookedScreen(list[list.length - 1]);
   renderMySessions();
 }
@@ -446,21 +204,46 @@ function planOffer(b) {
   const one = byId("live-60"), plan = LIVE.find((x) => x.best) || LIVE.find((x) => x.plan);
   if (!one || !plan) return "";
   const per = amount(plan.usd / plan.lessons, plan.xaf / plan.lessons);
-  return `<div class="plan-offer"><p class="eyebrow">Keep up the momentum</p>
+  return FR ? `<div class="plan-offer"><p class="eyebrow">Gardez le rythme</p>
+    <h3>${plan.lessons} cours tous les 2 mois, ${per} le cours au lieu de ${price(one)}</h3>
+    <p>Retrouver un professeur chaque semaine aide à retenir ce qu'on apprend. Avec la ${esc(L(plan, "name").split(" · ")[0])}, vous réservez chaque cours quand cela vous arrange, sur 2 mois. Tous les 2 mois, vous recevez un lien pour la renouveler ; sans paiement, elle s'arrête.</p>
+    <div class="hero-cta tight"><button class="btn btn-primary" data-modal-close data-goto-plans>Voir les formules</button><button class="btn btn-ghost" data-modal-close>Pas maintenant</button></div></div>`
+    : `<div class="plan-offer"><p class="eyebrow">Keep up the momentum</p>
     <h3>${plan.lessons} lessons every 2 months, ${per} each instead of ${price(one)}</h3>
-    <p>Meeting a teacher every week helps you remember what you learn. With the ${esc(plan.name.split(" · ")[0])}, you book each lesson whenever it suits you over 2 months. The plan renews automatically, and you can cancel the renewal at any time.</p>
+    <p>Meeting a teacher every week helps you remember what you learn. With the ${esc(plan.name.split(" · ")[0])}, you book each lesson whenever it suits you over 2 months. Every 2 months, we email you a link to renew it, and it stops whenever you don't.</p>
     <div class="hero-cta tight"><button class="btn btn-primary" data-modal-close data-goto-plans>See the plans</button><button class="btn btn-ghost" data-modal-close>Not now</button></div></div>`;
 }
 
 function bookedScreen(b) {
   openModal(`<div class="checkout">
-    <p class="eyebrow">${b.status === "demo" ? "Demo booking · nothing was charged" : "Booked"}</p>
-    <h2>Your live lesson is booked</h2>
-    <p><strong>${localDay(b.start)}, ${localTime(b.start)}</strong> your time (${b.zone}) · ${b.minutes} minutes.</p>
-    <p>Come back to this page when it's time. The <strong>Join</strong> button in “My live lessons” becomes active ${LIVE_CONFIG.joinEarly} minutes before the start.</p>
-    ${b.credit ? `<p class="note">${b.credit.plan ? "Your plan" : "Your lesson pack"}: ${b.credit.total - 1} more lesson${b.credit.total - 1 === 1 ? "" : "s"} to book from “My live lessons” whenever you like until ${localDay(b.credit.expires)}.</p>` : ""}
-    ${planOffer(b) || `<button class="btn btn-primary" data-modal-close>Done</button>`}
+    <p class="eyebrow">${b.status === "demo" ? t("Demo booking · nothing was charged", "Réservation de démonstration · rien n'a été payé") : t("Booked", "Réservé")}</p>
+    <h2>${t("Your live lesson is booked", "Votre cours en direct est réservé")}</h2>
+    <p><strong>${localDay(b.start)}, ${localTime(b.start)}</strong> ${t("your time", "à votre heure")} (${b.zone}) · ${b.minutes} minutes.</p>
+    <p>${t(`Come back to this page when it's time. The <strong>Join</strong> button in “My live lessons” becomes active ${LIVE_CONFIG.joinEarly} minutes before the start.`,
+      `Revenez sur cette page à l'heure du cours : le bouton <strong>Rejoindre</strong> de « Mes cours en direct » s'active ${LIVE_CONFIG.joinEarly} minutes avant le début.`)}</p>
+    ${b.credit ? `<p class="note">${t(`${b.credit.plan ? "Your plan" : "Your lesson pack"}: ${b.credit.total - 1} more lesson${b.credit.total - 1 === 1 ? "" : "s"} to book from “My live lessons” whenever you like until ${localDay(b.credit.expires)}.`,
+      `${b.credit.plan ? "Votre formule" : "Votre forfait"} : encore ${b.credit.total - 1} cours à réserver dans « Mes cours en direct », quand vous voulez jusqu'au ${localDay(b.credit.expires)}.`)}</p>` : ""}
+    ${planOffer(b) || `<button class="btn btn-primary" data-modal-close>${t("Done", "Terminé")}</button>`}
   </div>`);
+}
+
+// Back from the payment (app.js checkReturn): what the server booked. The lesson, the next
+// bookings and the video room are in "My courses" on the server.
+function paidBooking(d) {
+  const b = d.booking, url = d.account_url ? esc(d.account_url) : `${PAY_API}/account?lang=${LANG}`;
+  const open = `<a class="btn btn-primary" href="${url}">${t("Open My courses", "Ouvrir Mes cours")}</a>`;
+  if (b.renewed) return openModal(`<div class="checkout"><h2>${t("Your plan is renewed", "Votre formule est renouvelée")}</h2>
+    <p>${t(`Thank you! Your new lessons are ready to book in “My courses”. We've also sent the details to ${esc(d.email)}.`, `Merci ! Vos nouveaux cours sont à réserver dans « Mes cours ». Le détail vous a aussi été envoyé à ${esc(d.email)}.`)}</p>${open}</div>`);
+  if (!b.booked) return openModal(`<div class="checkout"><h2>${t("Choose a new time", "Choisissez une autre heure")}</h2>
+    <p>${t(`Your payment went through, but the time you chose was taken while you were paying. Pick another one in “My courses”. If none suits you, reply to the email we've sent to ${esc(d.email)} and you'll be refunded.`,
+      `Votre paiement est passé, mais l'heure choisie a été prise pendant le paiement. Choisissez-en une autre dans « Mes cours ». Si aucune ne vous convient, répondez à l'e-mail envoyé à ${esc(d.email)} : vous serez remboursé.`)}</p>${open}</div>`);
+  const more = b.lessons - 1;
+  openModal(`<div class="checkout"><p class="eyebrow">${t("Booked", "Réservé")}</p><h2>${t("Your live lesson is booked", "Votre cours en direct est réservé")}</h2>
+    <p><strong>${localDay(b.start)}, ${localTime(b.start)}</strong> ${t("your time", "à votre heure")} · ${b.minutes} minutes.</p>
+    <p>${t(`When it's time, open “My courses” and press <strong>Join</strong>: the room opens ${LIVE_CONFIG.joinEarly} minutes before the start. We've emailed the details to ${esc(d.email)}.`,
+      `À l'heure du cours, ouvrez « Mes cours » et cliquez sur <strong>Rejoindre</strong> : la salle ouvre ${LIVE_CONFIG.joinEarly} minutes avant le début. Le détail vous a été envoyé à ${esc(d.email)}.`)}</p>
+    ${more > 0 ? `<p class="note">${t(`Book your other ${more} lesson${more === 1 ? "" : "s"} yourself in “My courses”, whenever you like until ${localDay(b.until)}.`, `Réservez vous-même vos ${more} autres cours dans « Mes cours », quand vous voulez jusqu'au ${localDay(b.until)}.`)}</p>` : ""}
+    ${open} ${planOffer({ product: d.booking.product }) ? `<button class="btn btn-ghost" data-modal-close data-goto-plans>${t("See the plans", "Voir les formules")}</button>` : ""}</div>`);
 }
 
 // ---- my sessions: countdown and Join ------------------------------------
@@ -471,14 +254,10 @@ function sessionState(b, now = Date.now()) {
   return "waiting";
 }
 
-// Cancelling stops the next renewal; the lessons of the current 2 months stay usable until its end.
-async function cancelPlan(id) {
+// Demo: stopping the renewal; the lessons of the current 2 months stay usable until its end.
+function cancelPlan(id) {
   const list = bookings(), b = list.find((x) => x.id === id);
-  if (!b || !confirm(`Cancel your plan's renewal? You'll keep your remaining lessons until ${localDay(b.credit.expires)}.`)) return;
-  if (SHOP.api) {
-    try { const r = await fetch(`${SHOP.api}/plans/${encodeURIComponent(id)}/cancel`, { method: "POST" }); if (!r.ok) throw new Error(); }
-    catch { return alert("We couldn't cancel the renewal just now. Please try again, or write to us and we'll cancel it for you."); }
-  }
+  if (!b || !confirm(t(`Stop your plan's renewal? You'll keep your remaining lessons until ${localDay(b.credit.expires)}.`, `Arrêter le renouvellement ? Vous gardez vos cours restants jusqu'au ${localDay(b.credit.expires)}.`))) return;
   b.credit.renews = false; saveBookings(list); renderMySessions();
 }
 
@@ -488,25 +267,19 @@ function renderMySessions() {
   const list = bookings().filter((b) => b.start + b.minutes * MIN > Date.now() - DAY).sort((a, b) => a.start - b.start);
   const packs = bookings().filter((b) => b.credit && (b.credit.plan ? b.credit.renews || b.credit.expires > Date.now()
     : b.credit.used < b.credit.total && (!b.credit.expires || b.credit.expires > Date.now())));
-  const reqs = requests();
-  box.hidden = !list.length && !packs.length && !reqs.length;
-  box.innerHTML = `<h3>My live lessons${DEMO ? " · demo" : ""}</h3>
-    ${reqs.map((r) => `<div class="session request"><div><strong>${r.status === "answered" ? "Olivier has replied" : r.status === "declined" ? "None of your times worked for Olivier" : "Waiting for Olivier's reply"}</strong>
-      <small>${r.proposed.length} times suggested · ${r.minutes} min · ${esc(r.need)}</small></div>
-      ${r.status === "answered" ? `<button class="btn btn-primary mini" data-choose="${esc(r.id)}">Choose a time</button>`
-        : r.status === "declined" ? `<button class="btn btn-ghost mini" data-book="${r.credit ? "live-pack5" : r.product}">Suggest new times</button>`
-        : DEMO ? `<button class="btn btn-ghost mini" data-answer-demo="${esc(r.id)}">Demo: reply as Olivier</button>` : ""}
-    </div>`).join("")}
+  box.hidden = !DEMO || (!list.length && !packs.length);
+  if (box.hidden) return;
+  box.innerHTML = `<h3>${t("My live lessons", "Mes cours en direct")} · demo</h3>
     ${list.map((b) => `<div class="session" data-session="${b.id}">
       <div><strong>${localDay(b.start)} · ${localTime(b.start)}</strong><small>${b.minutes} min · ${b.need}</small></div>
       <span class="countdown" data-countdown="${b.id}"></span>
-      <button class="btn btn-primary mini" data-join="${b.id}">Join</button>
+      <button class="btn btn-primary mini" data-join="${b.id}">${t("Join", "Rejoindre")}</button>
     </div>`).join("")}
     ${packs.map((b) => { const c = b.credit, left = c.total - c.used, until = c.expires ? localDay(c.expires) : "";
-      return `<div class="session pack"><div><strong>${c.plan ? esc(byId(b.product).name.split(" · ")[0]) : "Your lesson pack"}</strong>
-      <small>${left} lesson${left === 1 ? "" : "s"} left${until ? ` until ${until}` : ""}${c.plan ? (c.renews ? ` · renews on ${until} with ${c.total} new lessons` : " · renewal cancelled") : ""}</small></div>
-      ${left > 0 ? `<button class="btn btn-ghost mini" data-book-credit="${b.id}">Book your next lesson</button>` : ""}
-      ${c.plan && c.renews ? `<button class="link-btn" data-cancel-plan="${b.id}">Cancel renewal</button>` : ""}</div>`; }).join("")}`;
+      return `<div class="session pack"><div><strong>${c.plan ? esc(L(byId(b.product), "name").split(" · ")[0]) : t("Your lesson pack", "Votre forfait")}</strong>
+      <small>${t(`${left} lesson${left === 1 ? "" : "s"} left${until ? ` until ${until}` : ""}`, `${left} cours restant${left > 1 ? "s" : ""}${until ? ` jusqu'au ${until}` : ""}`)}${c.plan ? (c.renews ? t(` · renewal link emailed 7 days before ${until}`, ` · lien de renouvellement envoyé 7 jours avant le ${until}`) : t(" · renewal stopped", " · renouvellement arrêté")) : ""}</small></div>
+      ${left > 0 ? `<button class="btn btn-ghost mini" data-book-credit="${b.id}">${t("Book your next lesson", "Réserver le cours suivant")}</button>` : ""}
+      ${c.plan && c.renews ? `<button class="link-btn" data-cancel-plan="${b.id}">${t("Stop the renewal", "Arrêter le renouvellement")}</button>` : ""}</div>`; }).join("")}`;
   tick();
 }
 
@@ -516,7 +289,7 @@ function tick() {
     const c = document.querySelector(`[data-countdown="${b.id}"]`);
     if (c) {
       const st = sessionState(b, now);
-      c.textContent = st === "ended" ? "Ended" : now < b.start ? `Starts in ${duration(b.start - now)}` : `In progress · ${duration(b.start + b.minutes * MIN - now)} left`;
+      c.textContent = st === "ended" ? t("Ended", "Terminé") : now < b.start ? t(`Starts in ${duration(b.start - now)}`, `Commence dans ${duration(b.start - now)}`) : t(`In progress · ${duration(b.start + b.minutes * MIN - now)} left`, `En cours · encore ${duration(b.start + b.minutes * MIN - now)}`);
       const j = document.querySelector(`[data-join="${b.id}"]`);
       if (j) j.disabled = st !== "open";
     }
@@ -524,7 +297,7 @@ function tick() {
   roomTick(now);
 }
 
-// ---- the video room -----------------------------------------------------
+// ---- the video room (demo; real lessons: "My courses" on the server) ------
 let room = null;
 
 function openRoom(id) {
@@ -533,9 +306,9 @@ function openRoom(id) {
   room = { b, stream: null, api: null };
   openModal(`<div class="room">
     <div class="room-top">
-      <div><p class="eyebrow">Live lesson with Olivier</p><strong>${b.need}</strong></div>
+      <div><p class="eyebrow">${t("Live lesson with Olivier", "Cours en direct avec Olivier")}</p><strong>${b.need}</strong></div>
       <div class="room-timer" id="roomTimer"></div>
-      <button class="btn btn-ghost mini" data-leave>Leave</button>
+      <button class="btn btn-ghost mini" data-leave>${t("Leave", "Quitter")}</button>
     </div>
     <div class="room-bar"><span id="roomBar"></span></div>
     <div class="room-video" id="roomVideo"></div>
@@ -547,49 +320,26 @@ function openRoom(id) {
 
 async function startVideo(b) {
   const box = $("#roomVideo");
-  if (LIVE_CONFIG.video.appId && SHOP.api) {
-    try {
-      const r = await fetch(`${SHOP.api}/sessions/${encodeURIComponent(b.id)}/token`);
-      const { jwt, room: name } = await r.json();
-      await loadScript(`https://8x8.vc/${LIVE_CONFIG.video.appId}/external_api.js`);
-      room.api = new JitsiMeetExternalAPI("8x8.vc", { roomName: `${LIVE_CONFIG.video.appId}/${name}`, jwt, parentNode: box,
-        width: "100%", height: "100%", userInfo: { displayName: b.name, email: b.email } });
-      room.api.addListener("readyToClose", leaveRoom);
-      return;
-    } catch {
-      box.innerHTML = `<p class="room-msg">We couldn't connect the video. Please reload the page or contact Olivier.</p>`;
-      return;
-    }
-  }
-  // No video service yet: check the camera and microphone, so the visitor is ready.
+  // Demo: no call, only the camera and microphone check. Real lessons open in "My courses".
   box.innerHTML = `<video id="selfView" autoplay muted playsinline></video>
-    <p class="room-msg">${DEMO ? "Demo: once the video service is set up, your call with Olivier will connect here." : "Your call with Olivier will connect here."} Use the preview to check that your camera and microphone are working.</p>`;
+    <p class="room-msg">${t("Demo: in a real lesson, your call with Olivier connects here. Use the preview to check that your camera and microphone are working.", "Démo : pendant un vrai cours, l'appel avec Olivier s'ouvre ici. Vérifiez dans l'aperçu que votre caméra et votre micro fonctionnent.")}</p>`;
   try {
     room.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     $("#selfView").srcObject = room.stream;
   } catch {
-    box.querySelector(".room-msg").textContent = "Please allow camera and microphone access in your browser, then reload the page.";
+    box.querySelector(".room-msg").textContent = t("Please allow camera and microphone access in your browser, then reload the page.", "Autorisez la caméra et le micro dans votre navigateur, puis rechargez la page.");
   }
-}
-
-function loadScript(src) {
-  return new Promise((ok, ko) => {
-    if (document.querySelector(`script[src="${src}"]`)) return ok();
-    const s = document.createElement("script");
-    s.src = src; s.onload = ok; s.onerror = ko;
-    document.head.appendChild(s);
-  });
 }
 
 function roomTick(now) {
   if (!room || !$("#roomTimer")) return;
   const { b } = room, end = b.start + b.minutes * MIN;
-  const t = $("#roomTimer"), bar = $("#roomBar");
-  if (now < b.start) { t.textContent = `Starts in ${duration(b.start - now)}`; bar.style.width = "0%"; t.className = "room-timer"; return; }
-  if (now >= end) { t.textContent = "Time's up"; bar.style.width = "100%"; t.className = "room-timer over"; return; }
-  t.textContent = `${duration(end - now)} left`;
+  const tm = $("#roomTimer"), bar = $("#roomBar");
+  if (now < b.start) { tm.textContent = t(`Starts in ${duration(b.start - now)}`, `Commence dans ${duration(b.start - now)}`); bar.style.width = "0%"; tm.className = "room-timer"; return; }
+  if (now >= end) { tm.textContent = t("Time's up", "C'est l'heure"); bar.style.width = "100%"; tm.className = "room-timer over"; return; }
+  tm.textContent = t(`${duration(end - now)} left`, `encore ${duration(end - now)}`);
   bar.style.width = `${((now - b.start) / (b.minutes * MIN)) * 100}%`;
-  t.className = end - now <= 5 * MIN ? "room-timer warn" : "room-timer";
+  tm.className = end - now <= 5 * MIN ? "room-timer warn" : "room-timer";
 }
 
 function leaveRoom() {
@@ -604,26 +354,17 @@ function leaveRoom() {
 
 // ---- events ---------------------------------------------------------------
 document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-book],[data-day],[data-slot],[data-pick],[data-propose],[data-join],[data-leave],[data-book-credit],[data-cancel-plan],[data-goto-plans],[data-choose],[data-answer-demo],[data-dismiss-full],[data-back-time]");
+  const el = e.target.closest("[data-book],[data-day],[data-pick],[data-join],[data-leave],[data-book-credit],[data-cancel-plan],[data-goto-plans],[data-back-time]");
   if (!el) return;
   const d = el.dataset;
   if ("book" in d) openBooking(d.book || null);
-  else if (d.day) { booking.day = d.day; renderBooking("times"); }
+  else if (d.day) { booking.day = d.day; renderBooking(); bringIntoView($("#bkTimes")); }
   else if (d.pick) {
     booking.slot = Number(d.pick); renderBooking();
     const next = $("#bkDetails") || $("#bookForm button.btn-primary");
     bringIntoView(next, $("#bkDetails") ? [$("#bkName"), $("#bkEmail")].find((x) => !x.value) || null : null);
   }
   else if ("backTime" in d) { booking.stage = "time"; renderBooking(); }
-  else if ("propose" in d) openBooking(booking.product, booking.credit, "propose");
-  else if ("dismissFull" in d) { booking.dismissFull = booking.day; renderBooking("details"); }
-  else if (d.slot) {
-    const t = Number(d.slot);
-    if (booking.times.includes(t)) booking.times = booking.times.filter((x) => x !== t);
-    else if (!blockedReason(t, LIVE_MINUTES[booking.product])) booking.times = [...booking.times, t];
-    const full = perDay(booking.times, booking.day) >= LIVE_CONFIG.maxPerDay && booking.dismissFull !== booking.day;
-    renderBooking(full ? "full" : null);
-  }
   else if (d.join) openRoom(d.join);
   else if ("leave" in d) leaveRoom();
   else if (d.bookCredit) {
@@ -632,8 +373,6 @@ document.addEventListener("click", (e) => {
   }
   else if (d.cancelPlan) cancelPlan(d.cancelPlan);
   else if ("gotoPlans" in d) { const g = $("#livePlans"); if (g) g.scrollIntoView({ behavior: "smooth" }); }
-  else if (d.choose) { const r = requests().find((x) => x.id === d.choose); if (r) openChoice(r.id, r.key); }
-  else if (d.answerDemo) openAnswer(d.answerDemo, "demo");
 });
 modal.addEventListener("change", (e) => {
   if (!$("#bookForm") || !e.target.closest("#bookForm")) return;
@@ -641,7 +380,7 @@ modal.addEventListener("change", (e) => {
     const before = LIVE_MINUTES[booking.product];
     booking.product = e.target.name === "minutes" ? (e.target.value === "30" ? "live-30" : "live-60") : e.target.value;
     // another length means other free times; the same length keeps the chosen time
-    if (booking.mode === "now" && LIVE_MINUTES[booking.product] !== before) {
+    if (LIVE_MINUTES[booking.product] !== before) {
       booking.slot = null; booking.stage = "time"; freeSlots = null;
       loadFree(LIVE_MINUTES[booking.product]).then(() => renderBooking());
     }
@@ -651,24 +390,12 @@ modal.addEventListener("change", (e) => {
   else if (e.target.name === "level") booking.level = e.target.value;
 });
 modal.addEventListener("submit", (e) => {
-  const id = e.target.id;
-  if (!["bookForm", "answerForm", "choiceForm"].includes(id)) return;
+  if (e.target.id !== "bookForm") return;
   e.preventDefault();
-  if (id === "bookForm") (booking.mode === "now" ? submitInstant : submitBooking)(e.target);
-  else if (id === "answerForm") submitAnswer(e.target);
-  else submitChoice(e.target);
+  submitBooking(e.target);
 });
 modal.addEventListener("close", () => { if (room) leaveRoom(); });
-
-// Links from the emails: ?olivier=<id>&key=<key> (Olivier's answer), ?lesson=<id>&key=<key> (learner's choice)
-function openFromLink() {
-  const q = new URLSearchParams(location.search);
-  const key = q.get("key") || "";
-  if (q.get("olivier")) openAnswer(q.get("olivier"), key);
-  else if (q.get("lesson")) openChoice(q.get("lesson"), key);
-}
 
 renderMySessions();
 setInterval(tick, 1000);
 checkReturn();
-openFromLink();
