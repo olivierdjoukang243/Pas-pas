@@ -141,15 +141,17 @@ function renderBooking() {
 
   // step 1: the time
   const times = all.filter((t) => localDay(t) === booking.day);
-  const fixed = booking.credit || PACK_SIZE[booking.product];      // a pack or a plan: 60 minutes
+  const fixed = booking.credit || isPlan(booking.product);         // a plan: chosen on its card, 60 minutes
+  // the formula and its price from the start: 30 min, 60 min or the 5-lesson bundle
+  const offers = LIVE.filter((x) => !x.plan);
   $("#bookForm").innerHTML = `
     <p class="eyebrow">${booking.credit ? t("Book with your lesson pack", "Réserver avec votre forfait") : t("Step 1 of 2 · choose a time", "Étape 1 sur 2 · choisissez l'heure")}${DEMO ? " · demo" : ""}</p>
     <h2>${PACK_SIZE[booking.product] && !booking.credit ? t("Pick a time for your first lesson", "Choisissez l'heure de votre premier cours") : t("Pick a time that works for you", "Choisissez l'heure qui vous convient")}</h2>
     <p>${t(`Here are Olivier's open times, updated live and shown in <strong>your local time (${zoneLabel()})</strong>. Pick one${booking.credit ? " and confirm it" : " and pay on the next step"}. Your lesson is booked instantly, so there's no waiting for a reply.`,
       `Voici les heures libres d'Olivier, à jour en direct et affichées <strong>à votre heure locale (${zoneLabel()})</strong>. Choisissez-en une${booking.credit ? " et confirmez" : ", puis payez à l'étape suivante"}. Le cours est réservé aussitôt : pas besoin d'attendre une réponse.`)}</p>
-    ${booking.credit ? `<p class="note">${t(`Lesson ${booking.credit.used + 1} of ${booking.credit.total} in your pack. No payment needed.`, `Cours ${booking.credit.used + 1} sur ${booking.credit.total} de votre forfait. Rien à payer.`)}</p>` : fixed ? `<p class="note">${L(p, "name")} : ${t(`${minutes}-minute lessons`, `cours de ${minutes} minutes`)}.</p>` : `
-    <div class="pay-methods book-len" role="radiogroup" aria-label="${t("Lesson length", "Durée du cours")}">
-      ${[30, 60].map((m) => `<label class="pm"><input type="radio" name="minutes" value="${m}" ${m === minutes ? "checked" : ""}> ${m} minutes</label>`).join("")}
+    ${booking.credit ? `<p class="note">${t(`Lesson ${booking.credit.used + 1} of ${booking.credit.total} in your pack. No payment needed.`, `Cours ${booking.credit.used + 1} sur ${booking.credit.total} de votre forfait. Rien à payer.`)}</p>` : fixed ? `<p class="note">${L(p, "name")} : ${t(`${minutes}-minute lessons`, `cours de ${minutes} minutes`)} · <b>${price(p)}</b> ${t("every 2 months", "tous les 2 mois")}.</p>` : `
+    <div class="pay-methods book-len" role="radiogroup" aria-label="${t("Lesson", "Formule")}">
+      ${offers.map((x) => `<label class="pm"><input type="radio" name="product" value="${x.id}" ${x.id === booking.product ? "checked" : ""}> <span class="pm-t">${L(x, "name")}<b>${price(x)}</b>${PACK_SIZE[x.id] ? `<small>${t(`book the other ${PACK_SIZE[x.id] - 1} yourself within 2 months`, `les ${PACK_SIZE[x.id] - 1} autres à réserver vous-même sous 2 mois`)}</small>` : ""}</span></label>`).join("")}
     </div>`}
     <div class="form-grid">
       <label for="bkNeed">${t("What would you like to work on?", "Que voulez-vous travailler ?")}<select id="bkNeed" name="need">${NEEDS.map((x) => `<option ${x === booking.need ? "selected" : ""}>${x}</option>`).join("")}</select></label>
@@ -162,7 +164,7 @@ function renderBooking() {
     ${booking.slot ? `<p class="note ok" role="status">${t("Your lesson:", "Votre cours :")} ${when}.</p>` : ""}`}
     ${booking.credit ? details : ""}
     <p class="form-error" id="bkError" hidden></p>
-    <button class="btn btn-primary btn-block" ${booking.slot ? "" : "disabled"}>${booking.credit ? t("Confirm this time", "Confirmer cette heure") : t("Next: choose how to pay", "Suivant : la formule et le paiement")}</button>
+    <button class="btn btn-primary btn-block" ${booking.slot ? "" : "disabled"}>${booking.credit ? t("Confirm this time", "Confirmer cette heure") : `${t("Next: payment", "Suivant : le paiement")} · ${price(p)}${isPlan(p.id) ? t(" every 2 months", " tous les 2 mois") : ""}`}</button>
     <p class="note">${t("These are all of Olivier's open times. New ones appear as his calendar changes.", "Ce sont toutes les heures libres d'Olivier. D'autres apparaissent quand son agenda change.")}</p>`;
 }
 

@@ -677,3 +677,5 @@ main > section.block-band.view-first { margin-top: 0; }
 .lang-link { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; min-width: 2.6em; padding: .45em .7em; border-radius: 999px; color: var(--bleu); font-weight: 700; font-size: .85rem; letter-spacing: .06em; text-decoration: none; border: 1.5px solid var(--ligne, #e7e1d6); }
 .lang-link:hover { border-color: var(--bleu); }
 .lang-link + .account-link { margin-left: .5em; }
+.live-buy { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: auto; }
+.live-card { display: flex; flex-direction: column; }

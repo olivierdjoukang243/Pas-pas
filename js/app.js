@@ -545,7 +545,7 @@ function renderLive() {
   $("#liveGrid").innerHTML = LIVE.filter((p) => !p.plan).map((p) => `<div class="pay-card live-card">
     <h3>${L(p, "name")}</h3>
     <p>${L(p, "desc")}</p>
-    <span class="price">${price(p)}</span>
+    <div class="live-buy"><span class="price">${price(p)}</span><button class="btn btn-primary mini" data-book="${p.id}">${t("Book", "Réserver")}</button></div>
   </div>`).join("");
   const plans = LIVE.filter((p) => p.plan), box = $("#livePlans");
   if (!box || !plans.length) return;
