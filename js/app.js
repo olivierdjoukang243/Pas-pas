@@ -87,6 +87,8 @@ async function refreshRates() {
 // Every country of residence, by its English name. The shop serves English speakers worldwide.
 const ISO = "AD AE AF AG AI AL AM AO AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GT GU GW GY HK HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG US UY UZ VA VC VE VG VI VN VU WF WS XK YE YT ZA ZM ZW".split(" ");
 const regionName = (() => { try { const dn = new Intl.DisplayNames(["en"], { type: "region" }); return (c) => dn.of(c); } catch { return (c) => c; } })();
+// French site: countries shown in French; the value (sent to the server) stays the English name.
+const regionNameFr = (() => { try { const dn = new Intl.DisplayNames(["fr"], { type: "region" }); return (c) => dn.of(c); } catch { return (c) => c; } })();
 const COUNTRY_NAMES = Object.fromEntries(ISO.map((c) => [c, regionName(c)]));
 const COUNTRIES = [...Object.values(COUNTRY_NAMES).sort((a, b) => a.localeCompare(b, "en")), "Other country"];
 // Each method lists the countries of residence where it is available; no list = every country.
@@ -94,7 +96,7 @@ const COUNTRIES = [...Object.values(COUNTRY_NAMES).sort((a, b) => a.localeCompar
 const PAY_METHODS = {
   momo: { label: "MTN MoMo", phone: true, countries: ["Cameroon"] },
   om: { label: "Orange Money", phone: true, countries: ["Cameroon"] },
-  card: { label: "Bank card (Visa, Mastercard)" },
+  card: { label: t("Bank card (Visa, Mastercard)", "Carte bancaire (Visa, Mastercard)") },
   paypal: { label: "PayPal" },
 };
 const CM_MOBILE = /^(?:\+?237)?6\d{8}$/;
@@ -183,7 +185,8 @@ function setCountry(name, manual) {
   if ($("#checkoutForm")) { renderResidenceCheckout(); renderPayOptions(); }
   if (manual) {
     const methods = methodsFor(name).map(([, m]) => m.label).join(", ");
-    announce(`Your country is now set to ${name}. Prices are shown in ${CURRENCIES[state.currency].label}${before !== state.currency ? " (updated)" : ""}, and you can pay with ${methods}.`);
+    announce(t(`Your country is now set to ${name}. Prices are shown in ${CURRENCIES[state.currency].label}${before !== state.currency ? " (updated)" : ""}, and you can pay with ${methods}.`,
+      `Votre pays est maintenant ${countryLabel(name)}. Les prix sont affichés en ${CURRENCIES[state.currency].label}${before !== state.currency ? " (mis à jour)" : ""}, et vous pouvez payer par ${methods}.`));
     flashUpdated();
   }
 }
@@ -228,7 +231,7 @@ function pickerHTML(id, { label, options, value, name, onChange }) {
     <button type="button" class="picker-btn" id="${id}-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="${esc(label)}: ${esc(cur.label)}">
       <span>${esc(cur.label)}</span><span aria-hidden="true">▾</span></button>
     <div class="picker-pop" hidden>
-      <input type="search" class="picker-search" placeholder="Search…" aria-label="Search ${esc(label)}" autocomplete="off">
+      <input type="search" class="picker-search" placeholder="${t("Search…", "Rechercher…")}" aria-label="${t("Search", "Rechercher")} ${esc(label)}" autocomplete="off">
       <ul class="picker-list" role="listbox" aria-label="${esc(label)}"></ul>
     </div>
   </div>`;
@@ -239,7 +242,7 @@ function pickerFill(box, q = "") {
   const list = options.filter((o) => !f || fold(o.label + " " + (o.keys || "")).includes(f));
   box.querySelector(".picker-list").innerHTML = list.length
     ? list.map((o, i) => `<li role="option" data-value="${esc(o.value)}" aria-selected="${o.value === v}" class="${i === 0 && f ? "active" : ""}">${esc(o.label)}${o.hint ? ` <small>${esc(o.hint)}</small>` : ""}</li>`).join("")
-    : `<li class="none">No matches</li>`;
+    : `<li class="none">${t("No matches", "Aucun résultat")}</li>`;
 }
 function pickerOpen(box, open) {
   document.querySelectorAll(".picker-pop:not([hidden])").forEach((p) => { if (p.parentElement !== box) { p.hidden = true; p.parentElement.querySelector(".picker-btn").setAttribute("aria-expanded", "false"); } });
@@ -283,29 +286,32 @@ document.addEventListener("keydown", (e) => {
   } else if (e.key === "Escape") { e.preventDefault(); pickerOpen(box, false); box.querySelector(".picker-btn").focus(); }
 });
 
-const COUNTRY_OPTIONS = () => COUNTRIES.map((c) => ({ value: c, label: c, keys: NAME_TO_CODE[c] || "" }));
+const countryLabel = (c) => !FR ? c : c === "Other country" ? "Autre pays" : NAME_TO_CODE[c] ? regionNameFr(NAME_TO_CODE[c]) : c;
+const COUNTRY_OPTIONS = () => COUNTRIES.map((c) => ({ value: c, label: countryLabel(c), keys: (NAME_TO_CODE[c] || "") + (FR ? " " + c : "") }))
+  .sort((a, b) => (a.value === "Other country") - (b.value === "Other country") || a.label.localeCompare(b.label, LANG));
 const currencyName = (() => { try { const dn = new Intl.DisplayNames(["en"], { type: "currency" }); return (c) => dn.of(c); } catch { return (c) => c; } })();
 function renderCurrencyPicker() {
   const box = $("#currencyPicker");
   if (!box) return;
-  box.innerHTML = pickerHTML("currency", { label: "Currency", value: state.currency,
-    options: Object.entries(CURRENCIES).map(([k, c]) => ({ value: k, label: c.label, hint: c.perUSD ? "estimate" : "", keys: currencyName(k) })),
+  box.innerHTML = pickerHTML("currency", { label: t("Currency", "Devise"), value: state.currency,
+    options: Object.entries(CURRENCIES).map(([k, c]) => ({ value: k, label: c.label, hint: c.perUSD ? t("estimate", "estimation") : "", keys: currencyName(k) })),
     onChange: (v) => {
       state.currency = v; store.set("currencyChoice", v);
       renderCurrencyPicker(); renderPrices(); if ($("#checkoutForm")) renderPayDetails();
-      announce(`Prices are now shown in ${CURRENCIES[v].label}.${["USD", "XAF", "XOF"].includes(v) ? "" : " These are estimates. You'll be charged in US dollars or FCFA."}`);
+      announce(t(`Prices are now shown in ${CURRENCIES[v].label}.${["USD", "XAF", "XOF"].includes(v) ? "" : " These are estimates. You'll be charged in US dollars or FCFA."}`,
+        `Les prix sont maintenant affichés en ${CURRENCIES[v].label}.${["USD", "XAF", "XOF"].includes(v) ? "" : " Ce sont des estimations : le paiement se fait en dollars US ou en FCFA."}`));
       flashUpdated();
     } });
 }
 
-const residenceNote = () => countryChosen() ? "your choice" : "detected automatically";
+const residenceNote = () => countryChosen() ? t("your choice", "votre choix") : t("detected automatically", "détecté automatiquement");
 
 function renderResidence() {
   const box = $("#residenceLine");
   if (!box) return;
-  box.innerHTML = `<div class="res-field"><span class="res-label" id="resCountryLabel">Your country of residence <small>(${residenceNote()})</small></span>
-    ${pickerHTML("resCountry", { label: "Country of residence", options: COUNTRY_OPTIONS(), value: state.country, onChange: (v) => setCountry(v, true) })}</div>
-    <span>Ways to pay: ${methodsFor(state.country).map(([, m]) => m.label).join(", ")}.</span>`;
+  box.innerHTML = `<div class="res-field"><span class="res-label" id="resCountryLabel">${t("Your country of residence", "Votre pays de résidence")} <small>(${residenceNote()})</small></span>
+    ${pickerHTML("resCountry", { label: t("Country of residence", "Pays de résidence"), options: COUNTRY_OPTIONS(), value: state.country, onChange: (v) => setCountry(v, true) })}</div>
+    <span>${t("Ways to pay:", "Moyens de paiement :")} ${methodsFor(state.country).map(([, m]) => m.label).join(", ")}.</span>`;
   renderPayLocal();
 }
 
@@ -317,7 +323,12 @@ function renderPayCurrency() {
   if (!box) return;
   const c = state.currency, label = CURRENCIES[c].label;
   const exact = c === "USD" || ((c === "XAF" || c === "XOF") && localFCFA());
-  box.innerHTML = `<h3>Your currency: ${esc(label)}</h3><p>${c === "USD"
+  box.innerHTML = FR ? `<h3>Votre devise : ${esc(label)}</h3><p>${c === "USD"
+    ? "Les prix sont affichés en dollars US, la devise des paiements par carte et PayPal."
+    : exact ? `Les prix sont affichés en ${esc(label)} : c'est le montant exact que vous paierez par mobile money. Les paiements par carte et PayPal se font en dollars US.`
+    : `Les prix en ${esc(label)} sont des estimations${CURRENCIES[c].perUSD ? ", mises à jour chaque jour" : ""}. Les paiements par carte et PayPal se font en dollars US, et votre banque fait la conversion.`}
+    Vous pouvez changer de devise en haut de la page.</p>`
+    : `<h3>Your currency: ${esc(label)}</h3><p>${c === "USD"
     ? "Prices are shown in US dollars, the currency used for card and PayPal payments."
     : exact ? `Prices are shown in ${esc(label)}. This is the exact amount you'll pay with local payment methods. Card and PayPal payments are charged in US dollars.`
     : `Prices in ${esc(label)} are estimates${CURRENCIES[c].perUSD ? ", updated daily" : ""}. Card and PayPal payments are charged in US dollars, and your bank handles the conversion.`}
@@ -331,16 +342,17 @@ function renderPayLocal() {
   const local = methodsFor(state.country).filter(([, m]) => m.countries);
   box.hidden = !local.length;
   if (!local.length) return;
-  box.innerHTML = `<h3>${esc(state.country)}</h3>
-    <p>Pay with ${local.map(([, m]) => m.label).join(" or ")} in ${local.some(([, m]) => m.phone) ? "FCFA" : "local currency"}, then confirm the payment on your phone.</p>
+  box.innerHTML = `<h3>${esc(countryLabel(state.country))}</h3>
+    <p>${t(`Pay with ${local.map(([, m]) => m.label).join(" or ")} in ${local.some(([, m]) => m.phone) ? "FCFA" : "local currency"}, then confirm the payment on your phone.`,
+      `Payez par ${local.map(([, m]) => m.label).join(" ou ")} en ${local.some(([, m]) => m.phone) ? "FCFA" : "monnaie locale"}, puis confirmez le paiement sur votre téléphone.`)}</p>
     <div class="chips">${local.map(([k, m]) => `<span class="chip chip-${k}">${m.label}</span>`).join("")}</div>`;
 }
 
 function renderResidenceCheckout() {
   const box = $("#coResidence");
   if (!box) return;
-  box.innerHTML = `<div class="res-field"><span class="res-label">Country of residence <small>(${residenceNote()})</small></span>
-    ${pickerHTML("coCountry", { label: "Country of residence", name: "country", options: COUNTRY_OPTIONS(), value: state.country, onChange: (v) => setCountry(v, true) })}</div>`;
+  box.innerHTML = `<div class="res-field"><span class="res-label">${t("Country of residence", "Pays de résidence")} <small>(${residenceNote()})</small></span>
+    ${pickerHTML("coCountry", { label: t("Country of residence", "Pays de résidence"), name: "country", options: COUNTRY_OPTIONS(), value: state.country, onChange: (v) => setCountry(v, true) })}</div>`;
 }
 if (!LEVELS.some((l) => l.code === state.level)) state.level = "A0";
 
@@ -371,12 +383,13 @@ const isPre = (p) => p.ready === false && !!p.preorder;
 // Ready on the site but not yet in the shop's stock (server /stock): shown "Coming soon", not sold.
 const SOON = new Set();
 const buyable = (p) => (p.ready !== false && !SOON.has(p.id)) || isPre(p);
-const waitTag = (p) => SOON.has(p.id) ? "Coming soon" : "In preparation";
-const buyLabel = (p) => isPre(p) ? "Pre-order" : "Buy";
+const waitTag = (p) => SOON.has(p.id) ? t("Coming soon", "Bientôt disponible") : t("In preparation", "En préparation");
+const buyLabel = (p) => isPre(p) ? t("Pre-order", "Précommander") : t("Buy", "Acheter");
 // The parts of a pack already deliverable: sent at once with a pre-order of the pack.
 const readyParts = (p) => p.kind === "level" ? PRODUCTS.filter((x) => x.level === p.level && x.kind === "part" && x.ready !== false && !SOON.has(x.id))
   : p.kind === "method" ? PRODUCTS.filter((x) => ["part", "level"].includes(x.kind) && x.ready !== false && !SOON.has(x.id) && !(x.kind === "part" && PRODUCTS.some((l) => l.kind === "level" && l.level === x.level && l.ready !== false))) : [];
-const PRE_NOTE = "We'll email your files as soon as they're ready, and you can cancel for a full refund until then.";
+const PRE_NOTE = t("We'll email your files as soon as they're ready, and you can cancel for a full refund until then.",
+  "Nous vous envoyons les fichiers par e-mail dès qu'ils sont prêts, et vous pouvez annuler jusque-là pour un remboursement intégral.");
 
 // Savings are computed from the catalogue, never typed by hand.
 function levelSaving(code) {
@@ -393,6 +406,7 @@ function methodSaving() {
 
 // ====== Levels ======
 function renderLevelTabs() {
+  if (!$("#levelTabs")) return;
   $("#levelTabs").innerHTML = LEVELS.map((l) => `<button role="tab" aria-selected="${l.code === state.level}" data-level="${l.code}" class="${l.status === "prep" ? "prep" : ""}" style="--h:${l.hue}">
     <b>${l.name.replace(/ (\d)$/, "\u00a0$1")}</b><span>${l.code}${l.status === "prep" ? " · In preparation" : ""}</span></button>`).join("");
 }
@@ -437,6 +451,7 @@ function productRow(p) {
 }
 
 function renderLevelPanel() {
+  if (!$("#levelPanel")) return;
   const l = levelOf(state.level);
   const products = PRODUCTS.filter((p) => p.level === l.code).sort((a, b) => (a.kind === "level") - (b.kind === "level") || (a.part || 0) - (b.part || 0));
   const head = `<div class="lp-head" style="--h:${l.hue}">
@@ -452,6 +467,7 @@ function renderLevelPanel() {
 }
 
 function renderMethod() {
+  if (!$("#methodBand")) return;
   const m = byId("complete-method");
   const s = methodSaving();
   $("#methodBand").innerHTML = `<div>
@@ -469,6 +485,7 @@ function renderMethod() {
 
 // Categories, not brands: what each kind of tool usually offers.
 function renderCompare() {
+  if (!$("#compareTable")) return;
   const rows = [
     ["How you pay", `One payment, from ${price(byId("a0-complete"))}, and the files are yours to keep`, "Monthly or yearly subscription", "Pay by the hour, every lesson"],
     ["Grammar explained in English", "Yes, in every module", "Short tips, mostly practice", "Depends on the tutor"],
@@ -487,37 +504,38 @@ function renderCompare() {
 }
 
 function examFormat(f) {
-  if (typeof EXAM_FORMATS === "undefined" || !f) return null;
-  const x = (EXAM_FORMATS[f[0]] || {})[f[1]];
+  const formats = FR && typeof EXAM_FORMATS_FR !== "undefined" ? EXAM_FORMATS_FR : typeof EXAM_FORMATS !== "undefined" ? EXAM_FORMATS : null;
+  if (!formats || !f) return null;
+  const x = (formats[f[0]] || {})[f[1]];
   return x || null;
 }
 
 function formatHTML(x) {
   if (!x) return "";
-  return `<details class="exam-format"><summary>Test format</summary>
-    <table>${x.papers.map((p) => `<tr><th>${p.name}<span>${p.time}${p.marks ? ` · /${p.marks}` : ""}${p.prep ? `<br>preparation time: ${p.prep}` : ""}</span></th><td>${p.detail}</td></tr>`).join("")}</table>
-    <p>${x.written ? `Written sections: ${x.written} in one sitting. ` : ""}${x.pass}.</p>
+  return `<details class="exam-format"><summary>${t("Test format", "Format de l'examen")}</summary>
+    <table>${x.papers.map((p) => `<tr><th>${p.name}<span>${p.time}${p.marks ? ` · /${p.marks}` : ""}${p.prep ? `<br>${t("preparation time", "préparation")}: ${p.prep}` : ""}</span></th><td>${p.detail}</td></tr>`).join("")}</table>
+    <p>${x.written ? t(`Written sections: ${x.written} in one sitting. `, `Épreuves collectives : ${x.written} d'affilée. `) : ""}${x.pass}.</p>
     ${x.nclc ? `<p class="nclc-target"><strong>${x.nclc.target}</strong></p>
     <div class="nclc-wrap"><table class="nclc"><tr><th>NCLC</th>${x.nclc.rows.map((r) => `<th>${r.name}</th>`).join("")}</tr>
     ${x.nclc.levels.map((l, i) => `<tr${l === "7" ? ' class="t7"' : ""}><th>${l}</th>${x.nclc.rows.map((r) => `<td>${r.scores[i]}</td>`).join("")}</tr>`).slice().reverse().join("")}</table></div>
-    <p>${x.nclc.note} Source: ${x.nclc.source}.</p>` : ""}</details>`;
+    <p>${x.nclc.note} ${t("Source:", "Source :")} ${x.nclc.source}.</p>` : ""}</details>`;
 }
 
 function renderExams() {
   $("#examSoon").innerHTML = EXAM_PACKS.map((p) => `<div class="pay-card exam-card" data-group="${p.level === "TCF" ? "tcf" : "delf"}">
-    <span class="tag${isPre(p) ? " pre" : buyable(p) ? "" : " soon"}">${isPre(p) ? "Pre-order" : buyable(p) ? p.level : waitTag(p)}</span>
+    <span class="tag${isPre(p) ? " pre" : buyable(p) ? "" : " soon"}">${isPre(p) ? t("Pre-order", "Précommande") : buyable(p) ? p.level : waitTag(p)}</span>
     <h3>${p.exam}</h3>
     ${(examFormat(p.format) || {}).official ? `<p class="exam-official" lang="fr">${examFormat(p.format).official}</p>` : ""}
-    <p class="exam-levels">${p.contents}</p>
-    <p>${p.desc}</p>
+    <p class="exam-levels">${L(p, "contents")}</p>
+    <p>${L(p, "desc")}</p>
     ${formatHTML(examFormat(p.format))}
-    <div class="exam-buy"><span class="price">${price(p)}</span>${buyable(p) ? `<button class="btn btn-primary mini" data-buy="${p.id}">${buyLabel(p)}</button>` : `<span class="exam-wait">Not on sale yet</span>`}</div>
-    ${isPre(p) ? `<p class="pre-note">The tests are being written. ${PRE_NOTE}</p>` : ""}
+    <div class="exam-buy"><span class="price">${price(p)}</span>${buyable(p) ? `<button class="btn btn-primary mini" data-buy="${p.id}">${buyLabel(p)}</button>` : `<span class="exam-wait">${t("Not on sale yet", "Pas encore en vente")}</span>`}</div>
+    ${isPre(p) ? `<p class="pre-note">${t("The tests are being written.", "Les sujets sont en cours de rédaction.")} ${PRE_NOTE}</p>` : ""}
   </div>`).join("") + EXAMS_SOON.map((e) => `<div class="pay-card exam-card" data-group="delf">
-    <span class="tag soon">Coming soon</span>
+    <span class="tag soon">${t("Coming soon", "Bientôt")}</span>
     <h3>${e.name}</h3>
-    <p class="exam-levels">${e.levels}</p>
-    <p>${e.note}</p>
+    <p class="exam-levels">${L(e, "levels")}</p>
+    <p>${L(e, "note")}</p>
     ${formatHTML(examFormat(e.format))}
   </div>`).join("");
 }
@@ -525,22 +543,24 @@ function renderExams() {
 function renderLive() {
   const one = byId("live-60");
   $("#liveGrid").innerHTML = LIVE.filter((p) => !p.plan).map((p) => `<div class="pay-card live-card">
-    <h3>${p.name}</h3>
-    <p>${p.desc}</p>
+    <h3>${L(p, "name")}</h3>
+    <p>${L(p, "desc")}</p>
     <span class="price">${price(p)}</span>
   </div>`).join("");
   const plans = LIVE.filter((p) => p.plan), box = $("#livePlans");
   if (!box || !plans.length) return;
-  box.innerHTML = `<div class="plans-head"><p class="eyebrow">Plans</p><h3>Learn every week and pay less per lesson</h3>
-    <p>Book your lessons yourself, whenever it suits you over each 2-month period. 7 days before the end, we email you a link to renew it with a fresh set of lessons. No renewal, no charge: it simply stops.</p></div>
+  box.innerHTML = `<div class="plans-head"><p class="eyebrow">${t("Plans", "Formules")}</p><h3>${t("Learn every week and pay less per lesson", "Un cours chaque semaine, moins cher à l'unité")}</h3>
+    <p>${t("Book your lessons yourself, whenever it suits you over each 2-month period. 7 days before the end, we email you a link to renew it with a fresh set of lessons. No renewal, no charge: it simply stops.",
+      "Vous réservez vous-même vos cours, quand cela vous arrange, sur chaque période de 2 mois. 7 jours avant la fin, vous recevez par e-mail un lien pour la renouveler avec de nouveaux cours. Pas de renouvellement, rien à payer : la formule s'arrête simplement.")}</p></div>
     <div class="plans">${plans.map((p) => { const save = Math.round(100 * (1 - p.usd / p.lessons / one.usd));
-      return `<div class="pay-card plan-card${p.best ? " best" : ""}">${p.best ? `<span class="tag best">Most popular</span>` : ""}
-      <h4>${p.name.split(" · ")[0]}</h4><p class="plan-n"><b>${p.lessons} lessons</b> of 60 minutes every 2 months · ${p.contents.toLowerCase()}</p>
-      <p class="plan-price"><span class="price">${price(p)}</span> <small>every 2 months</small></p>
-      <p class="plan-per">${amount(p.usd / p.lessons, p.xaf / p.lessons)} per lesson · <span class="ok">save ${save}%</span></p>
-      <p>${p.desc}</p>
-      <button class="btn ${p.best ? "btn-primary" : "btn-ghost"} mini" data-book="${p.id}">Choose this plan</button></div>`; }).join("")}</div>
-    <p class="note">Unused lessons don't carry over to the next 2-month period, so book them as you go. You can stop the renewal at any time in one click from “My courses”.</p>`;
+      return `<div class="pay-card plan-card${p.best ? " best" : ""}">${p.best ? `<span class="tag best">${t("Most popular", "La plus choisie")}</span>` : ""}
+      <h4>${L(p, "name").split(" · ")[0]}</h4><p class="plan-n">${t(`<b>${p.lessons} lessons</b> of 60 minutes every 2 months`, `<b>${p.lessons} cours</b> de 60 minutes tous les 2 mois`)} · ${L(p, "contents").toLowerCase()}</p>
+      <p class="plan-price"><span class="price">${price(p)}</span> <small>${t("every 2 months", "tous les 2 mois")}</small></p>
+      <p class="plan-per">${amount(p.usd / p.lessons, p.xaf / p.lessons)} ${t("per lesson", "le cours")} · <span class="ok">${t(`save ${save}%`, `${save} % d'économie`)}</span></p>
+      <p>${L(p, "desc")}</p>
+      <button class="btn ${p.best ? "btn-primary" : "btn-ghost"} mini" data-book="${p.id}">${t("Choose this plan", "Choisir cette formule")}</button></div>`; }).join("")}</div>
+    <p class="note">${t("Unused lessons don't carry over to the next 2-month period, so book them as you go. You can stop the renewal at any time in one click from “My courses”.",
+      "Les cours non réservés ne sont pas reportés sur la période suivante : réservez-les au fil de l'eau. Vous pouvez arrêter le renouvellement à tout moment, en un clic, depuis « Mes cours ».")}</p>`;
 }
 
 // Amounts written in the page text follow the chosen currency too, computed from the catalogue.
@@ -555,7 +575,7 @@ function renderPrices() { renderLevelPanel(); renderMethod(); renderCompare(); r
 // ====== Dialogs ======
 const modal = $("#modal");
 function openModal(html) {
-  $("#modalBody").innerHTML = `<button class="icon-btn modal-close" data-modal-close aria-label="Close">✕</button>${html}`;
+  $("#modalBody").innerHTML = `<button class="icon-btn modal-close" data-modal-close aria-label="${t("Close", "Fermer")}">✕</button>${html}`;
   if (!modal.open) modal.showModal();
 }
 
@@ -563,9 +583,9 @@ const whatsappLink = (text) => `https://wa.me/${SHOP.whatsapp}?text=${encodeURIC
 
 function contactHTML() {
   const bits = [];
-  if (SHOP.email) bits.push(`by email at <a href="mailto:${SHOP.email}">${SHOP.email}</a>`);
-  if (SHOP.whatsapp) bits.push(`on WhatsApp at <a href="https://wa.me/${SHOP.whatsapp}" target="_blank" rel="noopener">+${SHOP.whatsapp}</a>`);
-  return bits.length ? `Until online payment opens, you can order ${bits.join(" or ")}.` : "";
+  if (SHOP.email) bits.push(t(`by email at <a href="mailto:${SHOP.email}">${SHOP.email}</a>`, `par e-mail à <a href="mailto:${SHOP.email}">${SHOP.email}</a>`));
+  if (SHOP.whatsapp) bits.push(t(`on WhatsApp at`, `sur WhatsApp au`) + ` <a href="https://wa.me/${SHOP.whatsapp}" target="_blank" rel="noopener">+${SHOP.whatsapp}</a>`);
+  return bits.length ? t(`Until online payment opens, you can order ${bits.join(" or ")}.`, `En attendant le paiement en ligne, vous pouvez commander ${bits.join(" ou ")}.`) : "";
 }
 
 // Cameroon: MTN MoMo, Orange Money, card and PayPal. Elsewhere: card and PayPal.
@@ -579,26 +599,32 @@ function openBuy(id, draft = null) {
   const pre = isPre(p);
   checkoutDraft = draft;
   openModal(`<form class="checkout" id="checkoutForm" data-product="${p.id}" novalidate>
-    <p class="eyebrow">${pre ? "Pre-order · " : ""}${p.level === "A0–B1" ? "A0 to B1" : p.level}${DEMO ? " · demo" : ""}</p>
-    <h2>${p.name}</h2>
-    <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} your time · ${draft.minutes} min · ${draft.need}` : p.contents}</p>
+    <p class="eyebrow">${pre ? t("Pre-order · ", "Précommande · ") : ""}${p.level === "A0–B1" ? "A0 to B1" : p.kind === "live" ? t("Live", "Cours en direct") : p.level}${DEMO ? " · demo" : ""}</p>
+    <h2>${L(p, "name")}</h2>
+    <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} ${t("your time", "à votre heure")} · ${draft.minutes} min · ${draft.need}` : L(p, "contents")}</p>
     <div class="form-grid">
-      ${p.kind === "live" ? "" : `<label for="coName">Your name (printed on your files)<input id="coName" name="name" type="text" maxlength="80" autocomplete="name"></label>`}
-      <label for="coEmail">Email (your ${p.kind === "live" ? "booking confirmation" : "files"} will be sent here)<input id="coEmail" name="email" type="email" required autocomplete="email" value="${draft ? draft.email : ""}"></label>
+      ${p.kind === "live" ? "" : `<label for="coName">${t("Your name (printed on your files)", "Votre nom (imprimé sur vos fichiers)")}<input id="coName" name="name" type="text" maxlength="80" autocomplete="name"></label>`}
+      <label for="coEmail">${p.kind === "live" ? t("Email (your booking confirmation will be sent here)", "E-mail (la confirmation de réservation y sera envoyée)") : t("Email (your files will be sent here)", "E-mail (vos fichiers y seront envoyés)")}<input id="coEmail" name="email" type="email" required autocomplete="email" value="${draft ? draft.email : ""}"></label>
       <div id="coResidence"></div>
     </div>
-    <p class="eyebrow pm-title">Payment method</p>
-    <div class="pay-methods" id="payMethods" role="radiogroup" aria-label="Payment method"></div>
+    <p class="eyebrow pm-title">${t("Payment method", "Moyen de paiement")}</p>
+    <div class="pay-methods" id="payMethods" role="radiogroup" aria-label="${t("Payment method", "Moyen de paiement")}"></div>
     <div id="payDetails"></div>
     <div class="totals" id="coTotals"></div>
-    <label class="check"><input type="checkbox" name="terms" id="coTerms"> ${p.kind === "live"
+    <label class="check"><input type="checkbox" name="terms" id="coTerms"> ${FR ? (p.kind === "live"
+      ? (p.plan ? `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et les <a href="${POLICIES}#live" target="_blank">règles des cours en direct</a>. Je comprends que ma formule dure 2 mois, que les cours non réservés ne sont pas reportés, et que je peux la renouveler avec le lien envoyé 7 jours avant la fin (sinon, elle s'arrête simplement).`
+        : `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et les <a href="${POLICIES}#live" target="_blank">règles des cours en direct</a> (report gratuit jusqu'à 24 heures avant le cours).`)
+      : pre ? `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et la <a href="${POLICIES}#licence" target="_blank">licence</a>. Je comprends qu'il s'agit d'une précommande : les fichiers seront envoyés dès qu'ils seront prêts, et je peux annuler jusque-là pour un remboursement intégral.`
+      : `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et la <a href="${POLICIES}#licence" target="_blank">licence</a>. Je veux recevoir les fichiers immédiatement et je comprends que je renonce ainsi à mon droit de rétractation.`)
+      : p.kind === "live"
       ? (p.plan ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a>. I understand that my plan lasts 2 months, that unused lessons don't carry over, and that I can renew it with the link emailed 7 days before the end (if I don't, it simply stops).`
         : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a> (free rescheduling up to 24 hours before the lesson).`)
       : pre ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I understand that this is a pre-order. The files will be sent as soon as they're ready, and I can cancel for a full refund until then.`
       : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I want the files delivered immediately, and I understand that this means I lose my right of withdrawal.`}</label>
     <p class="form-error" id="formError" hidden></p>
     <button class="btn btn-primary btn-block" id="payBtn"></button>
-    <p class="note">${p.plan ? `Payment confirms your first lesson and starts your plan for 2 months. You book the other lessons yourself in “My courses”. 7 days before the end, we email you a link to renew it at ${price(p)}.` : p.kind === "live" ? "Payment confirms your lesson and holds the time for you." : pre ? `This is a pre-order. ${PRE_NOTE} If it isn't delivered within 90 days, you'll be refunded unless you choose to wait.` : "Because the files are delivered instantly, all sales are final. If a file is faulty, we'll replace it."}</p>
+    <p class="note">${FR ? (p.plan ? `Le paiement confirme votre premier cours et ouvre votre formule pour 2 mois. Vous réservez les autres cours vous-même dans « Mes cours ». 7 jours avant la fin, vous recevez un lien pour la renouveler à ${price(p)}.` : p.kind === "live" ? "Le paiement confirme votre cours et vous garde l'heure choisie." : pre ? `C'est une précommande. ${PRE_NOTE} Si elle n'est pas livrée sous 90 jours, vous êtes remboursé, sauf si vous choisissez d'attendre.` : "Les fichiers étant livrés immédiatement, la vente est définitive. Si un fichier est défectueux, nous le remplaçons.")
+      : p.plan ? `Payment confirms your first lesson and starts your plan for 2 months. You book the other lessons yourself in “My courses”. 7 days before the end, we email you a link to renew it at ${price(p)}.` : p.kind === "live" ? "Payment confirms your lesson and holds the time for you." : pre ? `This is a pre-order. ${PRE_NOTE} If it isn't delivered within 90 days, you'll be refunded unless you choose to wait.` : "Because the files are delivered instantly, all sales are final. If a file is faulty, we'll replace it."}</p>
   </form>`);
   renderResidenceCheckout();
   renderPayOptions();
@@ -614,13 +640,13 @@ function renderPayDetails() {
   const p = byId($("#checkoutForm").dataset.product);
   const country = $("#coCountry").value;
   const m = PAY_METHODS[document.querySelector('input[name="pay"]:checked').value];
-  $("#payDetails").innerHTML = m.phone ? `<label for="coMomo">${m.label} phone number
+  $("#payDetails").innerHTML = m.phone ? `<label for="coMomo">${t(`${m.label} phone number`, `Numéro ${m.label}`)}
       <input id="coMomo" name="momo" type="tel" required inputmode="tel" placeholder="6XX XX XX XX" autocomplete="tel"></label>` : "";
   const charged = country === "Cameroon" || m.phone ? fmtXAF(p.xaf) : fmtUSD(p.usd);
   const shown = price(p);
   $("#coTotals").innerHTML = `<div class="grand"><span>Total</span><span>${charged}</span></div>
-    ${shown !== charged ? `<div class="note"><span>In ${CURRENCIES[state.currency].label}</span><span>${shown}</span></div>` : ""}`;
-  $("#payBtn").textContent = m.phone ? `Pay with ${m.label}` : `Pay ${charged}`;
+    ${shown !== charged ? `<div class="note"><span>${t("In", "En")} ${CURRENCIES[state.currency].label}</span><span>${shown}</span></div>` : ""}`;
+  $("#payBtn").textContent = m.phone ? t(`Pay with ${m.label}`, `Payer par ${m.label}`) : t(`Pay ${charged}`, `Payer ${charged}`);
 }
 
 function submitCheckout(form) {
@@ -629,9 +655,10 @@ function submitCheckout(form) {
   const m = PAY_METHODS[data.get("pay")];
   const err = $("#formError");
   let msg = "";
-  if (!form.coEmail.value || !form.coEmail.checkValidity()) msg = "Please enter a valid email address so we can send you your order.";
-  else if (!form.coTerms.checked) msg = "Please accept the terms of sale to continue.";
-  else if (m.phone && !CM_MOBILE.test(String(data.get("momo")).replace(/[\s.-]/g, ""))) msg = `Please enter a Cameroonian mobile number for ${m.label}. It should have 9 digits and start with 6 (for example, 677 12 34 56).`;
+  if (!form.coEmail.value || !form.coEmail.checkValidity()) msg = t("Please enter a valid email address so we can send you your order.", "Entrez une adresse e-mail valide pour recevoir votre commande.");
+  else if (!form.coTerms.checked) msg = t("Please accept the terms of sale to continue.", "Acceptez les conditions de vente pour continuer.");
+  else if (m.phone && !CM_MOBILE.test(String(data.get("momo")).replace(/[\s.-]/g, ""))) msg = t(`Please enter a Cameroonian mobile number for ${m.label}. It should have 9 digits and start with 6 (for example, 677 12 34 56).`,
+    `Entrez un numéro mobile camerounais pour ${m.label} : 9 chiffres commençant par 6 (par exemple 677 12 34 56).`);
   if (msg) { err.textContent = msg; err.hidden = false; return; }
 
   if (data.get("country") !== state.country) setCountry(data.get("country"), true);
@@ -640,30 +667,32 @@ function submitCheckout(form) {
   const order = { product: p.id, email: data.get("email"), name: String(data.get("name") || (checkoutDraft && checkoutDraft.name) || "").trim(),
     country: state.country, method: data.get("pay"),
     phone: m.phone ? String(data.get("momo")).replace(/[\s.-]/g, "") : "",
-    currency: inFCFA ? "XAF" : "USD", amount: inFCFA ? p.xaf : p.usd, preorder: isPre(p), booking: checkoutDraft };
+    currency: inFCFA ? "XAF" : "USD", amount: inFCFA ? p.xaf : p.usd, preorder: isPre(p), booking: checkoutDraft, lang: LANG };
 
   // Live payment: the server creates the Notch Pay transaction and sends back its page.
   if (PAY_API) return payOnline(order);
   // Demo: nothing is charged; a live lesson is booked in this browser only.
   if (DEMO) {
     if (checkoutDraft) return bookedScreen(confirmBooking(checkoutDraft, "demo"));
-    return openModal(`<div class="checkout"><p class="eyebrow">Demo · nothing was charged</p><h2>Payment accepted</h2>
+    return openModal(FR ? `<div class="checkout"><p class="eyebrow">Démo · rien n'a été payé</p><h2>Paiement accepté</h2>
+      <p>Dans la vraie boutique, ${L(p, "name")} serait maintenant ${order.preorder ? "réservé pour" : "envoyé à"} ${esc(order.email)}.</p><button class="btn btn-primary" data-modal-close>Terminé</button></div>`
+      : `<div class="checkout"><p class="eyebrow">Demo · nothing was charged</p><h2>Payment accepted</h2>
       <p>In the real shop, ${p.name} would now be ${order.preorder ? "reserved for" : "sent to"} ${order.email}${order.preorder ? ", and sent as soon as it's ready" : ""}.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
   }
   const contact = contactHTML();
   const wa = SHOP.whatsapp ? whatsappLink(`Hello, I'd like to ${order.preorder ? "pre-order" : "buy"} "${p.name}" (${charged}), paying with ${m.label}. My email: ${data.get("email")}`) : "";
   openModal(`<div class="checkout">
-    <h2>Online payment is coming soon</h2>
-    <p>Payment by ${m.label} isn't available on the site yet, so you haven't been charged.</p>
-    ${wa ? `<a class="btn btn-wa" href="${wa}" target="_blank" rel="noopener">Send this order via WhatsApp</a>` : ""}
+    <h2>${t("Online payment is coming soon", "Le paiement en ligne arrive bientôt")}</h2>
+    <p>${t(`Payment by ${m.label} isn't available on the site yet, so you haven't been charged.`, `Le paiement par ${m.label} n'est pas encore ouvert sur le site : rien n'a été débité.`)}</p>
+    ${wa ? `<a class="btn btn-wa" href="${wa}" target="_blank" rel="noopener">${t("Send this order via WhatsApp", "Envoyer cette commande par WhatsApp")}</a>` : ""}
     ${contact ? `<p>${contact}</p>` : ""}
-    <button class="btn btn-ghost" data-modal-close>Close</button>
+    <button class="btn btn-ghost" data-modal-close>${t("Close", "Fermer")}</button>
   </div>`);
 }
 
 async function payOnline(order) {
   const btn = $("#payBtn"), err = $("#formError");
-  btn.disabled = true; btn.textContent = "Opening the secure payment page…";
+  btn.disabled = true; btn.textContent = t("Opening the secure payment page…", "Ouverture de la page de paiement sécurisée…");
   try {
     const r = await fetch(`${PAY_API}/checkout`, { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...order, return_url: location.href.split(/[?#]/)[0] }) });
@@ -673,7 +702,7 @@ async function payOnline(order) {
     if (!d.authorization_url) throw new Error("no payment page");
     location.href = d.authorization_url;
   } catch (e) {
-    err.textContent = "We couldn't open the payment page. You haven't been charged. Please try again in a moment.";
+    err.textContent = t("We couldn't open the payment page. You haven't been charged. Please try again in a moment.", "La page de paiement n'a pas pu s'ouvrir. Rien n'a été débité. Réessayez dans un instant.");
     err.hidden = false; btn.disabled = false; renderPayDetails();
   }
 }
@@ -689,26 +718,28 @@ async function checkReturn() {
     for (let i = 0; i < 15; i++) {
       d = await (await fetch(`${PAY_API}/payments/${encodeURIComponent(ref)}`)).json();
       if (d.status !== "complete" || d.booking || d.preorder || d.delivery !== "preparing") break;
-      if (i === 0) openModal(`<div class="checkout"><h2>Payment received</h2><p>${d.live ? "We're writing your lesson in Olivier's calendar." : "We're adding your name to your files."} This only takes a few seconds…</p></div>`);
+      if (i === 0) openModal(`<div class="checkout"><h2>${t("Payment received", "Paiement reçu")}</h2><p>${d.live ? t("We're writing your lesson in Olivier's calendar.", "Nous inscrivons votre cours dans l'agenda d'Olivier.") : t("We're adding your name to your files.", "Nous ajoutons votre nom à vos fichiers.")} ${t("This only takes a few seconds…", "Cela ne prend que quelques secondes…")}</p></div>`);
       await new Promise((r) => setTimeout(r, 2000));
     }
     if (d.status !== "complete") {
-      return openModal(`<div class="checkout"><h2>Payment not completed</h2><p>You haven't been charged, and you can try again whenever you're ready.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
+      return openModal(`<div class="checkout"><h2>${t("Payment not completed", "Paiement non abouti")}</h2><p>${t("You haven't been charged, and you can try again whenever you're ready.", "Rien n'a été débité. Vous pouvez réessayer quand vous voulez.")}</p><button class="btn btn-primary" data-modal-close>${t("Close", "Fermer")}</button></div>`);
     }
     if (d.booking) return paidBooking(d);
-    if (d.preorder) return openModal(`<div class="checkout"><h2>Thank you</h2><p>Your payment went through and your pre-order is confirmed. We'll send the files to ${esc(d.email)} as soon as they're ready, and you can cancel for a full refund until then.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
-    if (d.account_url) return openModal(`<div class="checkout"><h2>Thank you</h2><p>Your payment went through and your course is ready. Start reading online now, and pick up where you left off at any time over the next 12 months. We've also emailed the link and the download to ${esc(d.email)}.</p>
-      <a class="btn btn-primary" href="${esc(d.account_url)}">Open my course</a> <button class="btn btn-ghost" data-modal-close>Later</button></div>`);
-    openModal(`<div class="checkout"><h2>Thank you</h2><p>Your payment went through. Your files will be emailed to ${esc(d.email)} shortly.</p><button class="btn btn-primary" data-modal-close>Done</button></div>`);
+    if (d.preorder) return openModal(`<div class="checkout"><h2>${t("Thank you", "Merci")}</h2><p>${t(`Your payment went through and your pre-order is confirmed. We'll send the files to ${esc(d.email)} as soon as they're ready, and you can cancel for a full refund until then.`,
+      `Votre paiement est passé et votre précommande est confirmée. Nous enverrons les fichiers à ${esc(d.email)} dès qu'ils seront prêts, et vous pouvez annuler jusque-là pour un remboursement intégral.`)}</p><button class="btn btn-primary" data-modal-close>${t("Done", "Terminé")}</button></div>`);
+    if (d.account_url) return openModal(`<div class="checkout"><h2>${t("Thank you", "Merci")}</h2><p>${t(`Your payment went through and your course is ready. Start reading online now, and pick up where you left off at any time over the next 12 months. We've also emailed the link and the download to ${esc(d.email)}.`,
+      `Votre paiement est passé et vos fichiers sont prêts. Ouvrez-les en ligne dès maintenant, pendant 12 mois. Le lien et le téléchargement vous ont aussi été envoyés à ${esc(d.email)}.`)}</p>
+      <a class="btn btn-primary" href="${esc(d.account_url)}">${t("Open my course", "Ouvrir mes cours")}</a> <button class="btn btn-ghost" data-modal-close>${t("Later", "Plus tard")}</button></div>`);
+    openModal(`<div class="checkout"><h2>${t("Thank you", "Merci")}</h2><p>${t(`Your payment went through. Your files will be emailed to ${esc(d.email)} shortly.`, `Votre paiement est passé. Vos fichiers seront envoyés à ${esc(d.email)} dans quelques instants.`)}</p><button class="btn btn-primary" data-modal-close>${t("Done", "Terminé")}</button></div>`);
   } catch {
-    openModal(`<div class="checkout"><h2>Checking your payment…</h2><p>We can't confirm it just yet. You'll get an email as soon as it goes through.</p><button class="btn btn-primary" data-modal-close>Close</button></div>`);
+    openModal(`<div class="checkout"><h2>${t("Checking your payment…", "Vérification du paiement…")}</h2><p>${t("We can't confirm it just yet. You'll get an email as soon as it goes through.", "Nous ne pouvons pas encore le confirmer. Vous recevrez un e-mail dès qu'il sera passé.")}</p><button class="btn btn-primary" data-modal-close>${t("Close", "Fermer")}</button></div>`);
   }
 }
 
 // Buyers come back to their courses ("My courses", top right), once the payment server exists:
 // they sign in with the email used at checkout and receive a sign-in link (no password).
 if (PAY_API && $("#accountLink")) {
-  $("#accountLink").href = `${PAY_API}/account`;
+  $("#accountLink").href = `${PAY_API}/account?lang=${LANG}`;
   $("#accountLink").hidden = false;
 }
 
@@ -857,6 +888,7 @@ async function loadReviews() {
 }
 
 function renderReviews() {
+  if (!$("#reviews")) return;
   if (!reviewList.length) { $("#reviews").hidden = true; return; }
   const list = [...reviewList].sort((a, b) => String(b.date).localeCompare(String(a.date)));
   const avg = list.reduce((t, r) => t + r.rating, 0) / list.length;
@@ -985,7 +1017,7 @@ function openNext(id) {
   bringIntoView(row ? row.closest("li") || row : $("#levels"));
 }
 const contact = contactHTML();
-if (contact) { $("#contactLine").innerHTML = contact; $("#contactLine").hidden = false; }
+if (contact && $("#contactLine")) { $("#contactLine").innerHTML = contact; $("#contactLine").hidden = false; }
 $("#year").textContent = new Date().getFullYear();
 renderCurrencyPicker();
 renderLevelTabs();
@@ -997,6 +1029,8 @@ if (PAY_API) fetch(`${PAY_API}/stock`).then((r) => r.json()).then((d) => {
   if (SOON.size) { renderLevelPanel(); renderMethod(); renderCompare(); }
 }).catch(() => { /* the server refuses unstocked courses anyway */ });
 { const n = new URLSearchParams(location.search).get("next"); if (n) setTimeout(() => openNext(n), 300); }
+// ?test: the level test opens at once (link in the follow-up email of the free module).
+if (new URLSearchParams(location.search).has("test") && typeof LEVEL_TEST !== "undefined") setTimeout(openTest, 300);
 
 // ====== Long texts: first lines shown, "Read more" unfolds the rest (nothing is removed) ======
 const CLAMPED = ".prod-body > p, .exam-card > p:not(.exam-levels):not(.exam-official):not(.pre-note), .motive > p:not(.motive-tag):not(.motive-path), .clamp-me";
@@ -1007,10 +1041,10 @@ function clampAll() {
     el.classList.add("clamp");
     if (el.scrollHeight <= el.clientHeight + 2) { el.classList.remove("clamp"); return; }
     const b = document.createElement("button");
-    b.type = "button"; b.className = "more-btn"; b.textContent = "Read more"; b.setAttribute("aria-expanded", "false");
+    b.type = "button"; b.className = "more-btn"; b.textContent = t("Read more", "Lire la suite"); b.setAttribute("aria-expanded", "false");
     b.addEventListener("click", () => {
       const open = el.classList.toggle("open");
-      b.textContent = open ? "Show less" : "Read more";
+      b.textContent = open ? t("Show less", "Réduire") : t("Read more", "Lire la suite");
       b.setAttribute("aria-expanded", String(open));
     });
     el.after(b);
