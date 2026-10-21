@@ -8,7 +8,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231d2f6f'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>Pà</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261024b">
+  <link rel="stylesheet" href="css/style.css?v=20261025a">
 </head>
 <body>
 
@@ -116,6 +116,7 @@
       <li>Your <b>mobile money number</b>, if you pay that way: only to process that payment.</li>
       <li>Your <b>live lesson bookings</b> (times, topic, level): to organize your lessons.</li>
       <li>Your <b>review</b>, if you leave one.</li>
+      <li><b>Google Calendar</b>, only if you link it in Settings: with the narrowest access Google offers, we create a “Pas à Pas FRENCH” calendar in your Google account and write your live lessons in it, moving or removing them when they change. We can't see your other calendars or anything else in your account. We keep the access token only while your calendar is linked; unlinking it in Settings deletes the token and that calendar. Pas à Pas FRENCH's use of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements.</li>
       <li><b>Marketing emails</b> (French tips and news) are sent only if you check the box to receive them. Every email has a one-click unsubscribe link.</li>
     </ul>
     <p><b>Who is responsible.</b> Olivier Djoukang, at the address above, is responsible for your data.</p>
@@ -142,8 +143,8 @@
   </div>
 </footer>
 
-<script src="js/shop.js?v=20261024b"></script>
-<script src="js/i18n.js?v=20261024b"></script>
+<script src="js/shop.js?v=20261025a"></script>
+<script src="js/i18n.js?v=20261025a"></script>
 <script>
   const get = (path) => path.split(".").reduce((o, k) => (o || {})[k], SHOP) || "";
   document.querySelectorAll("[data-shop]").forEach((el) => { el.textContent = get(el.dataset.shop); });
@@ -154,6 +155,6 @@
   if (ways.length) document.getElementById("contactWays").innerHTML = ways.join(" · ");
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
-<script src="js/chat.js?v=20261024b"></script>
+<script src="js/chat.js?v=20261025a"></script>
 </body>
 </html>
