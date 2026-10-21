@@ -551,8 +551,8 @@ function renderLive() {
   const plans = LIVE.filter((p) => p.plan), box = $("#livePlans");
   if (!box || !plans.length) return;
   box.innerHTML = `<div class="plans-head"><p class="eyebrow">${t("Plans", "Formules")}</p><h3>${t("Learn every week and pay less per lesson", "Un cours chaque semaine, moins cher à l'unité")}</h3>
-    <p>${t("Book your lessons yourself, whenever it suits you over each 2-month period. 7 days before the end, we email you a link to renew it with a fresh set of lessons. No renewal, no charge: it simply stops.",
-      "Vous réservez vous-même vos cours, quand cela vous arrange, sur chaque période de 2 mois. 7 jours avant la fin, vous recevez par e-mail un lien pour la renouveler avec de nouveaux cours. Pas de renouvellement, rien à payer : la formule s'arrête simplement.")}</p></div>
+    <p>${t("Book your lessons yourself, whenever it suits you over each 2-month period. Then choose how it renews: automatically, with a payment request on your phone that you approve with your PIN, or by a link emailed 7 days before. Nothing is ever taken without your approval.",
+      "Vous réservez vous-même vos cours, quand cela vous arrange, sur chaque période de 2 mois. Vous choisissez ensuite le renouvellement : automatique, avec une demande de paiement sur votre téléphone que vous validez avec votre code, ou par un lien reçu 7 jours avant. Rien n'est jamais débité sans votre accord.")}</p></div>
     <div class="plans">${plans.map((p) => { const save = Math.round(100 * (1 - p.usd / p.lessons / one.usd));
       return `<div class="pay-card plan-card${p.best ? " best" : ""}">${p.best ? `<span class="tag best">${t("Most popular", "La plus choisie")}</span>` : ""}
       <h4>${L(p, "name").split(" · ")[0]}</h4><p class="plan-n">${t(`<b>${p.lessons} lessons</b> of 60 minutes every 2 months`, `<b>${p.lessons} cours</b> de 60 minutes tous les 2 mois`)} · ${L(p, "contents").toLowerCase()}</p>
@@ -611,21 +611,22 @@ function openBuy(id, draft = null) {
     <p class="eyebrow pm-title">${t("Payment method", "Moyen de paiement")}</p>
     <div class="pay-methods" id="payMethods" role="radiogroup" aria-label="${t("Payment method", "Moyen de paiement")}"></div>
     <div id="payDetails"></div>
+    ${p.plan ? `<div id="renewBox"></div>` : ""}
     <div class="totals" id="coTotals"></div>
     <label class="check"><input type="checkbox" name="terms" id="coTerms"> ${FR ? (p.kind === "live"
-      ? (p.plan ? `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et les <a href="${POLICIES}#live" target="_blank">règles des cours en direct</a>. Je comprends que ma formule dure 2 mois, que les cours non réservés ne sont pas reportés, et que je peux la renouveler avec le lien envoyé 7 jours avant la fin (sinon, elle s'arrête simplement).`
+      ? (p.plan ? `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et les <a href="${POLICIES}#live" target="_blank">règles des cours en direct</a>. Je comprends que ma formule dure 2 mois, que les cours non réservés ne sont pas reportés, et qu'elle se renouvelle selon le mode choisi ci-dessus, que je peux changer ou arrêter à tout moment dans « Mes cours ».`
         : `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et les <a href="${POLICIES}#live" target="_blank">règles des cours en direct</a> (report gratuit jusqu'à 24 heures avant le cours).`)
       : pre ? `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et la <a href="${POLICIES}#licence" target="_blank">licence</a>. Je comprends qu'il s'agit d'une précommande : les fichiers seront envoyés dès qu'ils seront prêts, et je peux annuler jusque-là pour un remboursement intégral.`
       : `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et la <a href="${POLICIES}#licence" target="_blank">licence</a>. Je veux recevoir les fichiers immédiatement et je comprends que je renonce ainsi à mon droit de rétractation.`)
       : p.kind === "live"
-      ? (p.plan ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a>. I understand that my plan lasts 2 months, that unused lessons don't carry over, and that I can renew it with the link emailed 7 days before the end (if I don't, it simply stops).`
+      ? (p.plan ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a>. I understand that my plan lasts 2 months, that unused lessons don't carry over, and that it renews in the way I chose above, which I can change or stop at any time in “My courses”.`
         : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a> (free rescheduling up to 24 hours before the lesson).`)
       : pre ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I understand that this is a pre-order. The files will be sent as soon as they're ready, and I can cancel for a full refund until then.`
       : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I want the files delivered immediately, and I understand that this means I lose my right of withdrawal.`}</label>
     <p class="form-error" id="formError" hidden></p>
     <button class="btn btn-primary btn-block" id="payBtn"></button>
-    <p class="note">${FR ? (p.plan ? `Le paiement confirme votre premier cours et ouvre votre formule pour 2 mois. Vous réservez les autres cours vous-même dans « Mes cours ». 7 jours avant la fin, vous recevez un lien pour la renouveler à ${price(p)}.` : p.kind === "live" ? "Le paiement confirme votre cours et vous garde l'heure choisie." : pre ? `C'est une précommande. ${PRE_NOTE} Si elle n'est pas livrée sous 90 jours, vous êtes remboursé, sauf si vous choisissez d'attendre.` : "Les fichiers étant livrés immédiatement, la vente est définitive. Si un fichier est défectueux, nous le remplaçons.")
-      : p.plan ? `Payment confirms your first lesson and starts your plan for 2 months. You book the other lessons yourself in “My courses”. 7 days before the end, we email you a link to renew it at ${price(p)}.` : p.kind === "live" ? "Payment confirms your lesson and holds the time for you." : pre ? `This is a pre-order. ${PRE_NOTE} If it isn't delivered within 90 days, you'll be refunded unless you choose to wait.` : "Because the files are delivered instantly, all sales are final. If a file is faulty, we'll replace it."}</p>
+    <p class="note">${FR ? (p.plan ? `Le paiement confirme votre premier cours et ouvre votre formule pour 2 mois. Vous réservez les autres cours vous-même dans « Mes cours ».` : p.kind === "live" ? "Le paiement confirme votre cours et vous garde l'heure choisie." : pre ? `C'est une précommande. ${PRE_NOTE} Si elle n'est pas livrée sous 90 jours, vous êtes remboursé, sauf si vous choisissez d'attendre.` : "Les fichiers étant livrés immédiatement, la vente est définitive. Si un fichier est défectueux, nous le remplaçons.")
+      : p.plan ? `Payment confirms your first lesson and starts your plan for 2 months. You book the other lessons yourself in “My courses”.` : p.kind === "live" ? "Payment confirms your lesson and holds the time for you." : pre ? `This is a pre-order. ${PRE_NOTE} If it isn't delivered within 90 days, you'll be refunded unless you choose to wait.` : "Because the files are delivered instantly, all sales are final. If a file is faulty, we'll replace it."}</p>
   </form>`);
   renderResidenceCheckout();
   renderPayOptions();
@@ -648,6 +649,29 @@ function renderPayDetails() {
   $("#coTotals").innerHTML = `<div class="grand"><span>Total</span><span>${charged}</span></div>
     ${shown !== charged ? `<div class="note"><span>${t("In", "En")} ${CURRENCIES[state.currency].label}</span><span>${shown}</span></div>` : ""}`;
   $("#payBtn").textContent = m.phone ? t(`Pay with ${m.label}`, `Payer par ${m.label}`) : t(`Pay ${charged}`, `Payer ${charged}`);
+  renderRenew(p, m);
+}
+
+// A plan: how it renews, chosen before paying. Automatic: on the renewal date the server sends a
+// payment request to the phone, approved with the PIN (nothing is taken without it). By link: an
+// email 7 days before. Card and PayPal: by link only (no automatic charge without the phone prompt).
+let renewChoice = "auto";
+function renderRenew(p, m) {
+  const box = $("#renewBox");
+  if (!box) return;
+  const auto = !!m.phone, v = auto ? renewChoice : "lien";
+  box.innerHTML = `<p class="eyebrow pm-title">${t("Renewal every 2 months", "Renouvellement tous les 2 mois")}</p>
+    <div class="pay-methods renew-choice" role="radiogroup" aria-label="${t("Renewal", "Renouvellement")}">
+      <label class="pm${auto ? "" : " off"}"><input type="radio" name="renew" value="auto" ${v === "auto" ? "checked" : ""} ${auto ? "" : "disabled"}>
+        <span class="pm-t">${t("Automatic", "Automatique")}<small>${auto
+          ? t(`On the renewal date, a payment request for ${price(p)} arrives on your ${m.label} phone: just approve it with your PIN. Nothing is taken without your approval.`,
+              `Le jour de l'échéance, une demande de paiement de ${price(p)} arrive sur votre téléphone ${m.label} : validez-la avec votre code. Rien n'est débité sans votre accord.`)
+          : t("Available with MTN MoMo and Orange Money.", "Disponible avec MTN MoMo et Orange Money.")}</small></span></label>
+      <label class="pm"><input type="radio" name="renew" value="lien" ${v === "lien" ? "checked" : ""}>
+        <span class="pm-t">${t("By link", "Par lien")}<small>${t("7 days before the end, we email you a link: you pay if you want to continue, otherwise the plan simply stops.",
+          "7 jours avant la fin, vous recevez un lien par e-mail : vous payez si vous voulez continuer, sinon la formule s'arrête simplement.")}</small></span></label>
+    </div>
+    <p class="note">${t("You can switch between the two, or stop the renewal, at any time in “My courses” → Settings.", "Vous pouvez passer de l'un à l'autre, ou arrêter le renouvellement, à tout moment dans « Mes cours » → Paramètres.")}</p>`;
 }
 
 function submitCheckout(form) {
@@ -668,7 +692,8 @@ function submitCheckout(form) {
   const order = { product: p.id, email: data.get("email"), name: String(data.get("name") || (checkoutDraft && checkoutDraft.name) || "").trim(),
     country: state.country, method: data.get("pay"),
     phone: m.phone ? String(data.get("momo")).replace(/[\s.-]/g, "") : "",
-    currency: inFCFA ? "XAF" : "USD", amount: inFCFA ? p.xaf : p.usd, preorder: isPre(p), booking: checkoutDraft, lang: LANG };
+    currency: inFCFA ? "XAF" : "USD", amount: inFCFA ? p.xaf : p.usd, preorder: isPre(p), booking: checkoutDraft, lang: LANG,
+    renew: p.plan ? (m.phone ? (data.get("renew") || "auto") : "lien") : undefined };
 
   // Live payment: the server creates the Notch Pay transaction and sends back its page.
   if (PAY_API) return payOnline(order);
@@ -978,6 +1003,7 @@ document.addEventListener("click", (e) => {
 });
 modal.addEventListener("click", (e) => { if (e.target === modal) modal.close(); });
 modal.addEventListener("change", (e) => {
+  if (e.target.name === "renew") renewChoice = e.target.value;
   if (e.target.name === "pay") {
     renderPayDetails();
     if ($("#coMomo")) bringIntoView($("#coMomo"), $("#coMomo"));   // the number to type comes into view

@@ -8,7 +8,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231d2f6f'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>Pà</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261022b">
+  <link rel="stylesheet" href="css/style.css?v=20261022c">
 </head>
 <body>
 
@@ -86,7 +86,7 @@
       <li><b>Late cancellation or no-show.</b> If you cancel less than 24 hours before a lesson, or miss it, the lesson counts as taken. If you arrive late, the lesson still ends at the scheduled time.</li>
       <li><b>If Olivier cancels</b>, or the lesson can't take place because of a problem on our side, you can choose either a new time or a full refund for that lesson.</li>
       <li><b>Bundles</b> of 5 lessons are valid for 2 months from the date of purchase. Any lessons not booked within that time are lost.</li>
-      <li><b>Plans.</b> A plan (4, 8 or 16 lessons of 60 minutes) runs in 2-month periods, and you book your lessons as you go during each period. Lessons not booked by the end of a period don't carry over. 7 days before the end of each period, we email you a link to <b>renew</b> the plan for a new period with a fresh set of lessons, at the price shown when you subscribed. Nothing is charged automatically: if you don't pay, the plan simply stops at the end of the period. You can also stop the renewal reminders in one click from “My courses” or by writing to us; you keep your remaining lessons until the end of the current period. If you renew and haven't booked any lessons in the new period, write to us within 7 days for a full refund of that renewal.</li>
+      <li><b>Plans.</b> A plan (4, 8 or 16 lessons of 60 minutes) runs in 2-month periods, and you book your lessons as you go during each period. Lessons not booked by the end of a period don't carry over. Before paying, you choose how the plan <b>renews</b> for a new period with a fresh set of lessons, at the price shown when you subscribed: <b>automatically</b> (MTN MoMo or Orange Money only: on the renewal date, a payment request arrives on your phone and you approve it with your PIN; we remind you 7 days before) or <b>by link</b> (7 days before the end of each period, we email you a link to renew). Nothing is ever taken without your approval: if you don't approve the request or don't pay, the plan simply stops at the end of the period. You can switch between the two, or stop the renewal, in one click from “My courses” → Settings or by writing to us; you keep your remaining lessons until the end of the current period. If you renew and haven't booked any lessons in the new period, write to us within 7 days for a full refund of that renewal.</li>
       <li><b>Conduct.</b> Lessons are based on mutual respect. Olivier may end a lesson without a refund if behavior becomes abusive.</li>
     </ul>
   </section>
@@ -142,8 +142,8 @@
   </div>
 </footer>
 
-<script src="js/shop.js?v=20261022b"></script>
-<script src="js/i18n.js?v=20261022b"></script>
+<script src="js/shop.js?v=20261022c"></script>
+<script src="js/i18n.js?v=20261022c"></script>
 <script>
   const get = (path) => path.split(".").reduce((o, k) => (o || {})[k], SHOP) || "";
   document.querySelectorAll("[data-shop]").forEach((el) => { el.textContent = get(el.dataset.shop); });
@@ -154,5 +154,6 @@
   if (ways.length) document.getElementById("contactWays").innerHTML = ways.join(" · ");
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
+<script src="js/chat.js?v=20261022c"></script>
 </body>
 </html>

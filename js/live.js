@@ -133,8 +133,8 @@ function renderBooking() {
     </div>
     ${details}
     <p class="form-error" id="bkError" hidden></p>
-    ${PACK_SIZE[booking.product] ? `<p class="note">${t(`You book the other ${PACK_SIZE[booking.product] - 1} lessons yourself in “My courses”, whenever you like over the next 2 months.${p.plan ? " 7 days before the end, we email you a link to renew the plan for 2 more months. If you don't renew, it simply stops." : ""}`,
-      `Vous réservez vous-même les ${PACK_SIZE[booking.product] - 1} autres cours dans « Mes cours », quand vous voulez pendant 2 mois.${p.plan ? " 7 jours avant la fin, vous recevez un lien pour renouveler la formule pour 2 mois. Sans renouvellement, elle s'arrête simplement." : ""}`)}</p>` : ""}
+    ${PACK_SIZE[booking.product] ? `<p class="note">${t(`You book the other ${PACK_SIZE[booking.product] - 1} lessons yourself in “My courses”, whenever you like over the next 2 months.${p.plan ? " Next step: choose how the plan renews, automatically or by link. Nothing is taken without your approval." : ""}`,
+      `Vous réservez vous-même les ${PACK_SIZE[booking.product] - 1} autres cours dans « Mes cours », quand vous voulez pendant 2 mois.${p.plan ? " Étape suivante : choisir comment la formule se renouvelle, automatiquement ou par lien. Rien n'est prélevé sans votre accord." : ""}`)}</p>` : ""}
     <button class="btn btn-primary btn-block">${t("Continue to payment", "Continuer vers le paiement")} · ${price(p)}${p.plan ? every : ""}</button>`;
     return;
   }
@@ -212,11 +212,11 @@ function planOffer(b) {
   const per = amount(plan.usd / plan.lessons, plan.xaf / plan.lessons);
   return FR ? `<div class="plan-offer"><p class="eyebrow">Gardez le rythme</p>
     <h3>${plan.lessons} cours tous les 2 mois, ${per} le cours au lieu de ${price(one)}</h3>
-    <p>Retrouver un professeur chaque semaine aide à retenir ce qu'on apprend. Avec la ${esc(L(plan, "name").split(" · ")[0])}, vous réservez chaque cours quand cela vous arrange, sur 2 mois. Tous les 2 mois, vous recevez un lien pour la renouveler ; sans paiement, elle s'arrête.</p>
+    <p>Retrouver un professeur chaque semaine aide à retenir ce qu'on apprend. Avec la ${esc(L(plan, "name").split(" · ")[0])}, vous réservez chaque cours quand cela vous arrange, sur 2 mois. Tous les 2 mois, elle se renouvelle selon le mode choisi, automatiquement ou par lien ; sans votre accord, elle s'arrête.</p>
     <div class="hero-cta tight"><button class="btn btn-primary" data-modal-close data-goto-plans>Voir les formules</button><button class="btn btn-ghost" data-modal-close>Pas maintenant</button></div></div>`
     : `<div class="plan-offer"><p class="eyebrow">Keep up the momentum</p>
     <h3>${plan.lessons} lessons every 2 months, ${per} each instead of ${price(one)}</h3>
-    <p>Meeting a teacher every week helps you remember what you learn. With the ${esc(plan.name.split(" · ")[0])}, you book each lesson whenever it suits you over 2 months. Every 2 months, we email you a link to renew it, and it stops whenever you don't.</p>
+    <p>Meeting a teacher every week helps you remember what you learn. With the ${esc(plan.name.split(" · ")[0])}, you book each lesson whenever it suits you over 2 months. Every 2 months, it renews the way you chose, automatically or by link, and it stops without your approval.</p>
     <div class="hero-cta tight"><button class="btn btn-primary" data-modal-close data-goto-plans>See the plans</button><button class="btn btn-ghost" data-modal-close>Not now</button></div></div>`;
 }
 
@@ -283,7 +283,7 @@ function renderMySessions() {
     </div>`).join("")}
     ${packs.map((b) => { const c = b.credit, left = c.total - c.used, until = c.expires ? localDay(c.expires) : "";
       return `<div class="session pack"><div><strong>${c.plan ? esc(L(byId(b.product), "name").split(" · ")[0]) : t("Your lesson pack", "Votre forfait")}</strong>
-      <small>${t(`${left} lesson${left === 1 ? "" : "s"} left${until ? ` until ${until}` : ""}`, `${left} cours restant${left > 1 ? "s" : ""}${until ? ` jusqu'au ${until}` : ""}`)}${c.plan ? (c.renews ? t(` · renewal link emailed 7 days before ${until}`, ` · lien de renouvellement envoyé 7 jours avant le ${until}`) : t(" · renewal stopped", " · renouvellement arrêté")) : ""}</small></div>
+      <small>${t(`${left} lesson${left === 1 ? "" : "s"} left${until ? ` until ${until}` : ""}`, `${left} cours restant${left > 1 ? "s" : ""}${until ? ` jusqu'au ${until}` : ""}`)}${c.plan ? (c.renews ? t(` · renews on ${until}`, ` · renouvellement le ${until}`) : t(" · renewal stopped", " · renouvellement arrêté")) : ""}</small></div>
       ${left > 0 ? `<button class="btn btn-ghost mini" data-book-credit="${b.id}">${t("Book your next lesson", "Réserver le cours suivant")}</button>` : ""}
       ${c.plan && c.renews ? `<button class="link-btn" data-cancel-plan="${b.id}">${t("Stop the renewal", "Arrêter le renouvellement")}</button>` : ""}</div>`; }).join("")}`;
   tick();
