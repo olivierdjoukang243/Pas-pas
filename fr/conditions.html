@@ -10,7 +10,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231d2f6f'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>Pà</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css?v=20261024b">
+  <link rel="stylesheet" href="../css/style.css?v=20261025a">
 </head>
 <body>
 
@@ -117,6 +117,7 @@
       <li>Votre <b>numéro de mobile money</b>, si vous payez ainsi : seulement pour traiter ce paiement.</li>
       <li>Vos <b>réservations de cours en direct</b> (heures, sujet, niveau) : pour organiser vos cours.</li>
       <li>Votre <b>avis</b>, si vous en laissez un.</li>
+      <li><b>Google Agenda</b>, seulement si vous le liez dans les Paramètres : avec l'accès le plus restreint proposé par Google, nous créons un agenda « Pas à Pas FRENCH » dans votre compte Google et y écrivons vos cours en direct, que nous déplaçons ou retirons quand ils changent. Nous ne voyons ni vos autres agendas, ni rien d'autre de votre compte. Nous gardons le jeton d'accès seulement tant que votre agenda est lié ; le délier dans les Paramètres supprime le jeton et cet agenda. L'usage par Pas à Pas FRENCH des informations reçues des API Google respecte la <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">politique de Google relative aux données utilisateur des services d'API</a>, y compris les exigences d'utilisation limitée.</li>
       <li>Les <b>e-mails d'information</b> (conseils et nouvelles) ne sont envoyés que si vous cochez la case prévue. Chacun contient un lien de désinscription en un clic.</li>
     </ul>
     <p><b>Responsable.</b> Olivier Djoukang, à l'adresse ci-dessus, est responsable de vos données.</p>
@@ -143,8 +144,8 @@
   </div>
 </footer>
 
-<script src="../js/shop.js?v=20261024b"></script>
-<script src="../js/i18n.js?v=20261024b"></script>
+<script src="../js/shop.js?v=20261025a"></script>
+<script src="../js/i18n.js?v=20261025a"></script>
 <script>
   const get = (path) => path.split(".").reduce((o, k) => (o || {})[k], SHOP) || "";
   document.querySelectorAll("[data-shop]").forEach((el) => { el.textContent = get(el.dataset.shop); });
@@ -154,6 +155,6 @@
   if (ways.length) document.getElementById("contactWays").innerHTML = ways.join(" · ");
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
-<script src="../js/chat.js?v=20261024b"></script>
+<script src="../js/chat.js?v=20261025a"></script>
 </body>
 </html>
