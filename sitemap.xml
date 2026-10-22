@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://pasapasfrench.com/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pasapasfrench.com/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pasapasfrench.com/fr/"/>
+  </url>
+  <url>
+    <loc>https://pasapasfrench.com/fr/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pasapasfrench.com/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pasapasfrench.com/fr/"/>
+  </url>
+  <url>
+    <loc>https://pasapasfrench.com/policies.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pasapasfrench.com/policies.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pasapasfrench.com/fr/conditions.html"/>
+  </url>
+  <url>
+    <loc>https://pasapasfrench.com/fr/conditions.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pasapasfrench.com/policies.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pasapasfrench.com/fr/conditions.html"/>
+  </url>
+</urlset>
