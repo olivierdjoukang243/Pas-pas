@@ -53,7 +53,8 @@ route();
 // USD and FCFA prices are fixed in the catalogue. XOF has the same parity as XAF.
 // EUR is derived from FCFA (fixed parity 655.957). The others are converted from USD at
 // indicative rates, refreshed once a day from open.er-api.com (free, no key); the values
-// below are the fallback. The amount charged is always the USD or FCFA price.
+// below are the fallback. Mobile money is charged at the FCFA price (Notch Pay); card and PayPal at
+// the USD price when Whop charges them, otherwise at the FCFA price.
 const XAF_PER_EUR = 655.957;
 const CURRENCIES = {
   USD: { label: "$ USD" },
@@ -298,8 +299,9 @@ function renderCurrencyPicker() {
     onChange: (v) => {
       state.currency = v; store.set("currencyChoice", v);
       renderCurrencyPicker(); renderPrices(); if ($("#checkoutForm")) renderPayDetails();
-      announce(t(`Prices are now shown in ${CURRENCIES[v].label}.${["USD", "XAF", "XOF"].includes(v) ? "" : " These are estimates. You'll be charged in US dollars or FCFA."}`,
-        `Les prix sont maintenant affichés en ${CURRENCIES[v].label}.${["USD", "XAF", "XOF"].includes(v) ? "" : " Ce sont des estimations : le paiement se fait en dollars US ou en FCFA."}`));
+      const exactHere = cardUSD() ? ["USD", "XAF", "XOF"].includes(v) : ["XAF", "XOF"].includes(v);
+      announce(t(`Prices are now shown in ${CURRENCIES[v].label}.${exactHere ? "" : cardUSD() ? " These are estimates. Card and PayPal are charged in US dollars." : " These are estimates. Every payment is charged in FCFA."}`,
+        `Les prix sont maintenant affichés en ${CURRENCIES[v].label}.${exactHere ? "" : cardUSD() ? " Ce sont des estimations : la carte et PayPal se paient en dollars US." : " Ce sont des estimations : tout paiement se fait en FCFA."}`));
       flashUpdated();
     } });
 }
@@ -316,22 +318,40 @@ function renderResidence() {
 }
 
 const localFCFA = () => methodsFor(state.country).some(([, m]) => m.phone);
+// Who charges card and PayPal, as the shop server says (/stock): "whop", in US dollars at the
+// catalogue's USD price (seller Nuvalex LLC), or "notchpay", in FCFA. The demo shows Whop.
+let CARD = PAY_API ? "" : "whop";
+const cardUSD = () => CARD === "whop";
 
 // What the visitor's currency means for them: exact price, or an estimate of a US dollar charge.
 function renderPayCurrency() {
   const box = $("#payCurrency");
   if (!box) return;
   const c = state.currency, label = CURRENCIES[c].label;
-  const exact = c === "USD" || ((c === "XAF" || c === "XOF") && localFCFA());
-  box.innerHTML = FR ? `<h3>Votre devise : ${esc(label)}</h3><p>${c === "USD"
-    ? "Les prix sont affichés en dollars US, la devise des paiements par carte et PayPal."
-    : exact ? `Les prix sont affichés en ${esc(label)} : c'est le montant exact que vous paierez par mobile money. Les paiements par carte et PayPal se font en dollars US.`
-    : `Les prix en ${esc(label)} sont des estimations${CURRENCIES[c].perUSD ? ", mises à jour chaque jour" : ""}. Les paiements par carte et PayPal se font en dollars US, et votre banque fait la conversion.`}
+  if (cardUSD()) {
+    // card and PayPal: US dollars at the catalogue's USD price; mobile money (Cameroon): FCFA
+    const local = localFCFA(), fcfa = c === "XAF" || (c === "XOF" && local);
+    box.innerHTML = FR ? `<h3>Votre devise : ${esc(label)}</h3><p>${c === "USD"
+      ? `Les prix sont affichés en ${esc(label)} : c'est le montant exact que vous paierez par carte ou PayPal${local ? " (le mobile money se paie en FCFA)" : ""}.`
+      : fcfa && local ? `Les prix sont affichés en ${esc(label)} : c'est le montant exact que vous paierez par mobile money. La carte et PayPal se paient en dollars US.`
+      : `Les prix en ${esc(label)} sont indicatifs. La carte et PayPal se paient en dollars US, au prix indiqué au paiement${local ? ", le mobile money en FCFA" : ""}, et votre banque fait la conversion.`}
+      Vous pouvez changer de devise en haut de la page.</p>`
+      : `<h3>Your currency: ${esc(label)}</h3><p>${c === "USD"
+      ? `Prices are shown in ${esc(label)}. This is the exact amount you'll pay by card or PayPal${local ? " (mobile money is paid in FCFA)" : ""}.`
+      : fcfa && local ? `Prices are shown in ${esc(label)}. This is the exact amount you'll pay by mobile money. Card and PayPal are charged in US dollars.`
+      : `Prices in ${esc(label)} are indicative. Card and PayPal are charged in US dollars, at the price shown at checkout${local ? ", and mobile money in FCFA" : ""}. Your bank handles the conversion.`}
+      You can change the currency at the top of the page.</p>`;
+    return;
+  }
+  // every payment (mobile money, card, PayPal) is charged in FCFA, at the catalogue's FCFA price
+  const exact = c === "XAF" || (c === "XOF" && localFCFA());
+  box.innerHTML = FR ? `<h3>Votre devise : ${esc(label)}</h3><p>${exact
+    ? `Les prix sont affichés en ${esc(label)} : c'est le montant exact que vous paierez, par mobile money, carte ou PayPal.`
+    : `Les prix en ${esc(label)} sont indicatifs. Tous les paiements (mobile money, carte, PayPal) se font en francs CFA (FCFA), au prix fixe indiqué au paiement, et votre banque fait la conversion.`}
     Vous pouvez changer de devise en haut de la page.</p>`
-    : `<h3>Your currency: ${esc(label)}</h3><p>${c === "USD"
-    ? "Prices are shown in US dollars, the currency used for card and PayPal payments."
-    : exact ? `Prices are shown in ${esc(label)}. This is the exact amount you'll pay with local payment methods. Card and PayPal payments are charged in US dollars.`
-    : `Prices in ${esc(label)} are estimates${CURRENCIES[c].perUSD ? ", updated daily" : ""}. Card and PayPal payments are charged in US dollars, and your bank handles the conversion.`}
+    : `<h3>Your currency: ${esc(label)}</h3><p>${exact
+    ? `Prices are shown in ${esc(label)}. This is the exact amount you'll pay, by mobile money, card or PayPal.`
+    : `Prices in ${esc(label)} are indicative. Every payment (mobile money, card, PayPal) is charged in CFA francs (FCFA), at the fixed price shown at checkout, and your bank handles the conversion.`}
     You can change the currency at the top of the page.</p>`;
 }
 
@@ -369,8 +389,9 @@ const fmtMoney = (value, code) => { const d = CURRENCIES[code]?.whole ? 0 : 2;
 // Price shown in the selected currency. "≈" marks a conversion; USD and FCFA are exact.
 function amount(usd, xaf, currency = state.currency) {
   if (currency === "USD") return fmtUSD(usd);
-  // FCFA is an exact price only where a local method charges it; elsewhere the card pays in US dollars
-  if (currency === "XAF" || currency === "XOF") return (localFCFA() ? "" : "≈ ") + fmtXAF(xaf);
+  // FCFA: the price charged by mobile money (Notch Pay, in XAF); USD: by card and PayPal (Whop)
+  if (currency === "XAF") return fmtXAF(xaf);
+  if (currency === "XOF") return (localFCFA() ? "" : "≈ ") + fmtXAF(xaf);
   if (currency === "EUR") return "≈ " + fmtMoney(xaf / XAF_PER_EUR, "EUR");
   return "≈ " + fmtMoney(usd * CURRENCIES[currency].perUSD, currency);
 }
@@ -644,11 +665,19 @@ function renderPayDetails() {
   const m = PAY_METHODS[document.querySelector('input[name="pay"]:checked').value];
   $("#payDetails").innerHTML = m.phone ? `<label for="coMomo">${t(`${m.label} phone number`, `Numéro ${m.label}`)}
       <input id="coMomo" name="momo" type="tel" required inputmode="tel" placeholder="6XX XX XX XX" autocomplete="tel"></label>` : "";
-  const charged = country === "Cameroon" || m.phone ? fmtXAF(p.xaf) : fmtUSD(p.usd);
-  const shown = price(p);
+  // Card and PayPal by Whop: the exact USD price, sold by Nuvalex LLC. Otherwise (mobile money,
+  // or card by Notch Pay): FCFA. The visitor's currency is shown as an indication.
+  const usd = !m.phone && cardUSD();
+  const charged = usd ? fmtUSD(p.usd) : fmtXAF(p.xaf);
+  const shown = usd ? amount(p.usd, p.xaf) : price(p);
+  const preByCard = usd && isPre(p);
   $("#coTotals").innerHTML = `<div class="grand"><span>Total</span><span>${charged}</span></div>
-    ${shown !== charged ? `<div class="note"><span>${t("In", "En")} ${CURRENCIES[state.currency].label}</span><span>${shown}</span></div>` : ""}`;
+    ${shown !== charged && !(usd && state.currency === "USD") ? `<div class="note"><span>${t("About", "Environ")} ${CURRENCIES[state.currency].label}</span><span>${shown.replace(/^≈ /, "≈ ")}</span></div>` : ""}
+    ${m.phone ? "" : usd ? `<div class="note"><span>${t("Sold by Nuvalex LLC (Pas à Pas FRENCH) · payment processed by Whop, in US dollars.", "Vendu par Nuvalex LLC (Pas à Pas FRENCH) · paiement traité par Whop, en dollars US.")}</span><span></span></div>`
+      : `<div class="note"><span>${t("Your bank converts FCFA into your currency.", "Votre banque convertit les FCFA dans votre devise.")}</span><span></span></div>`}
+    ${preByCard ? `<div class="note"><span>${t("Pre-orders can't be paid by card or PayPal yet.", "Les précommandes ne se paient pas encore par carte ni PayPal.")}</span><span></span></div>` : ""}`;
   $("#payBtn").textContent = m.phone ? t(`Pay with ${m.label}`, `Payer par ${m.label}`) : t(`Pay ${charged}`, `Payer ${charged}`);
+  $("#payBtn").disabled = preByCard;
   renderRenew(p, m);
 }
 
@@ -687,12 +716,12 @@ function submitCheckout(form) {
   if (msg) { err.textContent = msg; err.hidden = false; return; }
 
   if (data.get("country") !== state.country) setCountry(data.get("country"), true);
-  const inFCFA = state.country === "Cameroon" || m.phone;
-  const charged = inFCFA ? fmtXAF(p.xaf) : fmtUSD(p.usd);
+  const usd = !m.phone && cardUSD();
+  const charged = usd ? fmtUSD(p.usd) : fmtXAF(p.xaf);
   const order = { product: p.id, email: data.get("email"), name: String(data.get("name") || (checkoutDraft && checkoutDraft.name) || "").trim(),
     country: state.country, method: data.get("pay"),
     phone: m.phone ? String(data.get("momo")).replace(/[\s.-]/g, "") : "",
-    currency: inFCFA ? "XAF" : "USD", amount: inFCFA ? p.xaf : p.usd, preorder: isPre(p), booking: checkoutDraft, lang: LANG,
+    currency: usd ? "USD" : "XAF", amount: usd ? p.usd : p.xaf, preorder: isPre(p), booking: checkoutDraft, lang: LANG,
     renew: p.plan ? (m.phone ? (data.get("renew") || "auto") : "lien") : undefined };
 
   // Live payment: the server creates the Notch Pay transaction and sends back its page.
@@ -1054,6 +1083,7 @@ refreshRates().then(renderPrices);
 if (PAY_API) fetch(`${PAY_API}/stock`).then((r) => r.json()).then((d) => {
   (d.soon || []).forEach((id) => SOON.add(id));
   if (SOON.size) { renderLevelPanel(); renderMethod(); renderCompare(); }
+  if (d.card !== undefined && d.card !== CARD) { CARD = d.card; renderPayCurrency(); if ($("#checkoutForm")) renderPayDetails(); }
 }).catch(() => { /* the server refuses unstocked courses anyway */ });
 { const n = new URLSearchParams(location.search).get("next"); if (n) setTimeout(() => openNext(n), 300); }
 // ?test: the level test opens at once (link in the follow-up email of the free module).
