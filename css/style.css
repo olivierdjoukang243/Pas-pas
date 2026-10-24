@@ -421,13 +421,25 @@ textarea { font: inherit; padding: .7em .8em; border: 2px solid var(--ligne); bo
 .exam-format .nclc th, .exam-format .nclc td { width: auto; padding: .35em .25em; text-align: center; font-size: .74rem; }
 .exam-format .nclc td { white-space: nowrap; }
 .exam-format .nclc .t7 { background: #eef1fb; font-weight: 700; color: var(--bleu); }
-.author { display: grid; grid-template-columns: auto 1fr; gap: 1.6em; align-items: start; background: #fff; border-radius: 20px; padding: 2em; box-shadow: var(--shadow); }
-.author p { max-width: 68ch; color: #3b3f4a; }
-.author-mark { position: relative; width: 132px; height: 132px; border-radius: 50%; display: grid; place-items: center; background: var(--bleu); color: #fff; font-family: var(--serif); font-size: 2.4rem; font-weight: 700; overflow: hidden; box-shadow: 0 0 0 4px #fff, 0 0 0 6px var(--rouge), var(--shadow); }
+.author { display: grid; grid-template-columns: 260px 1fr; gap: 3rem; align-items: center; background: linear-gradient(135deg, #fff 55%, #f3f0ff 100%); border-radius: 24px; padding: 3rem; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+.author::before { content: ""; position: absolute; width: 340px; height: 340px; left: -110px; top: -110px; border-radius: 50%; background: radial-gradient(circle, rgba(29,47,111,.10), transparent 70%); }
+.author-visual { position: relative; text-align: center; }
+.author-name { margin: 1.1rem 0 0; font-family: var(--serif); font-size: 1.35rem; font-weight: 700; color: var(--bleu); }
+.author-name small { display: block; font-family: var(--sans); font-size: .82rem; font-weight: 600; color: var(--gris); margin-top: .2em; }
+.author-body .section-title { font-size: clamp(1.7rem, 3.2vw, 2.5rem); line-height: 1.15; }
+.author-lead { font-size: 1.05rem; color: #3b3f4a; max-width: 62ch; margin: 0 0 1.4rem; }
+.author-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; margin: 0 0 1.4rem; max-width: 560px; }
+.author-stats div { background: #fff; border: 1px solid var(--ligne); border-radius: 14px; padding: .9rem 1rem; }
+.author-stats b { display: block; font-family: var(--serif); font-size: 1.7rem; color: var(--bleu); line-height: 1.1; white-space: nowrap; }
+.author-stats span { display: block; font-size: .8rem; line-height: 1.35; color: var(--gris); margin-top: .25em; }
+.author-points { list-style: none; padding: 0; margin: 0 0 1.6rem; display: grid; gap: .55rem; }
+.author-points li { display: flex; gap: .6rem; align-items: center; font-weight: 500; }
+.author-points svg { flex: 0 0 22px; width: 22px; height: 22px; padding: 3px; border-radius: 50%; background: var(--vert); fill: #fff; }
+.author-cta { display: flex; flex-wrap: wrap; gap: .7rem; }
 /* la photo (img/olivier.jpg, petite) recouvre les initiales ; sans photo, les initiales restent.
    Image de fond et non <img> : ni « Enregistrer l'image », ni glisser-déposer, ni appui long sur mobile. */
-.author-mark { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-.author-photo { position: absolute; inset: 0; background: url("../img/olivier.jpg") center 25% / cover no-repeat; pointer-events: none; }
+.author-mark { position: relative; width: 240px; height: 240px; margin: 0 auto; border-radius: 28px; display: grid; place-items: center; background: var(--bleu); color: #fff; font-family: var(--serif); font-size: 3.4rem; font-weight: 700; overflow: hidden; box-shadow: 0 18px 40px rgba(29, 47, 111, .28); -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; transform: rotate(-2deg); }
+.author-photo { position: absolute; inset: 0; background: url("../img/olivier.jpg") center 30% / cover no-repeat; pointer-events: none; }
 .contact-line { margin: 0; }
 .header-inner { justify-content: space-between; }
 
@@ -523,6 +535,12 @@ details.mods { margin: .5em 0 0; padding: 0; background: none; box-shadow: none;
   .prod { grid-template-columns: 1fr; }
   .prod-buy { flex-direction: row; align-items: center; justify-content: space-between; }
   .exam-soon, .author { grid-template-columns: minmax(0, 1fr); }
+  .author { padding: 1.6rem; gap: 1.6rem; }
+  .author-mark { width: 180px; height: 180px; }
+  .author-stats { gap: .5rem; }
+  .author-stats div { padding: .7rem .6rem; }
+  .author-stats b { font-size: 1.15rem; }
+  .author-stats span { font-size: .72rem; }
   .modules li { grid-template-columns: 32px 1fr auto; }
   .modules li .btn { grid-column: 2 / -1; justify-self: start; }
   .lp-code { font-size: 2.4rem; }
