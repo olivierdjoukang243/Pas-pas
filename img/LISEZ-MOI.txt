@@ -1,0 +1,3 @@
+Photo de l'auteur (rubrique « Votre professeur » / « Meet your teacher ») :
+déposer ici olivier.jpg — carrée, 300 × 300 pixels (pas plus : une photo petite vaut peu si elle est copiée), moins de 100 Ko.
+Sans ce fichier, le site affiche les initiales « OD ».
