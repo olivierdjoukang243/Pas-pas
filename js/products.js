@@ -103,24 +103,24 @@ PRODUCTS.push(...EXAM_PACKS);
 
 // Live lessons with the author, one to one. Booked in two steps: a free exchange
 // to agree on the content and the time, then payment to confirm the session.
-// Prices revised 24/10/2026, in line with professional French teachers online (median about $21 an
-// hour, exam specialists $35 and more): $25 the hour. FCFA prices are set for the Cameroonian market
-// (mobile money), below the dollar rate. A plan renews at the price it was bought at (serveur/direct.py).
+// Prices revised 24/10/2026 (Olivier): learners are very price-sensitive, so $12 the hour, a little
+// above the marketplace rate, with no marketplace commission. FCFA prices are set for the Cameroonian
+// market (mobile money). A plan renews at the price it was bought at (serveur/direct.py).
 const LIVE = [
-  { id: "live-30", kind: "live", level: "Live", name: "Live Lesson · 30 minutes", contents: "One-to-one with Olivier", usd: 14, xaf: 6000,
+  { id: "live-30", kind: "live", level: "Live", name: "Live Lesson · 30 minutes", contents: "One-to-one with Olivier", usd: 7, xaf: 3500,
     desc: "A short, focused session on one grammar point, a pronunciation problem, or some quick speaking practice before an exam or interview." },
-  { id: "live-60", kind: "live", level: "Live", name: "Live Lesson · 60 minutes", contents: "One-to-one with Olivier", usd: 25, xaf: 10000,
+  { id: "live-60", kind: "live", level: "Live", name: "Live Lesson · 60 minutes", contents: "One-to-one with Olivier", usd: 12, xaf: 6000,
     desc: "A full session to explore a topic in depth, work through a module, practice speaking or get ready for an exam task." },
-  { id: "live-pack5", kind: "live", level: "Live", lessons: 5, name: "5 Live Lessons · 60 minutes each", contents: "One-to-one with Olivier · book them within 2 months", usd: 115, xaf: 46000,
+  { id: "live-pack5", kind: "live", level: "Live", lessons: 5, name: "5 Live Lessons · 60 minutes each", contents: "One-to-one with Olivier · book them within 2 months", usd: 55, xaf: 28000,
     desc: "A short course built around your goal. We agree on a plan in the first lesson, and after each lesson you get a brief written follow-up." },
   // Plans (16/10/2026, Olivier: "make the best choices for me"): 60-minute lessons booked as you go over
   // 2 months; the counter resets and the plan renews every 2 months unless cancelled before.
   // Three tiers, the middle one highlighted; savings are computed against the single 60-minute lesson.
-  { id: "plan-4", kind: "live", plan: true, level: "Live", lessons: 4, name: "Light Plan · 4 lessons every 2 months", contents: "One lesson every two weeks", usd: 92, xaf: 37000,
+  { id: "plan-4", kind: "live", plan: true, level: "Live", lessons: 4, name: "Light Plan · 4 lessons every 2 months", contents: "One lesson every two weeks", usd: 44, xaf: 22000,
     desc: "Just enough to keep your French moving alongside the course, with a regular slot to speak, ask Olivier questions and work on whatever is holding you back." },
-  { id: "plan-8", kind: "live", plan: true, best: true, level: "Live", lessons: 8, name: "Steady Plan · 8 lessons every 2 months", contents: "One lesson a week", usd: 168, xaf: 68000,
+  { id: "plan-8", kind: "live", plan: true, best: true, level: "Live", lessons: 8, name: "Steady Plan · 8 lessons every 2 months", contents: "One lesson a week", usd: 80, xaf: 44000,
     desc: "One lesson a week is the pace that turns study into a habit. You'll see steady progress month after month and keep your momentum." },
-  { id: "plan-16", kind: "live", plan: true, level: "Live", lessons: 16, name: "Intensive Plan · 16 lessons every 2 months", contents: "Two lessons a week", usd: 304, xaf: 120000,
+  { id: "plan-16", kind: "live", plan: true, level: "Live", lessons: 16, name: "Intensive Plan · 16 lessons every 2 months", contents: "Two lessons a week", usd: 144, xaf: 80000,
     desc: "For an upcoming exam, a move or a new job. Two lessons a week is the fastest way to go from understanding French to speaking it with ease." },
 ];
 const LIVE_NEEDS = ["A grammar point or a module", "Speaking or pronunciation", "Conversation practice", "Exam preparation (DELF, DALF, TCF)", "Something else"];
