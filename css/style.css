@@ -423,7 +423,9 @@ textarea { font: inherit; padding: .7em .8em; border: 2px solid var(--ligne); bo
 .exam-format .nclc .t7 { background: #eef1fb; font-weight: 700; color: var(--bleu); }
 .author { display: grid; grid-template-columns: auto 1fr; gap: 1.6em; align-items: start; background: #fff; border-radius: 20px; padding: 2em; box-shadow: var(--shadow); }
 .author p { max-width: 68ch; color: #3b3f4a; }
-.author-mark { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; background: var(--bleu); color: #fff; font-family: var(--serif); font-size: 1.8rem; font-weight: 700; }
+.author-mark { position: relative; width: 132px; height: 132px; border-radius: 50%; display: grid; place-items: center; background: var(--bleu); color: #fff; font-family: var(--serif); font-size: 2.4rem; font-weight: 700; overflow: hidden; box-shadow: 0 0 0 4px #fff, 0 0 0 6px var(--rouge), var(--shadow); }
+/* la photo (img/olivier.jpg) recouvre les initiales ; sans photo, les initiales restent */
+.author-mark img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
 .contact-line { margin: 0; }
 .header-inner { justify-content: space-between; }
 
