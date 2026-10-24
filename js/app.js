@@ -572,8 +572,8 @@ function renderLive() {
   const plans = LIVE.filter((p) => p.plan), box = $("#livePlans");
   if (!box || !plans.length) return;
   box.innerHTML = `<div class="plans-head"><p class="eyebrow">${t("Plans", "Formules")}</p><h3>${t("Learn every week and pay less per lesson", "Un cours chaque semaine, moins cher à l'unité")}</h3>
-    <p>${t("Book your lessons yourself, whenever it suits you over each 2-month period. Then choose how it renews: automatically, with a payment request on your phone that you approve with your PIN, or by a link emailed 7 days before. Nothing is ever taken without your approval.",
-      "Vous réservez vous-même vos cours, quand cela vous arrange, sur chaque période de 2 mois. Vous choisissez ensuite le renouvellement : automatique, avec une demande de paiement sur votre téléphone que vous validez avec votre code, ou par un lien reçu 7 jours avant. Rien n'est jamais débité sans votre accord.")}</p></div>
+    <p>${t("Book your lessons yourself, whenever it suits you over each 2-month period. Your plan renews only with your approval, and you can stop it at any time.",
+      "Vous réservez vous-même vos cours, quand cela vous arrange, sur chaque période de 2 mois. La formule ne se renouvelle qu'avec votre accord, et vous l'arrêtez quand vous voulez.")}</p></div>
     <div class="plans">${plans.map((p) => { const save = Math.round(100 * (1 - p.usd / p.lessons / one.usd));
       return `<div class="pay-card plan-card${p.best ? " best" : ""}">${p.best ? `<span class="tag best">${t("Most popular", "La plus choisie")}</span>` : ""}
       <h4>${L(p, "name").split(" · ")[0]}</h4><p class="plan-n">${t(`<b>${p.lessons} lessons</b> of 60 minutes every 2 months`, `<b>${p.lessons} cours</b> de 60 minutes tous les 2 mois`)} · ${L(p, "contents").toLowerCase()}</p>

@@ -834,3 +834,15 @@ main > section.block-band.view-first { margin-top: 0; }
   .hero-chip-1 { left: -4%; } .hero-chip-2 { right: -4%; }
   .hero-cta .btn { width: 100%; }
 }
+
+/* Pages intérieures : un vrai titre de page, moins de vide en haut */
+main > section.view-first .block-head .section-title { font-size: clamp(2rem, 4.2vw, 3rem); line-height: 1.12; letter-spacing: -.02em; }
+main > section.view-first .block-head .sub { font-size: 1.05rem; }
+main > section.block-band.view-first > .block { padding-top: 1rem; }
+/* Cours en direct : le visage du professeur à côté du titre */
+.live-head { align-items: center; flex-wrap: nowrap; }
+.live-head > div:nth-child(2) { flex: 1; }
+.live-face.author-mark { flex: 0 0 132px; width: 132px; height: 132px; border-radius: 28px; font-size: 2.4rem; transform: rotate(-3deg); }
+@media (max-width: 760px) { .live-head { flex-wrap: wrap; } .live-face.author-mark { flex-basis: 96px; width: 96px; height: 96px; } }
+/* Cartes de prix : le prix plus visible */
+.live-card .price, .exam-buy .price, .prod-buy .price { font-size: 1.35rem; }
