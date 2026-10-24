@@ -13,7 +13,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231d2f6f'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>Pà</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css?v=20261025k">
+  <link rel="stylesheet" href="../css/style.css?v=20261025l">
 </head>
 <body>
 
@@ -48,27 +48,22 @@
 <main>
   <section data-view="home" class="hero">
     <div class="container hero-inner">
-      <div>
-        <p class="eyebrow">DELF · DALF · TCF</p>
-        <h1>Réussissez votre examen de français, <em>pas à pas</em>.</h1>
-        <p class="lead">Des sujets d'entraînement complets au format officiel, qui se passent en ligne comme le vrai examen, et des cours en direct pour faire corriger votre oral et votre écrit par un professeur. Pour l'université, l'immigration au Canada ou au Québec, la nationalité ou votre carrière.</p>
+      <div class="hero-text">
+        <p class="eyebrow">TCF · DELF · DALF</p>
+        <h1>Arrivez prêt le jour de votre <em>examen</em>.</h1>
+        <p class="lead">Des sujets complets au format officiel, chronométrés comme le jour J, et des cours en direct pour faire corriger votre oral et votre écrit avec la grille officielle. Pour le Canada, le Québec, la France ou votre carrière.</p>
         <div class="hero-cta">
-          <a href="#exams" class="btn btn-primary">Voir les sujets d'examen</a>
-          <button class="btn btn-ghost" data-book>Réserver un cours en direct</button>
+          <a href="#exams" class="btn btn-primary btn-lg">Voir les sujets d'examen</a>
+          <button class="btn btn-ghost btn-lg" data-book>Réserver un cours</button>
         </div>
-        <ul class="hero-proof">
-          <li><strong>9</strong>examens au choix</li>
-          <li><strong>4</strong>sujets complets par examen</li>
-          <li><strong>A1 à C2</strong>du DELF au TCF</li>
-          <li><strong>7 800+</strong>cours en ligne depuis 2023</li>
-        </ul>
+        <ul class="hero-reassure"><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6L20.1 8.4 18.7 7z"/></svg>Format officiel actuel</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6L20.1 8.4 18.7 7z"/></svg>MTN MoMo, Orange Money ou carte</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6L20.1 8.4 18.7 7z"/></svg>Cours à votre heure</li></ul>
       </div>
-      <aside class="test-card" aria-labelledby="goalTitle">
-        <p class="eyebrow">Quel examen ?</p>
-        <h2 id="goalTitle">Selon votre projet</h2>
-        <p><b>Immigration au Canada :</b> TCF Canada. <b>Au Québec :</b> TCF Québec. <b>Nationalité ou titre de séjour en France :</b> TCF IRN. <b>Université :</b> DELF B2, DALF C1 ou TCF DAP. <b>Carrière :</b> un diplôme DELF ou le TCF tout public.</p>
-        <a href="#exams" class="btn btn-primary btn-block">Trouver mon examen</a>
-      </aside>
+      <div class="hero-visual" oncontextmenu="return false" ondragstart="return false">
+        <div class="hero-photo author-mark"><span aria-hidden="true">OD</span><i class="author-photo" role="img" aria-label="Olivier Djoukang"></i></div>
+        <p class="hero-chip hero-chip-1">7 800+ cours en ligne depuis 2023</p>
+        <p class="hero-chip hero-chip-2">Grilles officielles</p>
+        <p class="hero-caption">Olivier Djoukang, votre professeur et l'auteur des sujets</p>
+      </div>
     </div>
   </section>
 
@@ -76,7 +71,29 @@
     <div><b>1</b><h3>Choisissez votre examen</h3><p>DELF A1 à B2 ou l'une des cinq versions du TCF, et bientôt le DALF.</p></div>
     <div><b>2</b><h3>Entraînez-vous en conditions réelles</h3><p>Quatre sujets complets, chronométrés, avec les écoutes du jour J.</p></div>
     <div><b>3</b><h3>Faites corriger l'oral et l'écrit</h3><p>En cours en direct, Olivier évalue vos productions avec la grille officielle.</p></div>
-    <div><b>4</b><h3>Présentez-vous serein</h3><p>Vous connaissez le format, la durée et les pièges de chaque épreuve.</p></div>
+  </section>
+
+  <section data-view="home" class="trust-strip" aria-label="Pourquoi nous faire confiance">
+    <div class="container trust-row"><div><b>9</b><span>examens au choix</span></div><div><b>Depuis 2011</b><span>professeur de français</span></div><div><b>7 800+</b><span>cours en ligne depuis 2023</span></div><div><b>Sécurisé</b><span>mobile money ou carte</span></div></div>
+  </section>
+
+  <section data-view="home" class="container block">
+    <div class="block-head"><div><p class="eyebrow">Quel examen ?</p><h2 class="section-title">Selon votre projet</h2></div></div>
+    <div class="goal-cards">
+      <a href="#exams" class="goal-card"><b>Immigrer au Canada</b><span>TCF Canada</span></a>
+      <a href="#exams" class="goal-card"><b>Immigrer au Québec</b><span>TCF Québec</span></a>
+      <a href="#exams" class="goal-card"><b>Nationalité ou séjour en France</b><span>TCF IRN</span></a>
+      <a href="#exams" class="goal-card"><b>Étudier à l'université</b><span>DELF B2, DALF C1 ou TCF DAP</span></a>
+      <a href="#exams" class="goal-card"><b>Carrière ou CV</b><span>DELF ou TCF tout public</span></a>
+    </div>
+  </section>
+
+  <section data-view="home" class="container block">
+    <div class="guarantee">
+      <div class="guarantee-head"><p class="eyebrow">Sans risque</p><h2>Commencez sereinement</h2></div>
+      <ul class="guarantee-list"><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6L20.1 8.4 18.7 7z"/></svg><div><b>Le format officiel actuel</b><span>Mêmes épreuves, mêmes durées, même barème que le vrai examen.</span></div></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6L20.1 8.4 18.7 7z"/></svg><div><b>Précommande remboursable</b><span>Annulable à tout moment avant l’envoi, remboursement intégral.</span></div></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6L20.1 8.4 18.7 7z"/></svg><div><b>Fichiers à vous</b><span>Téléchargez, imprimez, gardez-les. Un fichier défectueux est remplacé.</span></div></li></ul>
+      <div class="guarantee-cta"><a href="#exams" class="btn btn-primary btn-lg">Voir les sujets</a><button class="btn btn-ghost btn-lg" data-book>Réserver un cours</button></div>
+    </div>
   </section>
 
   <section data-view="exams" id="exams" class="container block">
@@ -161,8 +178,8 @@
     <div class="pay-grid">
       <div class="pay-card pay-cm" id="payLocal" hidden></div>
       <div class="pay-card">
-        <h3>Partout dans le monde · bientôt</h3>
-        <p>Carte bancaire (Visa, Mastercard) ou PayPal, débités en dollars US : en cours d'ouverture.</p>
+        <h3>Partout dans le monde</h3>
+        <p>Carte bancaire (Visa, Mastercard), débitée en dollars US. PayPal arrive bientôt.</p>
         <div class="chips"><span class="chip">Visa</span><span class="chip">Mastercard</span><span class="chip">PayPal</span></div>
       </div>
       <div class="pay-card" id="payCurrency"></div>
@@ -185,7 +202,7 @@
       <details><summary>De quoi ai-je besoin pour un cours ?</summary><p>Un ordinateur ou un téléphone avec caméra et micro, et un navigateur à jour. Une bonne connexion internet suffit : la salle vidéo s'ouvre dans la page, sans application à installer.</p></details>
     </div>
     <div class="faq-group"><h3>Avant d'acheter</h3>
-      <details><summary>Comment payer ?</summary><p>Au paiement, seuls les moyens de votre pays de résidence s'affichent. Au Cameroun : MTN MoMo et Orange Money, en FCFA, que vous confirmez sur votre téléphone. La carte bancaire et PayPal arrivent bientôt pour tous les pays. Votre pays est détecté automatiquement, mais vous pouvez en choisir un autre.</p></details>
+      <details><summary>Comment payer ?</summary><p>Au paiement, seuls les moyens de votre pays de résidence s'affichent. Au Cameroun : MTN MoMo et Orange Money, en FCFA, que vous confirmez sur votre téléphone. Partout ailleurs : la carte bancaire, en dollars US, et bientôt PayPal. Votre pays est détecté automatiquement, mais vous pouvez en choisir un autre.</p></details>
       <details><summary>Puis-je être remboursé ?</summary><p>Les fichiers sont livrés immédiatement et ne peuvent pas être rendus : la vente est définitive. Si un fichier est défectueux, nous le remplaçons, ou nous vous remboursons si nous ne pouvons pas. Une précommande s'annule à tout moment avant l'envoi, avec remboursement intégral. <a href="conditions.html#withdrawal">Remboursements</a>.</p></details>
       <details><summary>Vous apprenez le français et l'anglais est votre langue ?</summary><p>Notre méthode de français pour anglophones, de A0 à B1, est sur <a href="../" data-lang="en" hreflang="en">la version anglaise du site</a>.</p></details>
     </div>
@@ -206,12 +223,12 @@
 
 <dialog id="modal" class="modal"><div id="modalBody"></div></dialog>
 
-<script src="../js/shop.js?v=20261025k"></script>
-<script src="../js/i18n.js?v=20261025k"></script>
-<script src="../js/exam-formats-fr.js?v=20261025k"></script>
-<script src="../js/products.js?v=20261025k"></script>
-<script src="../js/app.js?v=20261025k"></script>
-<script src="../js/live.js?v=20261025k"></script>
-<script src="../js/chat.js?v=20261025k"></script>
+<script src="../js/shop.js?v=20261025l"></script>
+<script src="../js/i18n.js?v=20261025l"></script>
+<script src="../js/exam-formats-fr.js?v=20261025l"></script>
+<script src="../js/products.js?v=20261025l"></script>
+<script src="../js/app.js?v=20261025l"></script>
+<script src="../js/live.js?v=20261025l"></script>
+<script src="../js/chat.js?v=20261025l"></script>
 </body>
 </html>
