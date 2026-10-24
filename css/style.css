@@ -846,3 +846,11 @@ main > section.block-band.view-first > .block { padding-top: 1rem; }
 @media (max-width: 760px) { .live-head { flex-wrap: wrap; } .live-face.author-mark { flex-basis: 96px; width: 96px; height: 96px; } }
 /* Cartes de prix : le prix plus visible */
 .live-card .price, .exam-buy .price, .prod-buy .price { font-size: 1.35rem; }
+
+/* Pied de page : moyens de paiement acceptés, à côté de la mention légale */
+.legal-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem 2rem; flex-wrap: wrap; margin-top: 2rem; padding-top: 1.2rem; border-top: 1px solid #2a3360; }
+.legal-row .legal-text { margin: 0; padding: 0; border: 0; flex: 1 1 420px; }
+.pay-icons { list-style: none; display: flex; flex-wrap: wrap; gap: .45rem; margin: 0; padding: 0; }
+.pay-icons li { line-height: 0; }
+.pay-icons svg { width: 44px; height: 28px; border-radius: 4px; box-shadow: 0 0 0 1px rgba(255,255,255,.12); }
+.footer { padding-bottom: 5.5rem; }
