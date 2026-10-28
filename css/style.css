@@ -899,3 +899,16 @@ body { font-size: 17px; }
 .intro-steps { padding-left: 1.2em; margin: 0 0 1em; line-height: 1.7; }
 .intro-steps li { margin: .3em 0; }
 .exam-packs { font-size: .86rem; color: #4a4f5c; margin: .2em 0 .6em; }
+/* Choix de l'examen : deux grandes cartes, impossibles à manquer */
+.exam-choice-q { font: 700 clamp(1.15rem, 2.2vw, 1.4rem) var(--serif); color: var(--bleu); margin: 2.2rem 0 .8rem; }
+.exam-tabs.exam-choice { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; padding: 0; background: none; border: 0; border-radius: 0; margin: 0 0 1.8rem; max-width: 720px; }
+.exam-choice button { display: flex; flex-direction: column; align-items: flex-start; gap: .25em; text-align: left; padding: 1.1em 1.3em 1.1em 3.2em; position: relative;
+  background: #fff; color: var(--bleu); border: 2px solid #d9dcea; border-radius: 16px; box-shadow: 0 4px 14px rgba(29,47,111,.08); transition: border-color .15s, box-shadow .15s, transform .15s; }
+.exam-choice button b { font: 700 1.25rem var(--serif); }
+.exam-choice button small { font: 500 .88rem var(--sans); color: #555a66; }
+.exam-choice button::before { content: ""; position: absolute; left: 1.1em; top: 1.25em; width: 1.25em; height: 1.25em; border-radius: 50%; border: 2px solid #b9bfd6; background: #fff; }
+.exam-choice button:hover { border-color: var(--bleu); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(29,47,111,.14); }
+.exam-choice button[aria-selected="true"] { background: var(--bleu); color: #fff; border-color: var(--bleu); box-shadow: 0 10px 26px rgba(29,47,111,.28); }
+.exam-choice button[aria-selected="true"] small { color: #d9def0; }
+.exam-choice button[aria-selected="true"]::before { border-color: #fff; background: #fff; box-shadow: inset 0 0 0 4px var(--bleu); }
+@media (max-width: 520px) { .exam-choice button { padding: .9em 1em .9em 2.8em; } .exam-choice button b { font-size: 1.1rem; } .exam-choice button::before { left: .9em; } }
