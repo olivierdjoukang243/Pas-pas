@@ -406,6 +406,7 @@ textarea { font: inherit; padding: .7em .8em; border: 2px solid var(--ligne); bo
 .tag.pre { background: #e3f1e6; color: #1e6b34; }
 .pre-note { display: block; font-size: .78rem; line-height: 1.35; color: #4a5568; margin-top: .4em; max-width: 26em; }
 .pre-note.light { color: rgba(255,255,255,.85); }
+.pre-note.light .link-btn { color: #fff; font-weight: 600; padding: 0; font-size: inherit; }
 .exam-card .pre-note { margin-top: .2em; }
 .exam-format { align-self: stretch; min-width: 0; margin: .2em 0 .8em; font-size: .9rem; }
 .exam-format summary { cursor: pointer; font-weight: 600; color: var(--bleu); }
