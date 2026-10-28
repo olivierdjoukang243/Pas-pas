@@ -491,7 +491,7 @@ function renderLevelPanel() {
       <div class="lp-title"><span class="lp-code">${l.code}</span><div><h3>${l.name}</h3><p>${l.status === "prep" ? l.note : LEVEL_INTRO[l.code]}</p></div></div>
     </div>`;
   if (l.status === "prep") {
-    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} isn't on sale yet. Levels from Introduction to Intermediate are available now.</p>
+    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} isn't on sale yet. Levels from Introduction to Advanced 1 (C1) are available now.</p>
       <button class="btn btn-ghost mini" data-level="B1">See B1</button></div>`;
   } else {
     $("#levelPanel").innerHTML = head + `<ol class="prods">${products.map(productRow).join("")}</ol>`;
@@ -522,7 +522,7 @@ function renderCompare() {
   const rows = [
     ["How you pay", `One payment, from ${price(byId("a0-complete"))}, and the files are yours to keep`, "Monthly or yearly subscription", "Pay by the hour, every lesson"],
     ["Grammar explained in English", "Yes, in every module", "Short tips, mostly practice", "Depends on the tutor"],
-    ["Step-by-step course with progress tests", "56 modules, 7 progress tests, Introduction to Intermediate", "Yes, in the app", "Depends on the tutor"],
+    ["Step-by-step course with progress tests", "88 modules, 11 progress tests, Introduction to Advanced", "Yes, in the app", "Depends on the tutor"],
     ["Works offline", "PDFs and MP3s on any device", "Partly, in the app", "No"],
     ["Answer keys to keep", "For every exercise", "Instant grading, nothing to keep", "Depends on the tutor"],
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],

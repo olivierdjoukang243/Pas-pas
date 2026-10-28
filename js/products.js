@@ -1,5 +1,6 @@
 // Pas à Pas catalogue. Facts confirmed by Olivier on 14/10/2026: 11 products,
-// 56 modules and 7 level checks from A0 to B1. Prices are set in both currencies
+// 56 modules and 7 level checks from A0 to B1; 28/10/2026: B2 and C1 open (88 modules and
+// 11 level checks from A0 to C1), prices chosen for Olivier. Prices are set in both currencies
 // (they are not converted). Never add a module title, product or price that is not confirmed.
 
 const LEVELS = [
@@ -7,8 +8,8 @@ const LEVELS = [
   { code: "A1", name: "Beginner 1", hue: 210, status: "open" },
   { code: "A2", name: "Beginner 2", hue: 228, status: "open" },
   { code: "B1", name: "Intermediate 1", hue: 248, status: "open" },
-  { code: "B2", name: "Intermediate 2", hue: 272, status: "prep", note: "Part 1 is being written and isn't available yet." },
-  { code: "C1", name: "Advanced 1", hue: 330, status: "prep", note: "In preparation and not available yet." },
+  { code: "B2", name: "Intermediate 2", hue: 272, status: "open" },
+  { code: "C1", name: "Advanced 1", hue: 330, status: "open" },
   { code: "C2", name: "Advanced 2", hue: 350, status: "prep", note: "In preparation and not available yet." },
 ];
 
@@ -17,6 +18,8 @@ const LEVEL_INTRO = {
   A1: "From single sentences to real conversations. Instructions switch to French, but grammar is still explained in English.",
   A2: "The level where you stop translating in your head.",
   B1: "The level where French starts to feel like your own, with objectives and section introductions in French too.",
+  B2: "The level where you explain, argue and write at length, with ease and nuance.",
+  C1: "Advanced French for study and work: precise, flexible and natural.",
 };
 
 // kind: "part" (8 modules + level check), "level" (both parts), "method" (everything).
@@ -48,6 +51,18 @@ const PRODUCTS = [
     desc: "The second half of B1 teaches you to make a case and express shades of meaning. It covers concession and opposition, hypotheses, formal and informal registers, professional writing, debating an idea, and the linking words that hold a long answer together. It ends with the B1 progress test. B1 is the level most exams and employers ask for." },
   { id: "b1-complete", level: "B1", kind: "level", name: "French Intermediate 1 (B1) — Full Level", contents: "Parts 1 and 2 · 16 modules + 2 progress tests", usd: 49, xaf: 26900,
     desc: "The full B1 level in one purchase: sixteen modules and two progress tests, for less than buying the two parts separately. This is the level that lets you work, study and debate in French." },
+  { id: "b2-part1", level: "B2", kind: "part", part: 1, name: "French Intermediate 2 (B2) — Part 1", contents: "Modules 1–8 + progress test", usd: 35, xaf: 19100,
+    desc: "The first half of B2, in eight modules and a progress test. Built like the rest of the method: grammar explained step by step, exercises with full answer keys, and a recorded dialogue and dictation in every module." },
+  { id: "b2-part2", level: "B2", kind: "part", part: 2, name: "French Intermediate 2 (B2) — Part 2", contents: "Modules 9–16 + progress test", usd: 35, xaf: 19100,
+    desc: "The second half of B2, in eight modules and a progress test that tells you when you're ready for C1. Built like the rest of the method: grammar explained step by step, exercises with full answer keys, and a recorded dialogue and dictation in every module." },
+  { id: "b2-complete", level: "B2", kind: "level", name: "French Intermediate 2 (B2) — Full Level", contents: "Parts 1 and 2 · 16 modules + 2 progress tests", usd: 59, xaf: 32300,
+    desc: "The full B2 level in one purchase: sixteen modules and two progress tests, for less than buying the two parts separately. B2 is the level many universities and employers ask for." },
+  { id: "c1-part1", level: "C1", kind: "part", part: 1, name: "French Advanced 1 (C1) — Part 1", contents: "Modules 1–8 + progress test", usd: 39, xaf: 21300,
+    desc: "The first half of C1, in eight modules and a progress test. Built like the rest of the method: grammar explained step by step, exercises with full answer keys, and a recorded dialogue and dictation in every module." },
+  { id: "c1-part2", level: "C1", kind: "part", part: 2, name: "French Advanced 1 (C1) — Part 2", contents: "Modules 9–16 + progress test", usd: 39, xaf: 21300,
+    desc: "The second half of C1, in eight modules and a progress test. Built like the rest of the method: grammar explained step by step, exercises with full answer keys, and a recorded dialogue and dictation in every module." },
+  { id: "c1-complete", level: "C1", kind: "level", name: "French Advanced 1 (C1) — Full Level", contents: "Parts 1 and 2 · 16 modules + 2 progress tests", usd: 65, xaf: 35600,
+    desc: "The full C1 level in one purchase: sixteen modules and two progress tests, for less than buying the two parts separately." },
   { id: "complete-method", level: "A0–B1", kind: "method", name: "Pas à Pas — The Complete Method (Introduction to Intermediate)", contents: "56 modules + 7 progress tests", usd: 129, xaf: 70800,
     desc: "Everything in one place: 56 modules and 7 progress tests, from the alphabet to defending your point of view in French. All four levels follow one method, with the same characters and the same way of explaining, so you never have to adjust to a new approach halfway through. The files are yours to keep, updates included." },
 ];
