@@ -811,9 +811,22 @@ if (PAY_API && $("#accountLink")) {
 
 // ====== Placement test ======
 // The questions come from the level checks of the method (js/leveltest.js, exported by the atelier).
-// The test climbs step by step, from A0 to B1 Part 2, and stops at the first step that is too hard.
+// The test climbs step by step, from A0 to the last level check exported (B1 Part 2 today, up to C2
+// as their level checks are written), and stops at the first step that is too hard.
 const TEST_PER_STEP = 4;
-let testStep = 0, testDraw = [], testDone = [];
+// Time counts too: a step answered right but very slowly is known, not yet fluent. Target seconds per
+// answer, by level, as in the timed self-assessments of the course (atelier: bilan_web.py, RYTHME);
+// a step passed in more than SLOW times the target is a step to consolidate, where we suggest starting.
+const TEST_SECONDS = { A0: 40, A1: 45, A2: 50, B1: 55, B2: 60, C1: 65, C2: 70 };
+const TEST_SLOW = 2;
+let testStep = 0, testDraw = [], testDone = [], testActive = 0, testSince = 0;
+const stepLevel = (step) => (step.product || step.name || "").slice(0, 2).toUpperCase();
+// time only counts while the test is on screen (a tab left open doesn't make anyone slow)
+const testClock = () => testActive + (testSince && !document.hidden ? Date.now() - testSince : 0);
+document.addEventListener("visibilitychange", () => {
+  if (!testSince && !testActive) return;
+  if (document.hidden) { testActive = testClock(); testSince = 0; } else if (document.getElementById("testForm")) testSince = Date.now();
+});
 const pick = (arr, n) => arr.map((x) => [Math.random(), x]).sort((a, b) => a[0] - b[0]).slice(0, n).map((x) => x[1]);
 const normalise = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
   .replace(/[\u2019\u02bc]/g, "'").toLowerCase().replace(/[.!?;:,]/g, "").replace(/\s+/g, " ").trim();
@@ -834,6 +847,7 @@ function openTest() {
 
 function renderTestStep() {
   const steps = LEVEL_TEST.steps, step = steps[testStep];
+  testActive = 0; testSince = Date.now();
   openModal(`<form class="quiz" id="testForm" autocomplete="off">
     <div class="quiz-head"><span class="eyebrow">Level test · step ${testStep + 1} of ${steps.length}</span><span class="chip">${step.name}</span></div>
     <div class="bar"><span style="width:${(testStep / steps.length) * 100}%"></span></div>
@@ -854,8 +868,11 @@ function submitTestStep(form) {
   const data = new FormData(form);
   const wrong = testDraw.filter((t, i) => normalise(data.get("tq" + i)) !== normalise(t.answer));
   const right = testDraw.length - wrong.length;
-  testDone.push({ step: LEVEL_TEST.steps[testStep], right, total: testDraw.length, wrong });
+  const seconds = Math.round(testClock() / 1000); testSince = 0;
+  const target = TEST_SECONDS[stepLevel(LEVEL_TEST.steps[testStep])] || 55;
   const passed = (100 * right) / testDraw.length >= LEVEL_TEST.pass;
+  const slow = passed && seconds > TEST_SLOW * target * testDraw.length;
+  testDone.push({ step: LEVEL_TEST.steps[testStep], right, total: testDraw.length, wrong, seconds, target, slow });
   if (passed && testStep + 1 < LEVEL_TEST.steps.length) {
     testStep++;
     testDraw = drawStep(LEVEL_TEST.steps[testStep]);
@@ -864,15 +881,22 @@ function submitTestStep(form) {
 }
 
 function testResult(finishedAll) {
-  const last = testDone[testDone.length - 1];
-  const passedSteps = testDone.slice(0, finishedAll ? undefined : -1).map((d) => d.step.name);
+  // where to start: the first step missed, or an earlier one passed but too slowly
+  const slowStep = testDone.find((d) => d.slow);
+  if (slowStep) finishedAll = false;
+  const last = slowStep || testDone[testDone.length - 1];
+  const passedSteps = testDone.slice(0, testDone.indexOf(last) + (finishedAll ? 1 : 0)).map((d) => d.step.name);
+  const total = testDone.reduce((n, d) => n + d.seconds, 0);
+  const topLevel = stepLevel(LEVEL_TEST.steps[LEVEL_TEST.steps.length - 1]);
+  const minutes = total >= 60 ? `${Math.floor(total / 60)} min ${total % 60} s` : `${total} s`;
   const p = finishedAll ? null : byId(last.step.product);
   if (p) { state.level = p.level; store.set("level", p.level); renderLevelTabs(); renderLevelPanel(); }
   const live = byId("live-60");
   openModal(`<div class="quiz quiz-result">
     <p class="eyebrow">Your result</p>
-    <h2>${finishedAll ? "You've reached the end of <em>B1</em>" : `Start with <em>${last.step.name}</em>`}</h2>
-    <p>${passedSteps.length ? `You passed ${passedSteps.join(", ")}. ` : ""}${finishedAll ? "B2, C1 and C2 are in preparation. In the meantime, a live lesson with Olivier is the best next step." : `You got ${last.right} out of ${last.total} right at this step.`}</p>
+    <h2>${finishedAll ? `You've reached the end of <em>${topLevel}</em>` : `Start with <em>${last.step.name}</em>`}</h2>
+    <p>${passedSteps.length ? `You passed ${passedSteps.join(", ")}. ` : ""}${finishedAll ? (topLevel === "C2" ? "That's the top of the scale. A live lesson with Olivier keeps it sharp." : "The next levels are in preparation. In the meantime, a live lesson with Olivier is the best next step.") : slowStep ? `You got ${last.right} out of ${last.total} right at this step, but it took you ${Math.round(last.seconds / last.total)} seconds per answer, where about ${last.target} is comfortable at this level. You know it; this course makes it automatic.` : `You got ${last.right} out of ${last.total} right at this step.`}</p>
+    <p class="quiz-note">Time on the test: ${minutes}. Your answers and your speed both count.</p>
     ${!finishedAll && last.wrong.length ? `<p class="quiz-note">Among other things, this course covers:</p><ul class="quiz-skills">${last.wrong.map((w) => `<li>${esc(w.skill)}</li>`).join("")}</ul>` : ""}
     <ul class="pick-list">${(p ? (p.ready === false ? [p, live] : [p]) : [live]).map((x) => `<li><span>${x.name}</span><span><strong>${price(x)}</strong> ${!buyable(x) ? `<span class="tag soon">In preparation</span>` : `<button class="btn btn-primary mini" ${x.kind === "live" ? `data-book="${x.id}"` : `data-buy="${x.id}"`}>${x.kind === "live" ? "Book" : buyLabel(x)}</button>`}</span></li>`).join("")}</ul>
     ${p && p.ready === false ? `<p class="quiz-note">${isPre(p) ? `This course is still being illustrated. Pre-order it now and we'll send it as soon as it's ready, with a full refund if you cancel before then.` : "This course is still being illustrated and isn't on sale yet."} In the meantime, a live lesson with Olivier can focus on exactly these points.</p>` : ""}
