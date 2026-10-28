@@ -560,10 +560,9 @@ function renderExams() {
     <h3>${p.exam}</h3>
     ${(examFormat(p.format) || {}).official ? `<p class="exam-official" lang="fr">${examFormat(p.format).official}</p>` : ""}
     <p class="exam-levels">${L(p, "contents")}</p>
-    <p>${L(p, "desc")}</p>
     ${formatHTML(examFormat(p.format))}
     <div class="exam-buy"><span class="price">${price(p)}</span>${buyable(p) ? `<button class="btn btn-primary mini" data-buy="${p.id}">${buyLabel(p)}</button>` : `<span class="exam-wait">${t("Not on sale yet", "Pas encore en vente")}</span>`}</div>
-    ${isPre(p) ? `<p class="pre-note">${t("The tests are being written.", "Les sujets sont en cours de rédaction.")} ${PRE_NOTE}</p>` : ""}
+    ${isPre(p) ? `<p class="pre-note">${t("Emailed as soon as they're written. Cancel anytime for a full refund.", "Envoyés dès qu'ils sont rédigés. Annulable à tout moment, remboursement intégral.")}</p>` : ""}
   </div>`).join("") + EXAMS_SOON.map((e) => `<div class="pay-card exam-card" data-group="delf">
     <span class="tag soon">${t("Coming soon", "Bientôt")}</span>
     <h3>${e.name}</h3>
