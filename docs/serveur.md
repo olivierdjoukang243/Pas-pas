@@ -175,7 +175,7 @@ modérateur.
 
 ## Packs d'examen
 Les produits `delf-a1` à `delf-b2` et les cinq TCF (`tcf-canada`, `tcf-quebec`, `tcf-tp`,
-`tcf-dap`, `tcf-irn`) sont des séries de 4 sujets complets sans tâche commune. L'atelier les
+`tcf-dap`, `tcf-irn`) sont des packs de 6 sujets complets (jusqu’à 5 packs par examen, soit 30 sujets), sans tâche commune. L'atelier les
 produit avec `delf.py` et `tcf.py` (registre `examens/series.json`) ; à chaque commande,
 `livrer.py` donne une série jamais livrée, renomme les fichiers et les tatoue. Garder la
 référence de la série livrée avec la commande.

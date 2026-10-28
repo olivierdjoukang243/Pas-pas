@@ -6,24 +6,24 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 
 ## Catalogue (faits confirmés le 14/10/2026)
 
-11 produits, 56 modules et 7 bilans, de A0 à B1, vendus par paquets de 8 modules.
+17 produits, 88 modules et 11 bilans, de A0 à C1, vendus par paquets de 8 modules (B2 et C1 en vente le 28/10/2026).
 
 | Produit | Contenu | Prix |
 |---|---|---|
 | A0 Complete | 8 modules + bilan | 19 $ / 10 400 FCFA |
-| A1, A2, B1 Part 1 | modules 1–8 + bilan | 29 $ / 15 900 FCFA chacun |
-| A1, A2, B1 Part 2 | modules 9–16 + bilan | 29 $ / 15 900 FCFA chacun |
-| A1, A2, B1 Complete | parties 1 et 2 | 49 $ / 26 900 FCFA chacun |
+| A1, A2, B1, B2, C1 Part 1 | modules 1–8 + bilan | 29 $ / 15 900 FCFA chacun |
+| A1, A2, B1, B2, C1 Part 2 | modules 9–16 + bilan | 29 $ / 15 900 FCFA chacun |
+| A1, A2, B1, B2, C1 Complete | parties 1 et 2 | 49 $ / 26 900 FCFA chacun |
 | The Complete Method | A0 à B1, 56 modules, 7 bilans | 129 $ / 70 800 FCFA |
-| DELF A1, DELF A2 | série de 4 sujets complets | 19 $ / 10 400 FCFA chacun |
-| DELF B1, DELF B2 | série de 4 sujets complets | 25 $ / 13 700 FCFA chacun |
-| TCF Canada, TCF Québec, TCF tout public, TCF DAP, TCF IRN | série de 4 sujets complets | 29 $ / 15 900 FCFA chacun (prix à revoir) |
+| DELF A1, DELF A2 | 5 packs de 6 sujets complets (aucune tâche commune) | 19 $ / 10 400 FCFA chacun |
+| DELF B1, DELF B2 | 5 packs de 6 sujets complets (aucune tâche commune) | 25 $ / 13 700 FCFA chacun |
+| TCF Canada, TCF Québec, TCF tout public, TCF DAP, TCF IRN | 5 packs de 6 sujets complets (aucune tâche commune) | 29 $ / 15 900 FCFA chacun (prix à revoir) |
 | A0 Module 1 | module complet | gratuit, envoyé par e-mail |
 
 - Un niveau complet coûte 9 $ (4 900 FCFA) de moins que ses deux parties. La Complete Method coûte 37 $ (20 300 FCFA) de moins que les quatre niveaux. Le site calcule ces économies à partir des prix, sans les saisir à la main.
-- B2, C1 et C2 sont en préparation (B2 partie 1 commencé) : affichés, mais non vendus.
+- B2 et C1 sont en vente (mêmes prix que B1 : 29 $ la partie, 49 $ le niveau). La méthode complète reste A0 à B1 ; B2 et C1 se vendent à part. C2 est en préparation : affiché, mais non vendu. Les titres des modules B2 et C1 s’afficheront quand l’export de l’atelier (`catalogue.json`) les contiendra.
 - **Précommandes** (16/10/2026) : A1 Part 2, A2, B1, les niveaux complets, la méthode complète et tous les packs d'examen sont `ready: false, preorder: true`. Bouton « Pre-order » : payé tout de suite, envoyé le jour où c'est prêt (les parties déjà prêtes partent aussitôt), annulable avec remboursement jusque-là, remboursé sans livraison sous 90 jours. Règles : `policies.html` (2 et 3) et `docs/serveur.md`.
-- Sujets d'examen : DELF A1 à B2 et les cinq TCF, séries de 4 sujets produites par l'atelier depuis ses réserves (sujet, correcteur, feuille de réponses, édition web qui note la compréhension écrite et orale, audio). DALF C1 et C2 restent « Coming soon » (pas encore de prix). Ce sont des sujets originaux au format officiel, jamais des épreuves officielles. Le format affiché sur chaque fiche est écrit par l'atelier (`js/exam-formats.js`, `delf.py --site`).
+- Sujets d'examen : DELF A1 à B2 et les cinq TCF, packs de 6 sujets (jusqu’à 5 par examen, 30 sujets tous différents) produits par l'atelier depuis ses réserves (sujet, correcteur, feuille de réponses, édition web qui note la compréhension écrite et orale, audio). DALF C1 et C2 restent « Coming soon » (pas encore de prix). Ce sont des sujets originaux au format officiel, jamais des épreuves officielles. Le format affiché sur chaque fiche est écrit par l'atelier (`js/exam-formats.js`, `delf.py --site`).
 - Formats livrés : PDF « édition vendue » avec corrigé, accompagné de l'audio en MP3 et d'un mémo PDF ; édition web interactive, à faire en ligne sur le site, avec l'audio intégré à la page. Pas de vidéo. L'édition CLASSROOM n'est jamais vendue.
 - Fichiers livrés : ventes définitives (fichier défectueux remplacé ou remboursé) ; précommandes annulables jusqu'à la livraison.
 

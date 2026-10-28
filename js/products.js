@@ -1,5 +1,6 @@
 // Pas à Pas catalogue. Facts confirmed by Olivier on 14/10/2026: 11 products,
-// 56 modules and 7 level checks from A0 to B1. Prices are set in both currencies
+// 56 modules and 7 level checks from A0 to B1; 28/10/2026: B2 and C1 in stock (6 products,
+// 32 modules, 4 level checks), same prices as B1. Prices are set in both currencies
 // (they are not converted). Never add a module title, product or price that is not confirmed.
 
 const LEVELS = [
@@ -7,8 +8,8 @@ const LEVELS = [
   { code: "A1", name: "Beginner 1", hue: 210, status: "open" },
   { code: "A2", name: "Beginner 2", hue: 228, status: "open" },
   { code: "B1", name: "Intermediate 1", hue: 248, status: "open" },
-  { code: "B2", name: "Intermediate 2", hue: 272, status: "prep", note: "Part 1 is being written and isn't available yet." },
-  { code: "C1", name: "Advanced 1", hue: 330, status: "prep", note: "In preparation and not available yet." },
+  { code: "B2", name: "Intermediate 2", hue: 272, status: "open" },
+  { code: "C1", name: "Advanced 1", hue: 330, status: "open" },
   { code: "C2", name: "Advanced 2", hue: 350, status: "prep", note: "In preparation and not available yet." },
 ];
 
@@ -17,6 +18,8 @@ const LEVEL_INTRO = {
   A1: "From single sentences to real conversations. Instructions switch to French, but grammar is still explained in English.",
   A2: "The level where you stop translating in your head.",
   B1: "The level where French starts to feel like your own, with objectives and section introductions in French too.",
+  B2: "The level where you argue, persuade and read the press without a dictionary. It is the level French universities ask for.",
+  C1: "The level where you choose your words for effect, in a meeting, a report or a debate, and French stops holding you back.",
 };
 
 // kind: "part" (8 modules + level check), "level" (both parts), "method" (everything).
@@ -27,6 +30,8 @@ const LEVEL_INTRO = {
 // A2, B1, and the packs that contain them); 16/10/2026: they open to pre-order. Set ready
 // back to true (or remove it) as each one is illustrated.
 // 25/10/2026: B1 and the Complete Method are illustrated and in stock on the server: on sale.
+// 28/10/2026: B2 and C1 in stock (stock-prive/b2-*, c1-*): on sale. Their module titles appear
+// once the workshop export (catalogue.json) includes them: tools/importer_catalogue.py.
 const PRODUCTS = [
   { id: "a0-complete", level: "A0", kind: "level", name: "French Introduction (A0)", contents: "8 modules + progress test", usd: 19, xaf: 10400,
     desc: "Start French from zero and reach your first conversation in eight modules. You'll learn to introduce yourself, use numbers, describe people and places, ask questions, use the present tense, tell the time, order in a café and talk about your day. The classic traps for English speakers are explained the moment they come up, from tu and vous to silent endings and je suis Paul versus je m'appelle Paul. A final progress test tells you whether you're ready for A1 or should review first." },
@@ -48,7 +53,20 @@ const PRODUCTS = [
     desc: "The second half of B1 teaches you to make a case and express shades of meaning. It covers concession and opposition, hypotheses, formal and informal registers, professional writing, debating an idea, and the linking words that hold a long answer together. It ends with the B1 progress test. B1 is the level most exams and employers ask for." },
   { id: "b1-complete", level: "B1", kind: "level", name: "French Intermediate 1 (B1) — Full Level", contents: "Parts 1 and 2 · 16 modules + 2 progress tests", usd: 49, xaf: 26900,
     desc: "The full B1 level in one purchase: sixteen modules and two progress tests, for less than buying the two parts separately. This is the level that lets you work, study and debate in French." },
-  { id: "complete-method", level: "A0–B1", kind: "method", name: "Pas à Pas — The Complete Method (Introduction to Intermediate)", contents: "56 modules + 7 progress tests", usd: 129, xaf: 70800,
+  { id: "b2-part1", level: "B2", kind: "part", part: 1, name: "French Intermediate 2 (B2) — Part 1", contents: "Modules 1–8 + progress test", usd: 29, xaf: 15900,
+    desc: "The first half of B2, where you stop getting by and start convincing. You'll argue a point and answer objections, follow fast native speech, and read real articles and opinion pieces without reaching for a dictionary. Every module comes as a book, an online edition, a one-page memo and two audio tracks (a dialogue and a dictation). A progress test with a self-assessment prepares you for Part 2." },
+  { id: "b2-part2", level: "B2", kind: "part", part: 2, name: "French Intermediate 2 (B2) — Part 2", contents: "Modules 9–16 + progress test", usd: 29, xaf: 15900,
+    desc: "The second half of B2 turns fluency into precision. You'll structure a long argument, write essays, letters and reports that hold together, and adapt your register to any listener. It ends with the B2 progress test and its self-assessment. B2 is the level French universities ask for, and the one the DELF B2 certifies." },
+  { id: "b2-complete", level: "B2", kind: "level", name: "French Intermediate 2 (B2) — Full Level", contents: "Parts 1 and 2 · 16 modules + 2 progress tests", usd: 49, xaf: 26900,
+    desc: "The full B2 level in one purchase: sixteen modules and two progress tests, for less than buying the two parts separately. This is the level for studying at a French-speaking university and working in French every day." },
+  { id: "c1-part1", level: "C1", kind: "part", part: 1, name: "French Advanced 1 (C1) — Part 1", contents: "Modules 1–8 + progress test", usd: 29, xaf: 15900,
+    desc: "The first half of C1, for learners who already speak with ease and now want style. You'll understand implicit meaning, irony and long, complex texts, and express yourself spontaneously, choosing the exact word rather than the nearest one. Every module comes as a book, an online edition, a one-page memo and two audio tracks (a dialogue and a dictation). A progress test with a self-assessment prepares you for Part 2." },
+  { id: "c1-part2", level: "C1", kind: "part", part: 2, name: "French Advanced 1 (C1) — Part 2", contents: "Modules 9–16 + progress test", usd: 29, xaf: 15900,
+    desc: "The second half of C1 is French for professional and academic life. You'll summarise and synthesise documents, write clear, well-built texts on complex subjects, and lead a discussion or a meeting with confidence. It ends with the C1 progress test and its self-assessment, and prepares you for the DALF C1." },
+  { id: "c1-complete", level: "C1", kind: "level", name: "French Advanced 1 (C1) — Full Level", contents: "Parts 1 and 2 · 16 modules + 2 progress tests", usd: 49, xaf: 26900,
+    desc: "The full C1 level in one purchase: sixteen modules and two progress tests, for less than buying the two parts separately. This is the level of the DALF C1, for university study, demanding jobs and a French that no longer holds you back." },
+  // The Complete Method stays A0 to B1 (Olivier, 28/10/2026): B2 and C1 are the next step after it.
+  { id: "complete-method", level: "A0–B1", kind: "method", includes: ["a0-complete", "a1-complete", "a2-complete", "b1-complete"], name: "Pas à Pas — The Complete Method (Introduction to Intermediate)", contents: "56 modules + 7 progress tests", usd: 129, xaf: 70800,
     desc: "Everything in one place: 56 modules and 7 progress tests, from the alphabet to defending your point of view in French. All four levels follow one method, with the same characters and the same way of explaining, so you never have to adjust to a new approach halfway through. The files are yours to keep, updates included." },
 ];
 
