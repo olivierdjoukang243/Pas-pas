@@ -854,3 +854,5 @@ main > section.block-band.view-first > .block { padding-top: 1rem; }
 .pay-icons li { line-height: 0; }
 .pay-icons svg { width: 44px; height: 28px; border-radius: 4px; box-shadow: 0 0 0 1px rgba(255,255,255,.12); }
 .footer { padding-bottom: 5.5rem; }
+.pay-icons a { display: block; line-height: 0; border-radius: 4px; transition: transform .15s, box-shadow .15s; }
+.pay-icons a:hover, .pay-icons a:focus-visible { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,.25); }

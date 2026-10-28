@@ -11,7 +11,7 @@ const SHOP = {
   seller: {
     name: "Olivier Djoukang",
     status: "a self-employed French teacher",
-    address: "Dschang, Cameroon",
+    address: "Cameroon",
   },
 };
 

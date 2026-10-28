@@ -1,6 +1,6 @@
 # Pas à Pas French — learn French step by step
 
-Vendeur : **Olivier Djoukang**, enseignant de français indépendant à Dschang (Cameroun), sous le nom commercial Pas à Pas FRENCH (depuis le 18/10/2026 : Notch Pay n'ouvre de compte marchand qu'aux personnes physiques résidant en Afrique francophone). Clientèle : les anglophones du monde entier.
+Vendeur : **Olivier Djoukang**, enseignant de français indépendant au Cameroun, sous le nom commercial Pas à Pas FRENCH (depuis le 18/10/2026 : Notch Pay n'ouvre de compte marchand qu'aux personnes physiques résidant en Afrique francophone). Clientèle : les anglophones du monde entier.
 
 Site de vente de la méthode Pas à Pas : cours de français pour adultes anglophones, écrits par Olivier Djoukang. Site statique (HTML/CSS/JS, sans compilation), en anglais.
 

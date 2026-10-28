@@ -20,7 +20,7 @@ ci-dessous.
 ```
 Subject: DMCA takedown notice — infringing copy of "Pas à Pas FRENCH"
 
-I am Olivier Djoukang, Dschang, Cameroon, the author and copyright owner of the course
+I am Olivier Djoukang, Cameroon, the author and copyright owner of the course
 "Pas à Pas FRENCH", which I sell under that name.
 
 1. Copyrighted work: "Pas à Pas FRENCH — [titre du produit]", © Olivier Djoukang,

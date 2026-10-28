@@ -160,6 +160,9 @@ const state = {
   level: store.get("level", "A0"),
 };
 if (!CURRENCIES[state.currency]) state.currency = guess.currency;
+// ?cur=XAF : a payment logo clicked on the policies page brings its currency with it
+{ const c = new URLSearchParams(location.search).get("cur");
+  if (CURRENCIES[c]) { state.currency = c; store.set("currencyChoice", c); } }
 if (!COUNTRIES.includes(state.country)) state.country = guess.country;
 const NAME_TO_CODE = Object.fromEntries(Object.entries(COUNTRY_NAMES).map(([c, n]) => [n, c]));
 // A country chosen by the visitor brings its currency, unless a currency was also picked by hand.
@@ -305,6 +308,15 @@ function renderCurrencyPicker() {
       flashUpdated();
     } });
 }
+
+// The payment logos of the footer lead to the courses, priced in the currency of that method
+// (US dollars for card, Apple Pay, Google Pay and PayPal; FCFA for MTN MoMo and Orange Money).
+document.addEventListener("click", (e) => {
+  const a = e.target.closest(".pay-link");
+  if (!a || !CURRENCIES[a.dataset.cur] || a.dataset.cur === state.currency) return;
+  state.currency = a.dataset.cur; store.set("currencyChoice", a.dataset.cur);
+  try { renderCurrencyPicker(); renderPrices(); } catch { /* a page without prices: the choice is kept */ }
+});
 
 const residenceNote = () => countryChosen() ? t("your choice", "votre choix") : t("detected automatically", "détecté automatiquement");
 
@@ -479,7 +491,7 @@ function renderLevelPanel() {
       <div class="lp-title"><span class="lp-code">${l.code}</span><div><h3>${l.name}</h3><p>${l.status === "prep" ? l.note : LEVEL_INTRO[l.code]}</p></div></div>
     </div>`;
   if (l.status === "prep") {
-    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} isn't on sale yet. Levels A0 to B1 are available now.</p>
+    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} isn't on sale yet. Levels from Introduction to Intermediate are available now.</p>
       <button class="btn btn-ghost mini" data-level="B1">See B1</button></div>`;
   } else {
     $("#levelPanel").innerHTML = head + `<ol class="prods">${products.map(productRow).join("")}</ol>`;
@@ -510,7 +522,7 @@ function renderCompare() {
   const rows = [
     ["How you pay", `One payment, from ${price(byId("a0-complete"))}, and the files are yours to keep`, "Monthly or yearly subscription", "Pay by the hour, every lesson"],
     ["Grammar explained in English", "Yes, in every module", "Short tips, mostly practice", "Depends on the tutor"],
-    ["Step-by-step course with progress tests", "56 modules, 7 progress tests, A0 to B1", "Yes, in the app", "Depends on the tutor"],
+    ["Step-by-step course with progress tests", "56 modules, 7 progress tests, Introduction to Intermediate", "Yes, in the app", "Depends on the tutor"],
     ["Works offline", "PDFs and MP3s on any device", "Partly, in the app", "No"],
     ["Answer keys to keep", "For every exercise", "Instant grading, nothing to keep", "Depends on the tutor"],
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
@@ -621,7 +633,7 @@ function openBuy(id, draft = null) {
   const pre = isPre(p);
   checkoutDraft = draft;
   openModal(`<form class="checkout" id="checkoutForm" data-product="${p.id}" novalidate>
-    <p class="eyebrow">${pre ? t("Pre-order · ", "Précommande · ") : ""}${p.level === "A0–B1" ? "A0 to B1" : p.kind === "live" ? t("Live", "Cours en direct") : p.level}${DEMO ? " · demo" : ""}</p>
+    <p class="eyebrow">${pre ? t("Pre-order · ", "Précommande · ") : ""}${p.level === "A0–B1" ? "Introduction to Intermediate" : p.kind === "live" ? t("Live", "Cours en direct") : p.level}${DEMO ? " · demo" : ""}</p>
     <h2>${L(p, "name")}</h2>
     <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} ${t("your time", "à votre heure")} · ${draft.minutes} min${draft.need ? ` · ${draft.need}` : ""}` : L(p, "contents")}</p>
     <div class="form-grid">
@@ -958,7 +970,7 @@ function renderReviews() {
   document.getElementById("reviewLd")?.remove();
   const ld = document.createElement("script");
   ld.type = "application/ld+json"; ld.id = "reviewLd";
-  ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Course", name: "Pas à Pas — The Complete Method (A0 to B1)",
+  ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Course", name: "Pas à Pas — The Complete Method (Introduction to Intermediate)",
     provider: { "@type": "Person", name: "Olivier Djoukang" },
     aggregateRating: { "@type": "AggregateRating", ratingValue: avg.toFixed(1), reviewCount: list.length },
     review: list.map((r) => ({ "@type": "Review", author: { "@type": "Person", name: r.name }, datePublished: r.date,
