@@ -883,3 +883,15 @@ body { font-size: 17px; }
   .block { padding: 4rem 0 1.5rem; }
   .sub { font-size: 1.02rem; }
 }
+/* Test de niveau, partie 2 : écoute et lecture */
+.comp-q audio { width: 100%; margin: .4em 0 .1em; }
+.comp-plays { display: block; color: #6b6f7b; font-size: .78rem; margin-bottom: .4em; }
+.comp-text { background: #faf8f4; border-left: 3px solid var(--bleu); padding: .7em .9em; border-radius: 6px; line-height: 1.6; margin: .4em 0; }
+.comp-question { margin: .6em 0 .4em; }
+.comp-options { display: grid; gap: .35em; }
+.comp-options label { display: flex; gap: .55em; align-items: flex-start; padding: .45em .6em; border: 1px solid #e7e1d6; border-radius: 10px; cursor: pointer; }
+.comp-options label:has(input:checked) { border-color: var(--bleu); background: #eef1fb; }
+.comp-result { margin: 1em 0; padding: .8em 1em; border-radius: 12px; background: #eef1fb; }
+.comp-result .eyebrow { margin: 0 0 .2em; }
+.comp-options input[type=radio] { width: auto; flex: none; margin: .3em 0 0; padding: 0; }
+.comp-options label span { flex: 1; text-align: left; }
