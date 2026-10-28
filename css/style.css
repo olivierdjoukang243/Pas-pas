@@ -895,3 +895,6 @@ body { font-size: 17px; }
 .comp-result .eyebrow { margin: 0 0 .2em; }
 .comp-options input[type=radio] { width: auto; flex: none; margin: .3em 0 0; padding: 0; }
 .comp-options label span { flex: 1; text-align: left; }
+.quiz-intro h2 { margin: .2em 0 .6em; }
+.intro-steps { padding-left: 1.2em; margin: 0 0 1em; line-height: 1.7; }
+.intro-steps li { margin: .3em 0; }
