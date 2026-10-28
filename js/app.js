@@ -560,6 +560,7 @@ function renderExams() {
     <h3>${p.exam}</h3>
     ${(examFormat(p.format) || {}).official ? `<p class="exam-official" lang="fr">${examFormat(p.format).official}</p>` : ""}
     <p class="exam-levels">${L(p, "contents")}</p>
+    <p class="exam-packs">${t("Up to 5 packs, all different: each purchase sends your next one.", "Jusqu'à 5 packs, tous différents : chaque achat vous envoie le suivant.")}</p>
     ${formatHTML(examFormat(p.format))}
     <div class="exam-buy"><span class="price">${price(p)}</span>${buyable(p) ? `<button class="btn btn-primary mini" data-buy="${p.id}">${buyLabel(p)}</button>` : `<span class="exam-wait">${t("Not on sale yet", "Pas encore en vente")}</span>`}</div>
     ${isPre(p) ? `<p class="pre-note">${t("Emailed as soon as they're written. Cancel anytime for a full refund.", "Envoyés dès qu'ils sont rédigés. Annulable à tout moment, remboursement intégral.")}</p>` : ""}
@@ -1204,7 +1205,7 @@ if (PAY_API) fetch(`${PAY_API}/stock`).then((r) => r.json()).then((d) => {
 if (new URLSearchParams(location.search).has("test") && typeof LEVEL_TEST !== "undefined") setTimeout(openTest, 300);
 
 // ====== Long texts: first lines shown, "Read more" unfolds the rest (nothing is removed) ======
-const CLAMPED = ".prod-body > p, .exam-card > p:not(.exam-levels):not(.exam-official):not(.pre-note), .motive > p:not(.motive-tag):not(.motive-path), .clamp-me";
+const CLAMPED = ".prod-body > p, .exam-card > p:not(.exam-levels):not(.exam-official):not(.pre-note):not(.exam-packs), .motive > p:not(.motive-tag):not(.motive-path), .clamp-me";
 function clampAll() {
   document.querySelectorAll(CLAMPED).forEach((el) => {
     if (el.dataset.clamped || !el.offsetParent) return;
