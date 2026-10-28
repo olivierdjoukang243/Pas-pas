@@ -59,7 +59,7 @@ Site de vente de la méthode Pas à Pas : cours de français pour adultes anglop
 | Produits, descriptions, prix, niveaux, séances en direct | `js/products.js` |
 | Heures possibles des séances, minimum de 3 heures, 3 par jour au plus, délais, visio (JaaS) | `LIVE_CONFIG` en haut de `js/live.js` |
 | Textes des politiques | `policies.html` |
-| Titres des modules | `js/modules.js`, **généré** : `python tools/importer_catalogue.py <atelier>/livraison/site/catalogue.json` après « Exporter pour le site » dans l'atelier |
+| Titres des modules | `js/modules.js`, **généré** : `python tools/importer_catalogue.py <atelier>/livraison/site/catalogue.json` après « Exporter pour le site » dans l'atelier, ou, si l'export oublie un niveau, `python tools/importer_stock.py <atelier>/livraison/boutique/stock-prive` (lit le `<h1>` des éditions en ligne vendues). Aucun des deux n'efface un produit absent de sa source. |
 | E-mail (alias Gmail), WhatsApp, adresse du serveur, identité du vendeur | `js/shop.js` (les champs vides restent masqués) |
 | Questions du test | `js/leveltest.js`, **généré** depuis l'atelier (`tools/importer_test.py`) |
 | Avis clients | automatiques (serveur) ; filtre dans `js/review-filter.js` ; avis recueillis ailleurs dans `js/reviews.js` |
