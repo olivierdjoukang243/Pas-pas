@@ -1,7 +1,6 @@
 // Généré par tools/importer_catalogue.py depuis l'export de l'atelier (2026-10-14T21:01:35).
 // Ne pas modifier à la main : les titres viennent des sources.
-// C1 (28/10/2026) : titres relevés par Olivier dans les fichiers, en attendant l'export de l'atelier.
-// B2 : pas encore, tant que les 16 titres ne sont pas vérifiés.
+// B2 et C1 (28/10/2026) : titres lus dans les éditions en ligne du stock (<h1>), en attendant l'export de l'atelier.
 const MODULES = {
  "a0-complete": {
   "modules": [
@@ -393,6 +392,118 @@ const MODULES = {
   "bilan": {
    "titre": "Level Check: The End of B1",
    "resume": "Bilan de la seconde partie du B1. Vingt-quatre compétences testées une par une, un profil qui montre où vous hésitez encore, et un plan de révision qui nomme la section à rouvrir."
+  }
+ },
+ "b2-part1": {
+  "modules": [
+   {
+    "n": 1,
+    "titre": "A Space That Changes Everything",
+    "resume": "Module 1 of 8 — level B2, first part. La concession.",
+    "exercices": null
+   },
+   {
+    "n": 2,
+    "titre": "The Mood Is the Whole Difference",
+    "resume": "Module 2 of 8 — level B2, first part. La conséquence et le but.",
+    "exercices": null
+   },
+   {
+    "n": 3,
+    "titre": "Who Is Doing the Doing?",
+    "resume": "Module 3 of 8 — level B2, first part. Les accords qui restent.",
+    "exercices": null
+   },
+   {
+    "n": 4,
+    "titre": "The Word That Turns the Sentence",
+    "resume": "Module 4 of 8 — level B2, first part. L’inversion stylistique.",
+    "exercices": null
+   },
+   {
+    "n": 5,
+    "titre": "The Tense You Will Only Read",
+    "resume": "Module 5 of 8 — level B2, first part. Le subjonctif imparfait en lecture.",
+    "exercices": null
+   },
+   {
+    "n": 6,
+    "titre": "Saying It Again Without Repeating It",
+    "resume": "Module 6 of 8 — level B2, first part. Les pronoms neutres et la reprise.",
+    "exercices": null
+   },
+   {
+    "n": 7,
+    "titre": "Holding a Long Sentence Together",
+    "resume": "Module 7 of 8 — level B2, first part. La phrase complexe.",
+    "exercices": null
+   },
+   {
+    "n": 8,
+    "titre": "What the Verb Demands",
+    "resume": "Module 8 of 8 — level B2, first part. Le régime des verbes.",
+    "exercices": null
+   }
+  ],
+  "bilan": {
+   "titre": "Level Check: Halfway Through B2",
+   "resume": "Bilan de la première partie du B2."
+  }
+ },
+ "b2-part2": {
+  "modules": [
+   {
+    "n": 1,
+    "titre": "What She Said She Would Do",
+    "resume": "Module 1 of 8 — level B2, second part. Le discours rapporté au passé.",
+    "exercices": null
+   },
+   {
+    "n": 2,
+    "titre": "Because Is Not Enough",
+    "resume": "Module 2 of 8 — level B2, second part. La cause.",
+    "exercices": null
+   },
+   {
+    "n": 3,
+    "titre": "While Others Wait",
+    "resume": "Module 3 of 8 — level B2, second part. L’opposition.",
+    "exercices": null
+   },
+   {
+    "n": 4,
+    "titre": "Suppose It Rained",
+    "resume": "Module 4 of 8 — level B2, second part. L’hypothèse nuancée.",
+    "exercices": null
+   },
+   {
+    "n": 5,
+    "titre": "Never, Nothing, Nobody",
+    "resume": "Module 5 of 8 — level B2, second part. La négation complexe.",
+    "exercices": null
+   },
+   {
+    "n": 6,
+    "titre": "The Smallest Words",
+    "resume": "Module 6 of 8 — level B2, second part. Les articles et les déterminants.",
+    "exercices": null
+   },
+   {
+    "n": 7,
+    "titre": "Building Words From Words",
+    "resume": "Module 7 of 8 — level B2, second part. La formation des mots.",
+    "exercices": null
+   },
+   {
+    "n": 8,
+    "titre": "Building an Argument",
+    "resume": "Module 8 of 8 — level B2, second part. L’argumentation.",
+    "exercices": null
+   }
+  ],
+  "bilan": {
+   "titre": "Level Check: The End of B2",
+   "resume": "Bilan de la seconde partie du B2."
   }
  },
  "c1-part1": {
