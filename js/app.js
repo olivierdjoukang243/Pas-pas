@@ -160,6 +160,9 @@ const state = {
   level: store.get("level", "A0"),
 };
 if (!CURRENCIES[state.currency]) state.currency = guess.currency;
+// ?cur=XAF : a payment logo clicked on the policies page brings its currency with it
+{ const c = new URLSearchParams(location.search).get("cur");
+  if (CURRENCIES[c]) { state.currency = c; store.set("currencyChoice", c); } }
 if (!COUNTRIES.includes(state.country)) state.country = guess.country;
 const NAME_TO_CODE = Object.fromEntries(Object.entries(COUNTRY_NAMES).map(([c, n]) => [n, c]));
 // A country chosen by the visitor brings its currency, unless a currency was also picked by hand.
@@ -305,6 +308,15 @@ function renderCurrencyPicker() {
       flashUpdated();
     } });
 }
+
+// The payment logos of the footer lead to the courses, priced in the currency of that method
+// (US dollars for card, Apple Pay, Google Pay and PayPal; FCFA for MTN MoMo and Orange Money).
+document.addEventListener("click", (e) => {
+  const a = e.target.closest(".pay-link");
+  if (!a || !CURRENCIES[a.dataset.cur] || a.dataset.cur === state.currency) return;
+  state.currency = a.dataset.cur; store.set("currencyChoice", a.dataset.cur);
+  try { renderCurrencyPicker(); renderPrices(); } catch { /* a page without prices: the choice is kept */ }
+});
 
 const residenceNote = () => countryChosen() ? t("your choice", "votre choix") : t("detected automatically", "détecté automatiquement");
 
@@ -479,7 +491,7 @@ function renderLevelPanel() {
       <div class="lp-title"><span class="lp-code">${l.code}</span><div><h3>${l.name}</h3><p>${l.status === "prep" ? l.note : LEVEL_INTRO[l.code]}</p></div></div>
     </div>`;
   if (l.status === "prep") {
-    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} isn't on sale yet. Levels A0 to B1 are available now.</p>
+    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} isn't on sale yet. Levels from Introduction to Intermediate are available now.</p>
       <button class="btn btn-ghost mini" data-level="B1">See B1</button></div>`;
   } else {
     $("#levelPanel").innerHTML = head + `<ol class="prods">${products.map(productRow).join("")}</ol>`;
@@ -510,7 +522,7 @@ function renderCompare() {
   const rows = [
     ["How you pay", `One payment, from ${price(byId("a0-complete"))}, and the files are yours to keep`, "Monthly or yearly subscription", "Pay by the hour, every lesson"],
     ["Grammar explained in English", "Yes, in every module", "Short tips, mostly practice", "Depends on the tutor"],
-    ["Step-by-step course with progress tests", "56 modules, 7 progress tests, A0 to B1", "Yes, in the app", "Depends on the tutor"],
+    ["Step-by-step course with progress tests", "56 modules, 7 progress tests, Introduction to Intermediate", "Yes, in the app", "Depends on the tutor"],
     ["Works offline", "PDFs and MP3s on any device", "Partly, in the app", "No"],
     ["Answer keys to keep", "For every exercise", "Instant grading, nothing to keep", "Depends on the tutor"],
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
@@ -548,10 +560,9 @@ function renderExams() {
     <h3>${p.exam}</h3>
     ${(examFormat(p.format) || {}).official ? `<p class="exam-official" lang="fr">${examFormat(p.format).official}</p>` : ""}
     <p class="exam-levels">${L(p, "contents")}</p>
-    <p>${L(p, "desc")}</p>
     ${formatHTML(examFormat(p.format))}
     <div class="exam-buy"><span class="price">${price(p)}</span>${buyable(p) ? `<button class="btn btn-primary mini" data-buy="${p.id}">${buyLabel(p)}</button>` : `<span class="exam-wait">${t("Not on sale yet", "Pas encore en vente")}</span>`}</div>
-    ${isPre(p) ? `<p class="pre-note">${t("The tests are being written.", "Les sujets sont en cours de rédaction.")} ${PRE_NOTE}</p>` : ""}
+    ${isPre(p) ? `<p class="pre-note">${t("Emailed as soon as they're written. Cancel anytime for a full refund.", "Envoyés dès qu'ils sont rédigés. Annulable à tout moment, remboursement intégral.")}</p>` : ""}
   </div>`).join("") + EXAMS_SOON.map((e) => `<div class="pay-card exam-card" data-group="delf">
     <span class="tag soon">${t("Coming soon", "Bientôt")}</span>
     <h3>${e.name}</h3>
@@ -621,7 +632,7 @@ function openBuy(id, draft = null) {
   const pre = isPre(p);
   checkoutDraft = draft;
   openModal(`<form class="checkout" id="checkoutForm" data-product="${p.id}" novalidate>
-    <p class="eyebrow">${pre ? t("Pre-order · ", "Précommande · ") : ""}${p.level === "A0–B1" ? "A0 to B1" : p.kind === "live" ? t("Live", "Cours en direct") : p.level}${DEMO ? " · demo" : ""}</p>
+    <p class="eyebrow">${pre ? t("Pre-order · ", "Précommande · ") : ""}${p.level === "A0–B1" ? "Introduction to Intermediate" : p.kind === "live" ? t("Live", "Cours en direct") : p.level}${DEMO ? " · demo" : ""}</p>
     <h2>${L(p, "name")}</h2>
     <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} ${t("your time", "à votre heure")} · ${draft.minutes} min${draft.need ? ` · ${draft.need}` : ""}` : L(p, "contents")}</p>
     <div class="form-grid">
@@ -800,9 +811,22 @@ if (PAY_API && $("#accountLink")) {
 
 // ====== Placement test ======
 // The questions come from the level checks of the method (js/leveltest.js, exported by the atelier).
-// The test climbs step by step, from A0 to B1 Part 2, and stops at the first step that is too hard.
+// The test climbs step by step, from A0 to the last level check exported (B1 Part 2 today, up to C2
+// as their level checks are written), and stops at the first step that is too hard.
 const TEST_PER_STEP = 4;
-let testStep = 0, testDraw = [], testDone = [];
+// Time counts too: a step answered right but very slowly is known, not yet fluent. Target seconds per
+// answer, by level, as in the timed self-assessments of the course (atelier: bilan_web.py, RYTHME);
+// a step passed in more than SLOW times the target is a step to consolidate, where we suggest starting.
+const TEST_SECONDS = { A0: 40, A1: 45, A2: 50, B1: 55, B2: 60, C1: 65, C2: 70 };
+const TEST_SLOW = 2;
+let testStep = 0, testDraw = [], testDone = [], testActive = 0, testSince = 0;
+const stepLevel = (step) => (step.product || step.name || "").slice(0, 2).toUpperCase();
+// time only counts while the test is on screen (a tab left open doesn't make anyone slow)
+const testClock = () => testActive + (testSince && !document.hidden ? Date.now() - testSince : 0);
+document.addEventListener("visibilitychange", () => {
+  if (!testSince && !testActive) return;
+  if (document.hidden) { testActive = testClock(); testSince = 0; } else if (document.getElementById("testForm")) testSince = Date.now();
+});
 const pick = (arr, n) => arr.map((x) => [Math.random(), x]).sort((a, b) => a[0] - b[0]).slice(0, n).map((x) => x[1]);
 const normalise = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
   .replace(/[\u2019\u02bc]/g, "'").toLowerCase().replace(/[.!?;:,]/g, "").replace(/\s+/g, " ").trim();
@@ -823,6 +847,7 @@ function openTest() {
 
 function renderTestStep() {
   const steps = LEVEL_TEST.steps, step = steps[testStep];
+  testActive = 0; testSince = Date.now();
   openModal(`<form class="quiz" id="testForm" autocomplete="off">
     <div class="quiz-head"><span class="eyebrow">Level test · step ${testStep + 1} of ${steps.length}</span><span class="chip">${step.name}</span></div>
     <div class="bar"><span style="width:${(testStep / steps.length) * 100}%"></span></div>
@@ -843,8 +868,11 @@ function submitTestStep(form) {
   const data = new FormData(form);
   const wrong = testDraw.filter((t, i) => normalise(data.get("tq" + i)) !== normalise(t.answer));
   const right = testDraw.length - wrong.length;
-  testDone.push({ step: LEVEL_TEST.steps[testStep], right, total: testDraw.length, wrong });
+  const seconds = Math.round(testClock() / 1000); testSince = 0;
+  const target = TEST_SECONDS[stepLevel(LEVEL_TEST.steps[testStep])] || 55;
   const passed = (100 * right) / testDraw.length >= LEVEL_TEST.pass;
+  const slow = passed && seconds > TEST_SLOW * target * testDraw.length;
+  testDone.push({ step: LEVEL_TEST.steps[testStep], right, total: testDraw.length, wrong, seconds, target, slow });
   if (passed && testStep + 1 < LEVEL_TEST.steps.length) {
     testStep++;
     testDraw = drawStep(LEVEL_TEST.steps[testStep]);
@@ -853,15 +881,22 @@ function submitTestStep(form) {
 }
 
 function testResult(finishedAll) {
-  const last = testDone[testDone.length - 1];
-  const passedSteps = testDone.slice(0, finishedAll ? undefined : -1).map((d) => d.step.name);
+  // where to start: the first step missed, or an earlier one passed but too slowly
+  const slowStep = testDone.find((d) => d.slow);
+  if (slowStep) finishedAll = false;
+  const last = slowStep || testDone[testDone.length - 1];
+  const passedSteps = testDone.slice(0, testDone.indexOf(last) + (finishedAll ? 1 : 0)).map((d) => d.step.name);
+  const total = testDone.reduce((n, d) => n + d.seconds, 0);
+  const topLevel = stepLevel(LEVEL_TEST.steps[LEVEL_TEST.steps.length - 1]);
+  const minutes = total >= 60 ? `${Math.floor(total / 60)} min ${total % 60} s` : `${total} s`;
   const p = finishedAll ? null : byId(last.step.product);
   if (p) { state.level = p.level; store.set("level", p.level); renderLevelTabs(); renderLevelPanel(); }
   const live = byId("live-60");
   openModal(`<div class="quiz quiz-result">
     <p class="eyebrow">Your result</p>
-    <h2>${finishedAll ? "You've reached the end of <em>B1</em>" : `Start with <em>${last.step.name}</em>`}</h2>
-    <p>${passedSteps.length ? `You passed ${passedSteps.join(", ")}. ` : ""}${finishedAll ? "B2, C1 and C2 are in preparation. In the meantime, a live lesson with Olivier is the best next step." : `You got ${last.right} out of ${last.total} right at this step.`}</p>
+    <h2>${finishedAll ? `You've reached the end of <em>${topLevel}</em>` : `Start with <em>${last.step.name}</em>`}</h2>
+    <p>${passedSteps.length ? `You passed ${passedSteps.join(", ")}. ` : ""}${finishedAll ? (topLevel === "C2" ? "That's the top of the scale. A live lesson with Olivier keeps it sharp." : "The next levels are in preparation. In the meantime, a live lesson with Olivier is the best next step.") : slowStep ? `You got ${last.right} out of ${last.total} right at this step, but it took you ${Math.round(last.seconds / last.total)} seconds per answer, where about ${last.target} is comfortable at this level. You know it; this course makes it automatic.` : `You got ${last.right} out of ${last.total} right at this step.`}</p>
+    <p class="quiz-note">Time on the test: ${minutes}. Your answers and your speed both count.</p>
     ${!finishedAll && last.wrong.length ? `<p class="quiz-note">Among other things, this course covers:</p><ul class="quiz-skills">${last.wrong.map((w) => `<li>${esc(w.skill)}</li>`).join("")}</ul>` : ""}
     <ul class="pick-list">${(p ? (p.ready === false ? [p, live] : [p]) : [live]).map((x) => `<li><span>${x.name}</span><span><strong>${price(x)}</strong> ${!buyable(x) ? `<span class="tag soon">In preparation</span>` : `<button class="btn btn-primary mini" ${x.kind === "live" ? `data-book="${x.id}"` : `data-buy="${x.id}"`}>${x.kind === "live" ? "Book" : buyLabel(x)}</button>`}</span></li>`).join("")}</ul>
     ${p && p.ready === false ? `<p class="quiz-note">${isPre(p) ? `This course is still being illustrated. Pre-order it now and we'll send it as soon as it's ready, with a full refund if you cancel before then.` : "This course is still being illustrated and isn't on sale yet."} In the meantime, a live lesson with Olivier can focus on exactly these points.</p>` : ""}
@@ -958,7 +993,7 @@ function renderReviews() {
   document.getElementById("reviewLd")?.remove();
   const ld = document.createElement("script");
   ld.type = "application/ld+json"; ld.id = "reviewLd";
-  ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Course", name: "Pas à Pas — The Complete Method (A0 to B1)",
+  ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Course", name: "Pas à Pas — The Complete Method (Introduction to Intermediate)",
     provider: { "@type": "Person", name: "Olivier Djoukang" },
     aggregateRating: { "@type": "AggregateRating", ratingValue: avg.toFixed(1), reviewCount: list.length },
     review: list.map((r) => ({ "@type": "Review", author: { "@type": "Person", name: r.name }, datePublished: r.date,

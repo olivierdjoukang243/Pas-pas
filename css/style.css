@@ -854,3 +854,32 @@ main > section.block-band.view-first > .block { padding-top: 1rem; }
 .pay-icons li { line-height: 0; }
 .pay-icons svg { width: 44px; height: 28px; border-radius: 4px; box-shadow: 0 0 0 1px rgba(255,255,255,.12); }
 .footer { padding-bottom: 5.5rem; }
+.pay-icons a { display: block; line-height: 0; border-radius: 4px; transition: transform .15s, box-shadow .15s; }
+.pay-icons a:hover, .pay-icons a:focus-visible { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,.25); }
+
+/* Lecture légère (28/10/2026) : un visiteur pressé lit en diagonale. Moins de texte à l'écran,
+   des lignes courtes, plus d'air entre les blocs, des cartes plus calmes. */
+body { font-size: 17px; }
+.block { padding: 6rem 0 2rem; }
+.block-head { margin-bottom: 2.4rem; }
+.section-title { line-height: 1.15; }
+.sub { font-size: 1.1rem; color: #555a66; max-width: 52ch; margin-top: .3em; }
+.clamp { --lines: 2; }
+.motive { padding: 1.7rem 1.6rem; }
+.motive h3 { margin-bottom: .4em; }
+.motive .motive-path { font-size: 1rem; color: #3b3f4a; line-height: 1.6; margin-bottom: 1.4em; }
+.more-info { margin-top: 1rem; max-width: 62ch; }
+.more-info summary { cursor: pointer; color: var(--bleu); font-weight: 600; }
+.more-info p { color: #555a66; line-height: 1.7; }
+.ready-check p, .ready-check li { line-height: 1.7; }
+.ready-check ol { padding-left: 1.2em; }
+.exam-card .pre-note { font-size: .8rem; color: #6b6f7b; }
+.card, .pay-card, .motive, .exam-card { box-shadow: 0 2px 14px rgba(29,47,111,.05); }
+.trust { gap: .8rem; }
+.trust-item { padding: .9rem 1rem; }
+.trust-item p { font-size: .84rem; line-height: 1.5; opacity: .8; }
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .block { padding: 4rem 0 1.5rem; }
+  .sub { font-size: 1.02rem; }
+}

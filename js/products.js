@@ -3,7 +3,7 @@
 // (they are not converted). Never add a module title, product or price that is not confirmed.
 
 const LEVELS = [
-  { code: "A0", name: "Absolute Beginner", hue: 190, status: "open" },
+  { code: "A0", name: "Introduction", hue: 190, status: "open" },
   { code: "A1", name: "Beginner 1", hue: 210, status: "open" },
   { code: "A2", name: "Beginner 2", hue: 228, status: "open" },
   { code: "B1", name: "Intermediate 1", hue: 248, status: "open" },
@@ -28,7 +28,7 @@ const LEVEL_INTRO = {
 // back to true (or remove it) as each one is illustrated.
 // 25/10/2026: B1 and the Complete Method are illustrated and in stock on the server: on sale.
 const PRODUCTS = [
-  { id: "a0-complete", level: "A0", kind: "level", name: "French Absolute Beginner (A0)", contents: "8 modules + progress test", usd: 19, xaf: 10400,
+  { id: "a0-complete", level: "A0", kind: "level", name: "French Introduction (A0)", contents: "8 modules + progress test", usd: 19, xaf: 10400,
     desc: "Start French from zero and reach your first conversation in eight modules. You'll learn to introduce yourself, use numbers, describe people and places, ask questions, use the present tense, tell the time, order in a café and talk about your day. The classic traps for English speakers are explained the moment they come up, from tu and vous to silent endings and je suis Paul versus je m'appelle Paul. A final progress test tells you whether you're ready for A1 or should review first." },
   { id: "a1-part1", level: "A1", kind: "part", part: 1, name: "French Beginner 1 (A1) — Part 1", contents: "Modules 1–8 + progress test", usd: 29, xaf: 15900,
     desc: "The first half of A1, where you move from single sentences to real conversations. You'll talk about the past with the passé composé, make plans, give opinions and preferences, shop and talk about quantities, give directions, and describe your home and daily routine. A progress test at the end prepares you for Part 2." },
@@ -48,7 +48,7 @@ const PRODUCTS = [
     desc: "The second half of B1 teaches you to make a case and express shades of meaning. It covers concession and opposition, hypotheses, formal and informal registers, professional writing, debating an idea, and the linking words that hold a long answer together. It ends with the B1 progress test. B1 is the level most exams and employers ask for." },
   { id: "b1-complete", level: "B1", kind: "level", name: "French Intermediate 1 (B1) — Full Level", contents: "Parts 1 and 2 · 16 modules + 2 progress tests", usd: 49, xaf: 26900,
     desc: "The full B1 level in one purchase: sixteen modules and two progress tests, for less than buying the two parts separately. This is the level that lets you work, study and debate in French." },
-  { id: "complete-method", level: "A0–B1", kind: "method", name: "Pas à Pas — The Complete Method (A0 to B1)", contents: "56 modules + 7 progress tests", usd: 129, xaf: 70800,
+  { id: "complete-method", level: "A0–B1", kind: "method", name: "Pas à Pas — The Complete Method (Introduction to Intermediate)", contents: "56 modules + 7 progress tests", usd: 129, xaf: 70800,
     desc: "Everything in one place: 56 modules and 7 progress tests, from the alphabet to defending your point of view in French. All four levels follow one method, with the same characters and the same way of explaining, so you never have to adjust to a new approach halfway through. The files are yours to keep, updates included." },
 ];
 
