@@ -420,7 +420,7 @@ const waitTag = (p) => SOON.has(p.id) ? t("Coming soon", "Bientôt disponible") 
 const buyLabel = (p) => isPre(p) ? t("Pre-order", "Précommander") : t("Buy", "Acheter");
 // The parts of a pack already deliverable: sent at once with a pre-order of the pack.
 const readyParts = (p) => p.kind === "level" ? PRODUCTS.filter((x) => x.level === p.level && x.kind === "part" && x.ready !== false && !SOON.has(x.id))
-  : p.kind === "method" ? PRODUCTS.filter((x) => ["part", "level"].includes(x.kind) && x.ready !== false && !SOON.has(x.id) && !(x.kind === "part" && PRODUCTS.some((l) => l.kind === "level" && l.level === x.level && l.ready !== false))) : [];
+  : p.kind === "method" ? PRODUCTS.filter((x) => ["part", "level"].includes(x.kind) && inMethod(x) && x.ready !== false && !SOON.has(x.id) && !(x.kind === "part" && PRODUCTS.some((l) => l.kind === "level" && l.level === x.level && l.ready !== false))) : [];
 const PRE_NOTE = t("We'll email your files as soon as they're ready, and you can cancel for a full refund until then.",
   "Nous vous envoyons les fichiers par e-mail dès qu'ils sont prêts, et vous pouvez annuler jusque-là pour un remboursement intégral.");
 
@@ -431,8 +431,10 @@ function levelSaving(code) {
   if (parts.length < 2 || !full) return null;
   return { usd: parts.reduce((s, p) => s + p.usd, 0) - full.usd, xaf: parts.reduce((s, p) => s + p.xaf, 0) - full.xaf };
 }
+// The method holds the levels it lists (A0 to B1), not every level on sale.
+const inMethod = (x) => byId("complete-method").includes.some((id) => id.slice(0, 2).toUpperCase() === x.level);
 function methodSaving() {
-  const levels = PRODUCTS.filter((p) => p.kind === "level");
+  const levels = PRODUCTS.filter((p) => p.kind === "level" && inMethod(p));
   const m = byId("complete-method");
   return { usd: levels.reduce((s, p) => s + p.usd, 0) - m.usd, xaf: levels.reduce((s, p) => s + p.xaf, 0) - m.xaf };
 }
@@ -491,8 +493,8 @@ function renderLevelPanel() {
       <div class="lp-title"><span class="lp-code">${l.code}</span><div><h3>${l.name}</h3><p>${l.status === "prep" ? l.note : LEVEL_INTRO[l.code]}</p></div></div>
     </div>`;
   if (l.status === "prep") {
-    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} isn't on sale yet. Levels from Introduction to Advanced 1 (C1) are available now.</p>
-      <button class="btn btn-ghost mini" data-level="B1">See B1</button></div>`;
+    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} isn't on sale yet. Levels from Introduction to Advanced 1 are available now.</p>
+      <button class="btn btn-ghost mini" data-level="C1">See C1</button></div>`;
   } else {
     $("#levelPanel").innerHTML = head + `<ol class="prods">${products.map(productRow).join("")}</ol>`;
   }
@@ -512,6 +514,7 @@ function renderMethod() {
     <div class="method-buy">
       <span class="price">${price(m)}</span>
       ${!buyable(m) ? `<span class="tag soon">${SOON.has(m.id) ? "Coming soon" : "In preparation: on sale once every level is illustrated"}</span>` : `<button class="btn btn-light" data-buy="${m.id}">${isPre(m) ? "Pre-order the Complete Method" : "Buy the Complete Method"}</button>`}
+      <span class="pre-note light">Finished B1? Carry on with <button class="link-btn" data-level="B2" data-scroll="levels">B2</button> and <button class="link-btn" data-level="C1" data-scroll="levels">C1</button>, sold level by level.</span>
       ${isPre(m) ? `<span class="pre-note light">${readyParts(m).map((x) => shortName(x)).join(", ")} can already be bought level by level. This pre-order sends the whole method as soon as the last level is illustrated, and you can cancel for a full refund until then.</span>` : ""}
     </div>`;
 }
@@ -522,7 +525,7 @@ function renderCompare() {
   const rows = [
     ["How you pay", `One payment, from ${price(byId("a0-complete"))}, and the files are yours to keep`, "Monthly or yearly subscription", "Pay by the hour, every lesson"],
     ["Grammar explained in English", "Yes, in every module", "Short tips, mostly practice", "Depends on the tutor"],
-    ["Step-by-step course with progress tests", "88 modules, 11 progress tests, Introduction to Advanced", "Yes, in the app", "Depends on the tutor"],
+    ["Step-by-step course with progress tests", "88 modules, 11 progress tests, Introduction to Advanced 1", "Yes, in the app", "Depends on the tutor"],
     ["Works offline", "PDFs and MP3s on any device", "Partly, in the app", "No"],
     ["Answer keys to keep", "For every exercise", "Instant grading, nothing to keep", "Depends on the tutor"],
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
@@ -968,13 +971,16 @@ function testResult(finishedAll) {
   const total = testDone.reduce((n, d) => n + d.seconds, 0) + compDone.reduce((n, d) => n + d.seconds, 0);
   const topLevel = stepLevel(LEVEL_TEST.steps[LEVEL_TEST.steps.length - 1]);
   const minutes = total >= 60 ? `${Math.floor(total / 60)} min ${total % 60} s` : `${total} s`;
-  const p = finishedAll ? null : byId(last.step.product);
+  // passed every step: the next level on sale, if any (B1 → B2 Part 1)
+  const nextCode = (LEVELS[LEVELS.findIndex((l) => l.code === topLevel) + 1] || {}).code;
+  const next = finishedAll ? PRODUCTS.find((x) => x.level === nextCode && x.part === 1 && buyable(x)) : null;
+  const p = finishedAll ? next : byId(last.step.product);
   if (p) { state.level = p.level; store.set("level", p.level); renderLevelTabs(); renderLevelPanel(); }
   const live = byId("live-60");
   openModal(`<div class="quiz quiz-result">
     <p class="eyebrow">Your result</p>
     <h2>${finishedAll ? `You know all the grammar up to <em>${topLevel}</em>` : `Start with <em>${last.step.name}</em>`}</h2>
-    <p>${passedSteps.length > 2 ? `You passed every grammar step from ${passedSteps[0]} to ${passedSteps[passedSteps.length - 1]}. ` : passedSteps.length ? `You passed ${passedSteps.join(" and ")}. ` : ""}${finishedAll ? (topLevel === "C2" ? "That's the top of the scale. A live lesson with Olivier keeps it sharp." : "The next levels are in preparation. In the meantime, a live lesson with Olivier is the best next step.") : slowStep ? `You got ${last.right} out of ${last.total} right here, but you needed about ${Math.round(last.seconds / last.total)} seconds per answer, when ${last.target} is comfortable at this level. You know these points: this course will make them automatic.` : `You got ${last.right} out of ${last.total} right at this step.`}</p>
+    <p>${passedSteps.length > 2 ? `You passed every grammar step from ${passedSteps[0]} to ${passedSteps[passedSteps.length - 1]}. ` : passedSteps.length ? `You passed ${passedSteps.join(" and ")}. ` : ""}${finishedAll ? (topLevel === "C2" ? "That's the top of the scale. A live lesson with Olivier keeps it sharp." : next ? `Your next step is ${next.level}: start with ${shortName(next)}.` : "The next levels are in preparation. In the meantime, a live lesson with Olivier is the best next step.") : slowStep ? `You got ${last.right} out of ${last.total} right here, but you needed about ${Math.round(last.seconds / last.total)} seconds per answer, when ${last.target} is comfortable at this level. You know these points: this course will make them automatic.` : `You got ${last.right} out of ${last.total} right at this step.`}</p>
     ${compSummary()}
     <p class="quiz-note">You spent ${minutes} on the test. Your level takes into account both your answers and how quickly you gave them.</p>
     ${!finishedAll && last.wrong.length ? `<p class="quiz-note">This course will help you with:</p><ul class="quiz-skills">${last.wrong.map((w) => `<li>${esc(w.skill)}</li>`).join("")}</ul>` : ""}
