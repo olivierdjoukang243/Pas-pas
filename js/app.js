@@ -840,7 +840,7 @@ function drawStep(step) {
 
 function openTest() {
   if (typeof LEVEL_TEST === "undefined") return;
-  testStep = 0; testDone = [];
+  testStep = 0; testDone = []; compDone = [];
   testDraw = drawStep(LEVEL_TEST.steps[0]);
   renderTestStep();
 }
@@ -877,7 +877,70 @@ function submitTestStep(form) {
     testStep++;
     testDraw = drawStep(LEVEL_TEST.steps[testStep]);
     renderTestStep();
-  } else testResult(passed);
+  } else if (LEVEL_TEST.comprehension && LEVEL_TEST.comprehension.length) { testGrammarAll = passed; compLevel = 0; compDone = []; renderComp(); }
+  else testResult(passed);
+}
+
+// ====== Part 2: listening and reading, A1 to C2 ======
+// Questions written for the test (atelier: test-niveau/, positionnement.py), audio by ElevenLabs.
+// Each level: two recordings (two plays each, as in the exams) and two texts, one answer each.
+// 3 out of 4 right, in less than TEST_SLOW times the comfortable time, opens the next level.
+const COMP_PASS = 3, COMP_PLAYS = 2;
+let compLevel = 0, compDone = [], testGrammarAll = false;
+function renderComp() {
+  const levels = LEVEL_TEST.comprehension, lv = levels[compLevel];
+  openModal(`<form class="quiz" id="compForm" autocomplete="off">
+    <div class="quiz-head"><span class="eyebrow">Part 2 · Listening and reading · ${compLevel + 1} of ${levels.length}</span><span class="chip">${lv.level}</span></div>
+    <div class="bar"><span style="width:${(compLevel / levels.length) * 100}%"></span></div>
+    ${compLevel === 0 ? `<p class="quiz-note">Now, real French. Listen to each recording (twice at most, as in the exams) or read each text, then choose one answer.</p>` : ""}
+    ${lv.items.map((it, i) => `<div class="quiz-q comp-q">
+      <p class="quiz-inst">${it.type === "listen" ? `🎧 Listening ${lv.items.slice(0, i + 1).filter((x) => x.type === "listen").length}` : `📄 Reading ${lv.items.slice(0, i + 1).filter((x) => x.type === "read").length}`}</p>
+      ${it.type === "listen" ? `<audio class="comp-audio" controls controlsList="nodownload noplaybackrate" preload="none" src="${esc(it.audio)}" data-plays="0"></audio><small class="comp-plays">${COMP_PLAYS} plays</small>`
+        : `<div class="comp-text" lang="fr">${esc(it.text).replace(/\n/g, "<br>")}</div>`}
+      <p class="comp-question" ${compLevel >= 2 ? 'lang="fr"' : ""}><b>${esc(it.question)}</b></p>
+      <div class="comp-options">${it.options.map((o, k) => `<label><input type="radio" name="c${i}" value="${k}"> <span ${compLevel >= 2 ? 'lang="fr"' : ""}>${esc(o)}</span></label>`).join("")}</div>
+    </div>`).join("")}
+    <button class="btn btn-primary btn-block" type="submit">${compLevel + 1 < levels.length ? "Next level" : "See my level"}</button>
+  </form>`);
+  testActive = 0; testSince = Date.now();
+}
+// two plays per recording, then the player locks
+document.addEventListener("play", (e) => {
+  const a = e.target;
+  if (!a.classList || !a.classList.contains("comp-audio")) return;
+  document.querySelectorAll(".comp-audio").forEach((x) => { if (x !== a) x.pause(); });
+  if (a.currentTime < 0.3) a.dataset.plays = +a.dataset.plays + 1;
+  const left = COMP_PLAYS - +a.dataset.plays;
+  const note = a.nextElementSibling; if (note) note.textContent = left > 0 ? `${left} play left` : "Last play";
+}, true);
+document.addEventListener("ended", (e) => {
+  const a = e.target;
+  if (a.classList && a.classList.contains("comp-audio") && +a.dataset.plays >= COMP_PLAYS) {
+    a.controls = false; a.style.display = "none"; const n = a.nextElementSibling; if (n) n.textContent = "Played twice.";
+  }
+}, true);
+function submitComp(form) {
+  const data = new FormData(form), lv = LEVEL_TEST.comprehension[compLevel];
+  const right = lv.items.filter((it, i) => data.get("c" + i) !== null && +data.get("c" + i) === it.answer).length;
+  const seconds = Math.round(testClock() / 1000); testSince = 0;
+  const target = lv.items.reduce((n, it) => n + it.seconds, 0);
+  const passed = right >= COMP_PASS, slow = passed && seconds > TEST_SLOW * target;
+  compDone.push({ level: lv.level, right, total: lv.items.length, seconds, target, slow, passed: passed && !slow });
+  if (passed && !slow && compLevel + 1 < LEVEL_TEST.comprehension.length) { compLevel++; renderComp(); }
+  else testResult(testGrammarAll);
+}
+document.addEventListener("submit", (e) => {
+  if (e.target.id !== "compForm") return;
+  e.preventDefault();
+  submitComp(e.target);
+});
+function compSummary() {
+  if (!compDone.length) return "";
+  const ok = compDone.filter((d) => d.passed), last = compDone[compDone.length - 1];
+  const reached = ok.length ? ok[ok.length - 1].level : "";
+  return `<div class="comp-result"><p class="eyebrow">Listening and reading</p>
+    <p><b>${reached ? `You understand French at ${reached} level${reached === "C2" ? ", the top of the scale" : ""}.` : "Below A1 for now: the course starts exactly there."}</b>
+    ${!last.passed ? (last.slow ? ` At ${last.level}, your answers were right but slow (${Math.round(last.seconds / 60)} min for about ${Math.round(last.target / 60)} min comfortable).` : ` At ${last.level}, ${last.right} out of ${last.total} right.`) : ""}</p></div>`;
 }
 
 function testResult(finishedAll) {
@@ -886,7 +949,7 @@ function testResult(finishedAll) {
   if (slowStep) finishedAll = false;
   const last = slowStep || testDone[testDone.length - 1];
   const passedSteps = testDone.slice(0, testDone.indexOf(last) + (finishedAll ? 1 : 0)).map((d) => d.step.name);
-  const total = testDone.reduce((n, d) => n + d.seconds, 0);
+  const total = testDone.reduce((n, d) => n + d.seconds, 0) + compDone.reduce((n, d) => n + d.seconds, 0);
   const topLevel = stepLevel(LEVEL_TEST.steps[LEVEL_TEST.steps.length - 1]);
   const minutes = total >= 60 ? `${Math.floor(total / 60)} min ${total % 60} s` : `${total} s`;
   const p = finishedAll ? null : byId(last.step.product);
@@ -896,6 +959,7 @@ function testResult(finishedAll) {
     <p class="eyebrow">Your result</p>
     <h2>${finishedAll ? `You've reached the end of <em>${topLevel}</em>` : `Start with <em>${last.step.name}</em>`}</h2>
     <p>${passedSteps.length ? `You passed ${passedSteps.join(", ")}. ` : ""}${finishedAll ? (topLevel === "C2" ? "That's the top of the scale. A live lesson with Olivier keeps it sharp." : "The next levels are in preparation. In the meantime, a live lesson with Olivier is the best next step.") : slowStep ? `You got ${last.right} out of ${last.total} right at this step, but it took you ${Math.round(last.seconds / last.total)} seconds per answer, where about ${last.target} is comfortable at this level. You know it; this course makes it automatic.` : `You got ${last.right} out of ${last.total} right at this step.`}</p>
+    ${compSummary()}
     <p class="quiz-note">Time on the test: ${minutes}. Your answers and your speed both count.</p>
     ${!finishedAll && last.wrong.length ? `<p class="quiz-note">Among other things, this course covers:</p><ul class="quiz-skills">${last.wrong.map((w) => `<li>${esc(w.skill)}</li>`).join("")}</ul>` : ""}
     <ul class="pick-list">${(p ? (p.ready === false ? [p, live] : [p]) : [live]).map((x) => `<li><span>${x.name}</span><span><strong>${price(x)}</strong> ${!buyable(x) ? `<span class="tag soon">In preparation</span>` : `<button class="btn btn-primary mini" ${x.kind === "live" ? `data-book="${x.id}"` : `data-buy="${x.id}"`}>${x.kind === "live" ? "Book" : buyLabel(x)}</button>`}</span></li>`).join("")}</ul>

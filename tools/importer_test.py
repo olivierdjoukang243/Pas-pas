@@ -29,6 +29,17 @@ with open(cible, 'w', encoding='utf-8') as f:
             '// Ne pas modifier à la main : les questions viennent des bilans.\n' % d['genere'])
     f.write('const LEVEL_TEST = { pass: %d, steps: ' % d['seuil'])
     json.dump(etapes, f, ensure_ascii=False, separators=(',', ':'))
+    # la compréhension orale et écrite, A1 à C2 (sans les transcriptions : elles donneraient
+    # les réponses des écoutes) ; les pistes sont dans audio/levelcheck/
+    comp = [{'level': n['niveau'], 'items': [
+        {'id': i['id'], 'type': 'listen' if i['type'] == 'ecoute' else 'read',
+         'audio': ('audio/levelcheck/' + i['audio']) if i['audio'] else '', 'seconds': i['secondes'],
+         'title': i['titre'], 'text': i['texte'], 'question': i['question'], 'options': i['options'],
+         'answer': i['juste']} for i in n['items']]} for n in d.get('comprehension', [])]
+    if comp:
+        f.write(', comprehension: ')
+        json.dump(comp, f, ensure_ascii=False, separators=(',', ':'))
     f.write(' };\n')
-print('%d étapes, %d compétences -> js/leveltest.js'
-      % (len(etapes), sum(len(e['skills']) for e in etapes)))
+print('%d étapes, %d compétences, compréhension %s -> js/leveltest.js'
+      % (len(etapes), sum(len(e['skills']) for e in etapes),
+         ' '.join(n['niveau'] for n in d.get('comprehension', [])) or 'absente'))
