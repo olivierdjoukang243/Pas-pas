@@ -1,5 +1,7 @@
 // Généré par tools/importer_catalogue.py depuis l'export de l'atelier (2026-10-14T21:01:35).
 // Ne pas modifier à la main : les titres viennent des sources.
+// C1 (28/10/2026) : titres relevés par Olivier dans les fichiers, en attendant l'export de l'atelier.
+// B2 : pas encore, tant que les 16 titres ne sont pas vérifiés.
 const MODULES = {
  "a0-complete": {
   "modules": [
@@ -391,6 +393,118 @@ const MODULES = {
   "bilan": {
    "titre": "Level Check: The End of B1",
    "resume": "Bilan de la seconde partie du B1. Vingt-quatre compétences testées une par une, un profil qui montre où vous hésitez encore, et un plan de révision qui nomme la section à rouvrir."
+  }
+ },
+ "c1-part1": {
+  "modules": [
+   {
+    "n": 1,
+    "titre": "The Mood That Chooses",
+    "resume": "Module 1 of 8 — level C1, first part. Le subjonctif dans la relative.",
+    "exercices": null
+   },
+   {
+    "n": 2,
+    "titre": "Telling It Like a Novel",
+    "resume": "Module 2 of 8 — level C1, first part. Le récit littéraire.",
+    "exercices": null
+   },
+   {
+    "n": 3,
+    "titre": "Saying It Without Claiming It",
+    "resume": "Module 3 of 8 — level C1, first part. La modalisation.",
+    "exercices": null
+   },
+   {
+    "n": 4,
+    "titre": "Putting the Spotlight On",
+    "resume": "Module 4 of 8 — level C1, first part. La mise en relief.",
+    "exercices": null
+   },
+   {
+    "n": 5,
+    "titre": "The Relative That Carries a Preposition",
+    "resume": "Module 5 of 8 — level C1, first part. Les relatifs composés.",
+    "exercices": null
+   },
+   {
+    "n": 6,
+    "titre": "Convincing or Convinced",
+    "resume": "Module 6 of 8 — level C1, first part. Les formes en -ant et l’accord des pronominaux.",
+    "exercices": null
+   },
+   {
+    "n": 7,
+    "titre": "The Impersonal Voice",
+    "resume": "Module 7 of 8 — level C1, first part. Effacer l’agent.",
+    "exercices": null
+   },
+   {
+    "n": 8,
+    "titre": "Many Sources, One Text",
+    "resume": "Module 8 of 8 — level C1, first part. La synthèse de documents.",
+    "exercices": null
+   }
+  ],
+  "bilan": {
+   "titre": "Level Check: Halfway Through C1",
+   "resume": "Bilan de la première partie du C1."
+  }
+ },
+ "c1-part2": {
+  "modules": [
+   {
+    "n": 1,
+    "titre": "Before, After, As Long As",
+    "resume": "Module 1 of 8 — level C1, second part. L’expression du temps.",
+    "exercices": null
+   },
+   {
+    "n": 2,
+    "titre": "Saying It Differently",
+    "resume": "Module 2 of 8 — level C1, second part. Les registres de langue.",
+    "exercices": null
+   },
+   {
+    "n": 3,
+    "titre": "Words That Don’t Mean What They Say",
+    "resume": "Module 3 of 8 — level C1, second part. Les expressions figées.",
+    "exercices": null
+   },
+   {
+    "n": 4,
+    "titre": "Every Sign Counts",
+    "resume": "Module 4 of 8 — level C1, second part. La ponctuation.",
+    "exercices": null
+   },
+   {
+    "n": 5,
+    "titre": "Holding a Text Together",
+    "resume": "Module 5 of 8 — level C1, second part. La cohésion du texte.",
+    "exercices": null
+   },
+   {
+    "n": 6,
+    "titre": "The Right Word",
+    "resume": "Module 6 of 8 — level C1, second part. Le mot juste.",
+    "exercices": null
+   },
+   {
+    "n": 7,
+    "titre": "Taking a Stand",
+    "resume": "Module 7 of 8 — level C1, second part. L’essai argumenté du DALF C1.",
+    "exercices": null
+   },
+   {
+    "n": 8,
+    "titre": "Facing the Jury",
+    "resume": "Module 8 of 8 — level C1, second part. L’épreuve orale du DALF C1.",
+    "exercices": null
+   }
+  ],
+  "bilan": {
+   "titre": "Level Check: The End of C1",
+   "resume": "Bilan de la seconde partie du C1."
   }
  }
 };
