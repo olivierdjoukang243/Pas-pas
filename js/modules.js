@@ -1,4 +1,4 @@
-// Généré par tools/importer_catalogue.py depuis l'export de l'atelier (2026-10-14T21:01:35).
+// Généré par tools/importer_catalogue.py depuis l'export de l'atelier (2026-10-28T23:30:19).
 // Ne pas modifier à la main : les titres viennent des sources.
 const MODULES = {
  "a0-complete": {
@@ -391,6 +391,230 @@ const MODULES = {
   "bilan": {
    "titre": "Level Check: The End of B1",
    "resume": "Bilan de la seconde partie du B1. Vingt-quatre compétences testées une par une, un profil qui montre où vous hésitez encore, et un plan de révision qui nomme la section à rouvrir."
+  }
+ },
+ "b2-part1": {
+  "modules": [
+   {
+    "n": 1,
+    "titre": "A Space That Changes Everything",
+    "resume": "Module 1 of 8 — level B2, first part. La concession. Deux expressions qui se prononcent exactement pareil et ne veulent pas dire la même chose, puis toutes les façons d’admettre un fait sans céder d’un pouce.",
+    "exercices": 10
+   },
+   {
+    "n": 2,
+    "titre": "The Mood Is the Whole Difference",
+    "resume": "Module 2 of 8 — level B2, first part. Conséquence et but. Une même conjonction pour constater un résultat ou pour le viser, et le mode du verbe pour seule différence.",
+    "exercices": 10
+   },
+   {
+    "n": 3,
+    "titre": "Who Is Doing the Doing?",
+    "resume": "Module 3 of 8 — level B2, first part. Les accords qui restent. Un participe suivi d’un infinitif, un en, un verbe de mesure : une seule question les tranche presque tous.",
+    "exercices": 10
+   },
+   {
+    "n": 4,
+    "titre": "The Word That Turns the Sentence",
+    "resume": "Module 4 of 8 — level B2, first part. L’inversion stylistique. Le sujet passe après le verbe sans que la phrase devienne une question, et un petit mot placé en tête suffit à le provoquer.",
+    "exercices": 11
+   },
+   {
+    "n": 5,
+    "titre": "The Tense You Will Only Read",
+    "resume": "Module 5 of 8 — level B2, first part. Le subjonctif imparfait et plus-que-parfait, en lecture. Un temps que personne ne parle plus, que tous les romans emploient encore, et un accent circonflexe qui suffit presque toujours à le reconnaître.",
+    "exercices": 10
+   },
+   {
+    "n": 6,
+    "titre": "Saying It Again Without Repeating It",
+    "resume": "Module 6 of 8 — level B2, first part. Les pronoms neutres et la reprise. Un petit mot qui remplace une phrase entière, puis l’art de rappeler ce qu’on a dit sans jamais le redire.",
+    "exercices": 10
+   },
+   {
+    "n": 7,
+    "titre": "Holding a Long Sentence Together",
+    "resume": "Module 7 of 8 — level B2, first part. La phrase complexe. Un que qui évite de répéter une conjonction, une proposition qui tient en deux mots, et des virgules qui changent le sens.",
+    "exercices": 10
+   },
+   {
+    "n": 8,
+    "titre": "What the Verb Demands",
+    "resume": "Module 8 of 8 — level B2, first part. Le régime des verbes. Une préposition qui change le sens du verbe, un à ce que qui ne se met pas partout, et un verbe qui se dit à l’envers.",
+    "exercices": 10
+   }
+  ],
+  "bilan": {
+   "titre": "Level Check: Halfway Through B2",
+   "resume": "Bilan de la première partie du B2. Vingt-quatre compétences testées une par une, un profil qui montre où vous hésitez encore, et un plan de révision qui nomme la section à rouvrir."
+  }
+ },
+ "b2-part2": {
+  "modules": [
+   {
+    "n": 1,
+    "titre": "What She Said She Would Do",
+    "resume": "Module 1 of 8 — level B2, second part. Le discours rapporté au passé. Chaque temps recule d’un cran, chaque repère change de nom, et une question perd sa forme de question.",
+    "exercices": 11
+   },
+   {
+    "n": 2,
+    "titre": "Because Is Not Enough",
+    "resume": "Module 2 of 8 — level B2, second part. La cause. Parce que répond, puisque rappelle, comme pose le décor ; et le mot choisi dit ce que vous pensez de la raison donnée.",
+    "exercices": 11
+   },
+   {
+    "n": 3,
+    "titre": "While Others Wait",
+    "resume": "Module 3 of 8 — level B2, second part. L’opposition. Mettre deux faits face à face sans que l’un empêche l’autre : alors que, tandis que, en revanche, au contraire, et la frontière exacte avec la concession.",
+    "exercices": 11
+   },
+   {
+    "n": 4,
+    "titre": "Suppose It Rained",
+    "resume": "Module 4 of 8 — level B2, second part. L’hypothèse nuancée. Les phrases en si où le passé et le présent se croisent, puis tout ce qui suppose sans dire si : au cas où, quand bien même, à condition que, pour peu que, sans, avec.",
+    "exercices": 11
+   },
+   {
+    "n": 5,
+    "titre": "Never, Nothing, Nobody",
+    "resume": "Module 5 of 8 — level B2, second part. La négation complexe. Plusieurs négations dans la même phrase, une négation qui devient sujet, une autre qui ne nie rien, et la place exacte de chacune.",
+    "exercices": 11
+   },
+   {
+    "n": 6,
+    "titre": "The Smallest Words",
+    "resume": "Module 6 of 8 — level B2, second part. Les articles et les déterminants. Quand l’article disparaît, quand des devient de, et ce que disent chaque, tout, quelques ; puis les pays, les fêtes et le corps.",
+    "exercices": 11
+   },
+   {
+    "n": 7,
+    "titre": "Building Words From Words",
+    "resume": "Module 7 of 8 — level B2, second part. La formation des mots. Un préfixe retourne le sens, un suffixe change la nature du mot et annonce son genre : à partir d’un seul mot, toute une famille.",
+    "exercices": 11
+   },
+   {
+    "n": 8,
+    "titre": "Building an Argument",
+    "resume": "Module 8 of 8 — level B2, second part. L’argumentation. Annoncer un plan, enchaîner les arguments, concéder pour mieux réfuter, conclure ; et choisir le mode juste quand on donne son avis.",
+    "exercices": 11
+   }
+  ],
+  "bilan": {
+   "titre": "Level Check: The End of B2",
+   "resume": "Bilan de la seconde partie du B2. Vingt-quatre compétences testées une par une, un profil qui montre où vous hésitez encore, et un plan de révision qui nomme la section à rouvrir."
+  }
+ },
+ "c1-part1": {
+  "modules": [
+   {
+    "n": 1,
+    "titre": "The Mood That Chooses",
+    "resume": "Module 1 of 8 — level C1, first part. Le subjonctif dans la relative. Le même antécédent, deux modes : l’un affirme que la chose existe, l’autre la cherche, la souhaite ou la juge. Puis le subjonctif passé, qui situe l’action avant.",
+    "exercices": 11
+   },
+   {
+    "n": 2,
+    "titre": "Telling It Like a Novel",
+    "resume": "Module 2 of 8 — level C1, first part. Le récit littéraire. Le passé simple passe de la lecture à l’écriture, le passé antérieur entre en scène, et chaque temps trouve sa place : l’événement au premier plan, le décor derrière.",
+    "exercices": 12
+   },
+   {
+    "n": 3,
+    "titre": "Saying It Without Claiming It",
+    "resume": "Module 3 of 8 — level C1, first part. La modalisation. Le conditionnel qui rapporte sans garantir, les tournures et les mots qui dosent la certitude, et le discours indirect libre, où la voix d’un personnage se glisse dans le récit.",
+    "exercices": 12
+   },
+   {
+    "n": 4,
+    "titre": "Putting the Spotlight On",
+    "resume": "Module 4 of 8 — level C1, first part. La mise en relief. C’est… qui et c’est… que pour désigner, ce qui… c’est pour faire attendre, et la dislocation, qui détache un mot pour mieux le reprendre.",
+    "exercices": 12
+   },
+   {
+    "n": 5,
+    "titre": "The Relative That Carries a Preposition",
+    "resume": "Module 5 of 8 — level C1, first part. Les relatifs composés. Lequel et ses formes après une préposition, auquel et duquel qui se contractent, dont ou duquel, préposition + quoi, et où, qui sait aussi dire le temps.",
+    "exercices": 12
+   },
+   {
+    "n": 6,
+    "titre": "Convincing or Convinced",
+    "resume": "Module 6 of 8 — level C1, first part. Les formes en -ant et l’accord des pronominaux. Participe présent, adjectif verbal et gérondif, qui se ressemblent sans s’écrire toujours pareil ; puis l’accord du participe passé des verbes pronominaux, dans ses cas les plus délicats.",
+    "exercices": 12
+   },
+   {
+    "n": 7,
+    "titre": "The Impersonal Voice",
+    "resume": "Module 7 of 8 — level C1, first part. Effacer l’agent. Le passif et ses concurrents, on, se faire, se voir et le pronominal de sens passif ; les tournures impersonnelles ; et la nominalisation, qui fait d’une phrase un groupe nominal.",
+    "exercices": 12
+   },
+   {
+    "n": 8,
+    "titre": "Many Sources, One Text",
+    "resume": "Module 8 of 8 — level C1, first part. La synthèse de documents. Repérer les idées de plusieurs textes, les confronter, les reformuler dans un texte neuf et neutre, comme au DALF C1 ; puis les présenter à l’oral, devant un jury.",
+    "exercices": 12
+   }
+  ],
+  "bilan": {
+   "titre": "Level Check: Halfway Through C1",
+   "resume": "Bilan de la première partie du C1. Vingt-quatre compétences testées une par une, un profil qui montre où vous hésitez encore, et un plan de révision qui nomme la section à rouvrir."
+  }
+ },
+ "c1-part2": {
+  "modules": [
+   {
+    "n": 1,
+    "titre": "Before, After, As Long As",
+    "resume": "Module 1 of 8 — level C1, second part. L’expression du temps. Les conjonctions et leur mode, le ne explétif, les nuances de tant que, à mesure que et depuis que, puis tout ce qui dit le temps sans conjonction.",
+    "exercices": 12
+   },
+   {
+    "n": 2,
+    "titre": "Saying It Differently",
+    "resume": "Module 2 of 8 — level C1, second part. Les registres de langue. Passer du familier au courant, puis au soutenu, en changeant à la fois les mots et la phrase ; l’inversion complexe et le ne seul ; et les formules de la lettre formelle.",
+    "exercices": 12
+   },
+   {
+    "n": 3,
+    "titre": "Words That Don’t Mean What They Say",
+    "resume": "Module 3 of 8 — level C1, second part. Les expressions figées. Les images du corps et des animaux, les proverbes et les mots fossiles ; les verbes à pronom figé, en vouloir, s’en prendre, s’y prendre ; et les collocations, ces mots qui vont ensemble sans qu’aucune règle l’explique.",
+    "exercices": 12
+   },
+   {
+    "n": 4,
+    "titre": "Every Sign Counts",
+    "resume": "Module 4 of 8 — level C1, second part. La ponctuation. La virgule qui détache sans jamais couper, la relative avec ou sans virgules, les autres signes ; et la typographie française, ses espaces, ses guillemets, ses minuscules et ses nombres.",
+    "exercices": 12
+   },
+   {
+    "n": 5,
+    "titre": "Holding a Text Together",
+    "resume": "Module 5 of 8 — level C1, second part. La cohésion du texte. Varier les reprises et lever l’ambiguïté avec ce dernier ou celui-ci ; les connecteurs du registre soutenu ; et aussi en tête de phrase, avec son inversion.",
+    "exercices": 12
+   },
+   {
+    "n": 6,
+    "titre": "The Right Word",
+    "resume": "Module 6 of 8 — level C1, second part. Le mot juste. Les paronymes qui piègent, les synonymes qui ne se valent pas, les verbes précis qui remplacent faire et dire ; et l’art de dire moins pour faire entendre plus : la litote, l’euphémisme, l’atténuation.",
+    "exercices": 12
+   },
+   {
+    "n": 7,
+    "titre": "Taking a Stand",
+    "resume": "Module 7 of 8 — level C1, second part. L’essai argumenté du DALF C1. La problématique et le plan, le paragraphe et son enchaînement ; la concession au niveau C1, avoir beau, si… que, il n’en reste pas moins ; et l’art de réfuter puis de prendre position.",
+    "exercices": 12
+   },
+   {
+    "n": 8,
+    "titre": "Facing the Jury",
+    "resume": "Module 8 of 8 — level C1, second part. L’épreuve orale du DALF C1 : l’exposé, puis l’entretien avec le jury. Prendre la parole, la garder, la rendre ; demander une précision et reformuler ; la question du registre soutenu ; et répondre à une objection sans perdre le fil.",
+    "exercices": 12
+   }
+  ],
+  "bilan": {
+   "titre": "Level Check: The End of C1",
+   "resume": "Bilan de la seconde partie du C1. Vingt-quatre compétences testées une par une, du temps et du mode à l’entretien devant un jury, un profil qui montre où vous hésitez encore, et un plan de révision qui nomme la section à rouvrir."
   }
  }
 };
