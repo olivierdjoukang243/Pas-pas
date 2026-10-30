@@ -217,7 +217,14 @@ function announce(text) {
   t.textContent = text;
   t.classList.add("show");
   clearTimeout(announce.timer);
-  announce.timer = setTimeout(() => t.classList.remove("show"), 4500);
+  announce.timer = setTimeout(() => t.classList.remove("show"), 10000);   // a confirmation stays 10 seconds
+}
+// An action in progress: the button turns a wheel and can't be pressed twice.
+function busy(btn, on) {
+  if (!btn) return;
+  btn.disabled = on;
+  btn.classList.toggle("is-busy", on);
+  if (on) btn.setAttribute("aria-busy", "true"); else btn.removeAttribute("aria-busy");
 }
 function flashUpdated() {
   document.querySelectorAll("#levelPanel, #methodBand, #compareTable, #examSoon, #liveGrid, #residenceLine, #payLocal, #payCurrency, #currencyPicker, .checkout .totals, #payMethods")
@@ -762,18 +769,18 @@ function submitCheckout(form) {
 
 async function payOnline(order) {
   const btn = $("#payBtn"), err = $("#formError");
-  btn.disabled = true; btn.textContent = t("Opening the secure payment page…", "Ouverture de la page de paiement sécurisée…");
+  busy(btn, true); btn.textContent = t("Opening the secure payment page…", "Ouverture de la page de paiement sécurisée…");
   try {
     const r = await fetch(`${PAY_API}/checkout`, { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...order, return_url: location.href.split(/[?#]/)[0] }) });
     const d = await r.json().catch(() => ({}));
     // A refusal explained by the server (method not open yet, wrong number…) is shown as is.
-    if (!r.ok && d.error) { err.textContent = d.error; err.hidden = false; btn.disabled = false; renderPayDetails(); return; }
+    if (!r.ok && d.error) { err.textContent = d.error; err.hidden = false; busy(btn, false); renderPayDetails(); return; }
     if (!d.authorization_url) throw new Error("no payment page");
     location.href = d.authorization_url;
   } catch (e) {
     err.textContent = t("We couldn't open the payment page. You haven't been charged. Please try again in a moment.", "La page de paiement n'a pas pu s'ouvrir. Rien n'a été débité. Réessayez dans un instant.");
-    err.hidden = false; btn.disabled = false; renderPayDetails();
+    err.hidden = false; busy(btn, false); renderPayDetails();
   }
 }
 
@@ -788,7 +795,7 @@ async function checkReturn() {
     for (let i = 0; i < 15; i++) {
       d = await (await fetch(`${PAY_API}/payments/${encodeURIComponent(ref)}`)).json();
       if (d.status !== "complete" || d.booking || d.preorder || d.delivery !== "preparing") break;
-      if (i === 0) openModal(`<div class="checkout"><h2>${t("Payment received", "Paiement reçu")}</h2><p>${d.live ? t("We're writing your lesson in Olivier's calendar.", "Nous inscrivons votre cours dans l'agenda d'Olivier.") : t("We're adding your name to your files.", "Nous ajoutons votre nom à vos fichiers.")} ${t("This only takes a few seconds…", "Cela ne prend que quelques secondes…")}</p></div>`);
+      if (i === 0) openModal(`<div class="checkout"><h2><span class="spin" aria-hidden="true"></span>${t("Payment received", "Paiement reçu")}</h2><p>${d.live ? t("We're writing your lesson in Olivier's calendar.", "Nous inscrivons votre cours dans l'agenda d'Olivier.") : t("We're adding your name to your files.", "Nous ajoutons votre nom à vos fichiers.")} ${t("This only takes a few seconds…", "Cela ne prend que quelques secondes…")}</p></div>`);
       await new Promise((r) => setTimeout(r, 2000));
     }
     if (d.status !== "complete") {
@@ -1028,14 +1035,14 @@ async function submitFree(form) {
     <p>While you wait, why not find your level with the free test?</p>
     <div class="hero-cta tight"><button class="btn btn-primary" data-test>Take the level test</button><button class="btn btn-ghost" data-modal-close>Close</button></div></div>`);
   if (PAY_API) {
-    btn.disabled = true; btn.textContent = "Sending…";
+    busy(btn, true); btn.textContent = "Sending…";
     try {
       const r = await fetch(`${PAY_API}/free-module`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req) });
       if (!r.ok) throw { said: (await r.json().catch(() => ({}))).error };
       return sent();
     } catch (e) {
       err.textContent = (e && e.said) || "We couldn't send the module just now. Please try again in a moment."; err.hidden = false;
-      btn.disabled = false; btn.textContent = "Send me Module 1"; return;
+      busy(btn, false); btn.textContent = "Send me Module 1"; return;
     }
   }
   if (DEMO) return sent(" · demo, nothing was sent");
@@ -1113,11 +1120,13 @@ async function submitReview(form) {
   const err = $("#rvError");
   if (problems.length) { err.innerHTML = problems.map(esc).join("<br>"); err.hidden = false; return; }
   if (SHOP.api) {
+    const btn = form.querySelector("[type=submit], button:not([type])");
+    busy(btn, true);
     try {
       const res = await fetch(`${SHOP.api}/reviews`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(r) });
       const out = await res.json().catch(() => ({}));
-      if (!res.ok) { err.innerHTML = esc(out.error || "We couldn't publish your review."); err.hidden = false; return; }
-    } catch { err.textContent = "We couldn't send your review just now. Please try again."; err.hidden = false; return; }
+      if (!res.ok) { err.innerHTML = esc(out.error || "We couldn't publish your review."); err.hidden = false; busy(btn, false); return; }
+    } catch { err.textContent = "We couldn't send your review just now. Please try again."; err.hidden = false; busy(btn, false); return; }
   } else if (DEMO) {
     store.set("demoReviews", [...store.get("demoReviews", []), { ...r, token: undefined, date: new Date().toISOString().slice(0, 10) }]);
   }
