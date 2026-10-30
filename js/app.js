@@ -500,8 +500,8 @@ function renderLevelPanel() {
       <div class="lp-title"><span class="lp-code">${l.code}</span><div><h3>${l.name}</h3><p>${l.status === "prep" ? l.note : LEVEL_INTRO[l.code]}</p></div></div>
     </div>`;
   if (l.status === "prep") {
-    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} isn't on sale yet. Levels from Introduction to Advanced 1 are available now.</p>
-      <button class="btn btn-ghost mini" data-level="C1">See C1</button></div>`;
+    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} isn't on sale yet. Levels from Introduction to Advanced 2 are available now.</p>
+      <button class="btn btn-ghost mini" data-level="C2">See C2</button></div>`;
   } else {
     $("#levelPanel").innerHTML = head + `<ol class="prods">${products.map(productRow).join("")}</ol>`;
   }
@@ -521,7 +521,7 @@ function renderMethod() {
     <div class="method-buy">
       <span class="price">${price(m)}</span>
       ${!buyable(m) ? `<span class="tag soon">${SOON.has(m.id) ? "Coming soon" : "In preparation: on sale once every level is illustrated"}</span>` : `<button class="btn btn-light" data-buy="${m.id}">${isPre(m) ? "Pre-order the Complete Method" : "Buy the Complete Method"}</button>`}
-      <span class="pre-note light">Finished B1? Carry on with <button class="link-btn" data-level="B2" data-scroll="levels">B2</button> and <button class="link-btn" data-level="C1" data-scroll="levels">C1</button>, sold level by level.</span>
+      <span class="pre-note light">Finished B1? Carry on with <button class="link-btn" data-level="B2" data-scroll="levels">B2</button>, <button class="link-btn" data-level="C1" data-scroll="levels">C1</button> and <button class="link-btn" data-level="C2" data-scroll="levels">C2</button>, sold level by level.</span>
       ${isPre(m) ? `<span class="pre-note light">${readyParts(m).map((x) => shortName(x)).join(", ")} can already be bought level by level. This pre-order sends the whole method as soon as the last level is illustrated, and you can cancel for a full refund until then.</span>` : ""}
     </div>`;
 }
@@ -532,7 +532,7 @@ function renderCompare() {
   const rows = [
     ["How you pay", `One payment, from ${price(byId("a0-complete"))}, and the files are yours to keep`, "Monthly or yearly subscription", "Pay by the hour, every lesson"],
     ["Grammar explained in English", "Yes, in every module", "Short tips, mostly practice", "Depends on the tutor"],
-    ["Step-by-step course with progress tests", "88 modules, 11 progress tests, Introduction to Advanced 1", "Yes, in the app", "Depends on the tutor"],
+    ["Step-by-step course with progress tests", "104 modules, 13 progress tests, Introduction to Advanced 2", "Yes, in the app", "Depends on the tutor"],
     ["Works offline", "PDFs and MP3s on any device", "Partly, in the app", "No"],
     ["Answer keys to keep", "For every exercise", "Instant grading, nothing to keep", "Depends on the tutor"],
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
