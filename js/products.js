@@ -10,7 +10,7 @@ const LEVELS = [
   { code: "B1", name: "Intermediate 1", hue: 248, status: "open" },
   { code: "B2", name: "Intermediate 2", hue: 272, status: "open" },
   { code: "C1", name: "Advanced 1", hue: 330, status: "open" },
-  { code: "C2", name: "Advanced 2", hue: 350, status: "prep", note: "In preparation and not available yet." },
+  { code: "C2", name: "Advanced 2", hue: 350, status: "open" },
 ];
 
 const LEVEL_INTRO = {
@@ -20,6 +20,7 @@ const LEVEL_INTRO = {
   B1: "The level where French starts to feel like your own, with objectives and section introductions in French too.",
   B2: "The level where you argue, persuade and read the press without a dictionary. It is the level French universities ask for.",
   C1: "The level where you choose your words for effect, in a meeting, a report or a debate, and French stops holding you back.",
+  C2: "The level of the press, the classics and the jury: French as precise and as supple as an educated native speaker's.",
 };
 
 // kind: "part" (8 modules + level check), "level" (both parts), "method" (everything).
@@ -30,7 +31,7 @@ const LEVEL_INTRO = {
 // A2, B1, and the packs that contain them); 16/10/2026: they open to pre-order. Set ready
 // back to true (or remove it) as each one is illustrated.
 // 25/10/2026: B1 and the Complete Method are illustrated and in stock on the server: on sale.
-// 28/10/2026: B2 and C1 in stock (stock-prive/b2-*, c1-*): on sale. Their module titles appear
+// 28/10/2026: B2 and C1 in stock (stock-prive/b2-*, c1-*): on sale. 30/10/2026: C2 too, same prices. Their module titles appear
 // once the workshop export (catalogue.json) includes them: tools/importer_catalogue.py.
 const PRODUCTS = [
   { id: "a0-complete", level: "A0", kind: "level", name: "French Introduction (A0)", contents: "8 modules + progress test", usd: 19, xaf: 10400,
@@ -65,6 +66,12 @@ const PRODUCTS = [
     desc: "The second half of C1 is about precision and the DALF C1. It covers expressing time, switching between registers, fixed expressions, punctuation, text cohesion and finding the right word, then ends with two modules on the DALF C1 itself: the argued essay and the oral exam in front of the jury. The C1 progress test and its self-assessment close the level." },
   { id: "c1-complete", level: "C1", kind: "level", name: "French Advanced 1 (C1) — Full Level", contents: "Parts 1 and 2 · 16 modules + 2 progress tests", usd: 49, xaf: 26900,
     desc: "The full C1 level in one purchase: sixteen modules and two progress tests, for less than buying the two parts separately. This is the level of the DALF C1, for university study, demanding jobs and a French that no longer holds you back." },
+  { id: "c2-part1", level: "C2", kind: "part", part: 1, name: "French Advanced 2 (C2) — Part 1", contents: "Modules 1–8 + progress test", usd: 29, xaf: 15900,
+    desc: "The first half of C2, the French of books, speeches and the press. It covers the tenses of formal writing, including the imperfect subjunctive, hypotheses in a literary register, reading between the lines, shades of meaning, figures of speech, the vocabulary of classic texts and contracts, and the varieties of French across the French-speaking world, then ends with the DALF C2 oral exam. A progress test with a self-assessment prepares you for Part 2." },
+  { id: "c2-part2", level: "C2", kind: "part", part: 2, name: "French Advanced 2 (C2) — Part 2", contents: "Modules 9–16 + progress test", usd: 29, xaf: 15900,
+    desc: "The second half of C2 is about writing like a professional. It covers the news article, editorials and opinion pieces, the report, the speech, the critical review, condensing and rephrasing a text, and the style of good prose, then ends with the DALF C2 written exam. The C2 progress test and its self-assessment close the level, and the course." },
+  { id: "c2-complete", level: "C2", kind: "level", name: "French Advanced 2 (C2) — Full Level", contents: "Parts 1 and 2 · 16 modules + 2 progress tests", usd: 49, xaf: 26900,
+    desc: "The full C2 level in one purchase: sixteen modules and two progress tests, for less than buying the two parts separately. This is the level of the DALF C2, the highest French-language diploma." },
   // The Complete Method stays A0 to B1 (Olivier, 28/10/2026): B2 and C1 are the next step after it.
   { id: "complete-method", level: "A0–B1", kind: "method", includes: ["a0-complete", "a1-complete", "a2-complete", "b1-complete"], name: "Pas à Pas — The Complete Method (Introduction to Intermediate)", contents: "56 modules + 7 progress tests", usd: 129, xaf: 70800,
     desc: "Everything in one place: 56 modules and 7 progress tests, from the alphabet to defending your point of view in French. All four levels follow one method, with the same characters and the same way of explaining, so you never have to adjust to a new approach halfway through. The files are yours to keep, updates included." },
