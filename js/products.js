@@ -68,6 +68,10 @@ const PRODUCTS = [
   // The Complete Method stays A0 to B1 (Olivier, 28/10/2026): B2 and C1 are the next step after it.
   { id: "complete-method", level: "A0–B1", kind: "method", includes: ["a0-complete", "a1-complete", "a2-complete", "b1-complete"], name: "Pas à Pas — The Complete Method (Introduction to Intermediate)", contents: "56 modules + 7 progress tests", usd: 129, xaf: 70800,
     desc: "Everything in one place: 56 modules and 7 progress tests, from the alphabet to defending your point of view in French. All four levels follow one method, with the same characters and the same way of explaining, so you never have to adjust to a new approach halfway through. The files are yours to keep, updates included." },
+  // The Complete Method Online (Olivier, 30/10/2026): A0 to C2, read online only, lifetime access. The server
+  // delivers the online editions of these levels (noms.EN_LIGNE in the workshop): no files to download.
+  { id: "complete-online", level: "A0–C2", kind: "method", online: true, includes: ["a0-complete", "a1-complete", "a2-complete", "b1-complete", "b2-complete", "c1-complete", "c2-complete"], name: "Pas à Pas — The Complete Method Online (Introduction to Advanced)", contents: "104 modules + 13 progress tests · read online · lifetime access", usd: 249, xaf: 136800,
+    desc: "All seven levels, from your first word to C2, in your browser: 104 modules with their recordings, 13 progress tests with timed self-assessments, and a certificate of study for each module you complete. Your access never expires, so you can go at your own pace, for years. The course is read online only: there are no files to download or print." },
 ];
 
 // Exam packs: series of 6 complete papers produced by the workshop (delf.py, tcf.py, series.py),

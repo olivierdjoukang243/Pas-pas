@@ -918,3 +918,6 @@ body { font-size: 17px; }
 .is-busy { cursor: progress; }
 .is-busy::before, .spin { content: ""; display: inline-block; width: 1em; height: 1em; margin-right: .5em; vertical-align: -.15em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: wheel .7s linear infinite; }
 @keyframes wheel { to { transform: rotate(360deg); } }
+
+/* The Complete Method Online, under the Complete Method */
+.method-online { margin-top: 1.2em; background: linear-gradient(140deg, #2b1c5e, #6a1f4a); }
