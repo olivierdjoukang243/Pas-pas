@@ -72,8 +72,9 @@ const PRODUCTS = [
     desc: "The second half of C2 is about writing like a professional. It covers the news article, editorials and opinion pieces, the report, the speech, the critical review, condensing and rephrasing a text, and the style of good prose, then ends with the DALF C2 written exam. The C2 progress test and its self-assessment close the level, and the course." },
   { id: "c2-complete", level: "C2", kind: "level", name: "French Advanced 2 (C2) — Full Level", contents: "Parts 1 and 2 · 16 modules + 2 progress tests", usd: 49, xaf: 26900,
     desc: "The full C2 level in one purchase: sixteen modules and two progress tests, for less than buying the two parts separately. This is the level of the DALF C2, the highest French-language diploma." },
-  // The Complete Method stays A0 to B1 (Olivier, 28/10/2026): B2 and C1 are the next step after it.
-  { id: "complete-method", level: "A0–B1", kind: "method", includes: ["a0-complete", "a1-complete", "a2-complete", "b1-complete"], name: "Pas à Pas — The Complete Method (Introduction to Intermediate)", contents: "56 modules + 7 progress tests", usd: 129, xaf: 70800,
+  // The Foundations Method (id complete-method), A0 to B1 in files to keep (Olivier, 28/10/2026; renamed 30/10/2026
+  // so it isn't confused with the Complete Method Online, A0 to C2).
+  { id: "complete-method", level: "A0–B1", kind: "method", includes: ["a0-complete", "a1-complete", "a2-complete", "b1-complete"], name: "Pas à Pas — The Foundations Method (Introduction to Intermediate)", contents: "56 modules + 7 progress tests", usd: 129, xaf: 70800,
     desc: "Everything in one place: 56 modules and 7 progress tests, from the alphabet to defending your point of view in French. All four levels follow one method, with the same characters and the same way of explaining, so you never have to adjust to a new approach halfway through. The files are yours to keep, updates included." },
   // The Complete Method Online (Olivier, 30/10/2026): A0 to C2, read online only, lifetime access. The server
   // delivers the online editions of these levels (noms.EN_LIGNE in the workshop): no files to download.

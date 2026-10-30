@@ -513,14 +513,14 @@ function renderMethod() {
   const m = byId("complete-method");
   const s = methodSaving();
   $("#methodBand").innerHTML = `<div>
-      <p class="eyebrow">Best value</p>
-      <h2>The Complete Method</h2>
+      <p class="eyebrow">Best value · A0 to B1 · files to keep</p>
+      <h2>The Foundations Method</h2>
       <p>${m.desc}</p>
       <p class="method-meta">${m.contents} · <span>${amount(s.usd, s.xaf)} less than buying the four levels separately</span></p>
     </div>
     <div class="method-buy">
       <span class="price">${price(m)}</span>
-      ${!buyable(m) ? `<span class="tag soon">${SOON.has(m.id) ? "Coming soon" : "In preparation: on sale once every level is illustrated"}</span>` : `<button class="btn btn-light" data-buy="${m.id}">${isPre(m) ? "Pre-order the Complete Method" : "Buy the Complete Method"}</button>`}
+      ${!buyable(m) ? `<span class="tag soon">${SOON.has(m.id) ? "Coming soon" : "In preparation: on sale once every level is illustrated"}</span>` : `<button class="btn btn-light" data-buy="${m.id}">${isPre(m) ? "Pre-order the Foundations Method" : "Buy the Foundations Method"}</button>`}
       <span class="pre-note light">Finished B1? Carry on with <button class="link-btn" data-level="B2" data-scroll="levels">B2</button>, <button class="link-btn" data-level="C1" data-scroll="levels">C1</button> and <button class="link-btn" data-level="C2" data-scroll="levels">C2</button>, sold level by level.</span>
       ${isPre(m) ? `<span class="pre-note light">${readyParts(m).map((x) => shortName(x)).join(", ")} can already be bought level by level. This pre-order sends the whole method as soon as the last level is illustrated, and you can cancel for a full refund until then.</span>` : ""}
     </div>`;
@@ -543,7 +543,7 @@ function renderMethodOnline() {
     <div class="method-buy">
       <span class="price">${price(o)}</span>
       ${!buyable(o) ? `<span class="tag soon">${waitTag(o)}</span>` : `<button class="btn btn-light" data-buy="${o.id}">Buy the Complete Method Online</button>`}
-      <span class="pre-note light">Online only, never expires. Prefer files to keep and print? Choose a level, or the Complete Method above.</span>
+      <span class="pre-note light">Online only, never expires. Prefer files to keep and print? Choose a level, or the Foundations Method above.</span>
     </div>`;
 }
 
@@ -1108,7 +1108,7 @@ function renderReviews() {
   document.getElementById("reviewLd")?.remove();
   const ld = document.createElement("script");
   ld.type = "application/ld+json"; ld.id = "reviewLd";
-  ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Course", name: "Pas à Pas — The Complete Method (Introduction to Intermediate)",
+  ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Course", name: "Pas à Pas FRENCH — French for English speakers, Introduction to Advanced",
     provider: { "@type": "Person", name: "Olivier Djoukang" },
     aggregateRating: { "@type": "AggregateRating", ratingValue: avg.toFixed(1), reviewCount: list.length },
     review: list.map((r) => ({ "@type": "Review", author: { "@type": "Person", name: r.name }, datePublished: r.date,
