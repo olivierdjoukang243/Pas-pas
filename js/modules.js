@@ -1,4 +1,4 @@
-// Généré par tools/importer_catalogue.py depuis l'export de l'atelier (2026-10-28T23:30:19).
+// Généré par tools/importer_catalogue.py depuis l'export de l'atelier (2026-10-30T09:01:08).
 // Ne pas modifier à la main : les titres viennent des sources.
 const MODULES = {
  "a0-complete": {
@@ -615,6 +615,118 @@ const MODULES = {
   "bilan": {
    "titre": "Level Check: The End of C1",
    "resume": "Bilan de la seconde partie du C1. Vingt-quatre compétences testées une par une, du temps et du mode à l’entretien devant un jury, un profil qui montre où vous hésitez encore, et un plan de révision qui nomme la section à rouvrir."
+  }
+ },
+ "c2-part1": {
+  "modules": [
+   {
+    "n": 1,
+    "titre": "Tenses of the Page",
+    "resume": "Module 1 of 8 — level C2, first part. Les temps de l’écrit soutenu. Le subjonctif imparfait, à reconnaître et à former ; la concordance des temps au registre littéraire ; et le conditionnel passé deuxième forme, celui de « il eût fallu ».",
+    "exercices": 12
+   },
+   {
+    "n": 2,
+    "titre": "What If",
+    "resume": "Module 2 of 8 — level C2, first part. L’hypothèse au registre soutenu. L’inversion qui remplace « si », de « viendrait-il à partir » à « eût-il su » ; les locutions de condition et le mode qu’elles exigent ; et l’hypothèse sans conjonction, avec « faute de », « à défaut de » ou un simple gérondif.",
+    "exercices": 12
+   },
+   {
+    "n": 3,
+    "titre": "Reading Between the Lines",
+    "resume": "Module 3 of 8 — level C2, first part. L’implicite. Le présupposé, que la phrase pose sans le dire, et le sous-entendu, que l’auditeur déduit ; l’ironie et l’allusion, qui supposent la complicité du lecteur ; et les marques par lesquelles on prend ses distances avec ce qu’on rapporte.",
+    "exercices": 12
+   },
+   {
+    "n": 4,
+    "titre": "Shades of Meaning",
+    "resume": "Module 4 of 8 — level C2, first part. Les nuances du sens. La connotation, qui fait d’un mot un jugement, et les suffixes qui méprisent ; le passage du sens propre au sens figuré ; et l’adjectif qui change de sens selon sa place, d’« un grand homme » à « un homme grand ».",
+    "exercices": 12
+   },
+   {
+    "n": 5,
+    "titre": "The Art of the Figure",
+    "resume": "Module 5 of 8 — level C2, first part. Les figures de style. Les figures d’analogie, de la comparaison à la métonymie ; les figures d’opposition, de l’antithèse au chiasme ; et les figures d’insistance, de l’anaphore à la prétérition. Les reconnaître, les nommer, et les employer avec mesure.",
+    "exercices": 12
+   },
+   {
+    "n": 6,
+    "titre": "Words of Another Age",
+    "resume": "Module 6 of 8 — level C2, first part. La langue des classiques. Le lexique vieilli qui survit dans les textes et les contrats, de « point » à « nonobstant » ; l’ordre des mots littéraire, comme dans « grande fut sa surprise » ; et l’art de lire, sans se perdre, une phrase de dix lignes.",
+    "exercices": 12
+   },
+   {
+    "n": 7,
+    "titre": "One Language, Many Voices",
+    "resume": "Module 7 of 8 — level C2, first part. Les variétés du français. Le français de la francophonie, de Bruxelles à Montréal, de Genève à Yaoundé ; l’argot et le verlan, à comprendre sans forcément les parler ; et les emprunts à l’anglais, avec leurs équivalents officiels, leurs faux amis et leurs calques.",
+    "exercices": 12
+   },
+   {
+    "n": 8,
+    "titre": "The C2 Oral",
+    "resume": "Module 8 of 8 — level C2, first part. L’épreuve orale du DALF C2. Prendre des notes pendant deux écoutes, avec abréviations et symboles ; rendre compte d’un document sonore, fidèlement et sans le juger ; puis développer un point de vue et débattre avec le jury, au niveau de nuance qu’exige le C2.",
+    "exercices": 12
+   }
+  ],
+  "bilan": {
+   "titre": "Level Check: Halfway Through C2",
+   "resume": "Bilan de la première partie du C2. Vingt-quatre compétences testées une par une, du subjonctif imparfait au débat devant un jury, un profil qui montre où vous hésitez encore, et un plan de révision qui nomme la section à rouvrir."
+  }
+ },
+ "c2-part2": {
+  "modules": [
+   {
+    "n": 1,
+    "titre": "The Front Page",
+    "resume": "Module 1 of 8 — level C2, second part. L’article de presse. Le titre, le chapeau et les intertitres, qui décident si l’on lit ; la pyramide inversée, qui donne l’essentiel d’abord ; et le style journalistique, précis, concret et neutre, avec ses incises et ses périphrases.",
+    "exercices": 12
+   },
+   {
+    "n": 2,
+    "titre": "Speaking Your Mind",
+    "resume": "Module 2 of 8 — level C2, second part. L’éditorial et la tribune. Les genres de l’opinion, de l’éditorial qui engage le journal à la tribune qui n’engage que son auteur ; l’art d’interpeller le lecteur, par la question rhétorique et le « nous » qui l’associe ; et l’appel à l’action, avec « il est temps que » et « puisse ».",
+    "exercices": 12
+   },
+   {
+    "n": 3,
+    "titre": "Facts Before Opinions",
+    "resume": "Module 3 of 8 — level C2, second part. Le rapport. Son plan, de la commande aux recommandations, en passant par le constat et l’analyse ; la neutralité d’un texte où l’auteur s’efface derrière les faits ; et l’art de recommander, entre la prudence du conditionnel et la netteté du subjonctif.",
+    "exercices": 12
+   },
+   {
+    "n": 4,
+    "titre": "Words Spoken Aloud",
+    "resume": "Module 4 of 8 — level C2, second part. Le discours. S’adresser à un auditoire, dans l’ordre du protocole, et le remercier ; les trois temps du discours, de l’exorde à la péroraison, avec des transitions qu’on entend ; et le rythme ternaire, qui donne aux phrases leur élan.",
+    "exercices": 12
+   },
+   {
+    "n": 5,
+    "titre": "A Critic’s Eye",
+    "resume": "Module 5 of 8 — level C2, second part. Le compte rendu critique. Présenter une œuvre sans en dévoiler la fin ; le lexique de l’évaluation, du dithyrambe à l’éreintement ; et l’art de nuancer un jugement, avec « si… que », « tout… que » et le « si » qui oppose.",
+    "exercices": 12
+   },
+   {
+    "n": 6,
+    "titre": "Saying More with Less",
+    "resume": "Module 6 of 8 — level C2, second part. Condenser et reformuler. Condenser une phrase, un paragraphe, un texte, sans rien perdre d’essentiel ; reformuler sans recopier, en changeant les mots et la construction ; et garder la logique de l’original, ses causes, ses conséquences et ses oppositions.",
+    "exercices": 12
+   },
+   {
+    "n": 7,
+    "titre": "The Music of Prose",
+    "resume": "Module 7 of 8 — level C2, second part. Le style. Varier l’attaque des phrases, pour échapper à la monotonie du sujet-verbe ; le participe détaché, et la règle de son sujet ; et la reprise d’une conjonction par « que », comme dans « s’il fait beau et qu’il ne vente pas ».",
+    "exercices": 12
+   },
+   {
+    "n": 8,
+    "titre": "The Final Paper",
+    "resume": "Module 8 of 8 — level C2, second part. L’épreuve écrite du DALF C2. Analyser la consigne, pour savoir quel texte écrire, pour qui et dans quel but ; exploiter un dossier de plusieurs documents sans le recopier ; et relire sa copie avec méthode, dans les trois heures et demie de l’examen.",
+    "exercices": 12
+   }
+  ],
+  "bilan": {
+   "titre": "Level Check: The End of C2",
+   "resume": "Bilan de la seconde partie du C2, et de tout le niveau. Vingt-quatre compétences testées une par une, du titre de presse à la relecture d’une copie de DALF, un profil qui montre où vous hésitez encore, et un plan de révision qui nomme la section à rouvrir."
   }
  }
 };

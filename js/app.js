@@ -500,8 +500,8 @@ function renderLevelPanel() {
       <div class="lp-title"><span class="lp-code">${l.code}</span><div><h3>${l.name}</h3><p>${l.status === "prep" ? l.note : LEVEL_INTRO[l.code]}</p></div></div>
     </div>`;
   if (l.status === "prep") {
-    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} isn't on sale yet. Levels from Introduction to Advanced 1 are available now.</p>
-      <button class="btn btn-ghost mini" data-level="C1">See C1</button></div>`;
+    $("#levelPanel").innerHTML = head + `<div class="lp-empty"><p>${l.code} isn't on sale yet. Levels from Introduction to Advanced 2 are available now.</p>
+      <button class="btn btn-ghost mini" data-level="C2">See C2</button></div>`;
   } else {
     $("#levelPanel").innerHTML = head + `<ol class="prods">${products.map(productRow).join("")}</ol>`;
   }
@@ -521,8 +521,29 @@ function renderMethod() {
     <div class="method-buy">
       <span class="price">${price(m)}</span>
       ${!buyable(m) ? `<span class="tag soon">${SOON.has(m.id) ? "Coming soon" : "In preparation: on sale once every level is illustrated"}</span>` : `<button class="btn btn-light" data-buy="${m.id}">${isPre(m) ? "Pre-order the Complete Method" : "Buy the Complete Method"}</button>`}
-      <span class="pre-note light">Finished B1? Carry on with <button class="link-btn" data-level="B2" data-scroll="levels">B2</button> and <button class="link-btn" data-level="C1" data-scroll="levels">C1</button>, sold level by level.</span>
+      <span class="pre-note light">Finished B1? Carry on with <button class="link-btn" data-level="B2" data-scroll="levels">B2</button>, <button class="link-btn" data-level="C1" data-scroll="levels">C1</button> and <button class="link-btn" data-level="C2" data-scroll="levels">C2</button>, sold level by level.</span>
       ${isPre(m) ? `<span class="pre-note light">${readyParts(m).map((x) => shortName(x)).join(", ")} can already be bought level by level. This pre-order sends the whole method as soon as the last level is illustrated, and you can cancel for a full refund until then.</span>` : ""}
+    </div>`;
+  renderMethodOnline();
+}
+
+// The Complete Method Online: A0 to C2, read online for life. Its saving is counted only when
+// every level it holds is in the catalogue.
+function renderMethodOnline() {
+  const o = byId("complete-online"), box = $("#methodOnline");
+  if (!box || !o) return;
+  const levels = o.includes.map(byId);
+  const s = levels.every(Boolean) ? { usd: levels.reduce((a, p) => a + p.usd, 0) - o.usd, xaf: levels.reduce((a, p) => a + p.xaf, 0) - o.xaf } : null;
+  box.innerHTML = `<div>
+      <p class="eyebrow">Introduction to Advanced · lifetime access</p>
+      <h2>The Complete Method Online</h2>
+      <p>${o.desc}</p>
+      <p class="method-meta">${o.contents}${s && s.usd > 0 ? ` · <span>${amount(s.usd, s.xaf)} less than buying the seven levels separately</span>` : ""}</p>
+    </div>
+    <div class="method-buy">
+      <span class="price">${price(o)}</span>
+      ${!buyable(o) ? `<span class="tag soon">${waitTag(o)}</span>` : `<button class="btn btn-light" data-buy="${o.id}">Buy the Complete Method Online</button>`}
+      <span class="pre-note light">Online only, never expires. Prefer files to keep and print? Choose a level, or the Complete Method above.</span>
     </div>`;
 }
 
@@ -532,7 +553,7 @@ function renderCompare() {
   const rows = [
     ["How you pay", `One payment, from ${price(byId("a0-complete"))}, and the files are yours to keep`, "Monthly or yearly subscription", "Pay by the hour, every lesson"],
     ["Grammar explained in English", "Yes, in every module", "Short tips, mostly practice", "Depends on the tutor"],
-    ["Step-by-step course with progress tests", "88 modules, 11 progress tests, Introduction to Advanced 1", "Yes, in the app", "Depends on the tutor"],
+    ["Step-by-step course with progress tests", "104 modules, 13 progress tests, Introduction to Advanced 2", "Yes, in the app", "Depends on the tutor"],
     ["Works offline", "PDFs and MP3s on any device", "Partly, in the app", "No"],
     ["Answer keys to keep", "For every exercise", "Instant grading, nothing to keep", "Depends on the tutor"],
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
@@ -643,12 +664,12 @@ function openBuy(id, draft = null) {
   const pre = isPre(p);
   checkoutDraft = draft;
   openModal(`<form class="checkout" id="checkoutForm" data-product="${p.id}" novalidate>
-    <p class="eyebrow">${pre ? t("Pre-order · ", "Précommande · ") : ""}${p.level === "A0–B1" ? "Introduction to Intermediate" : p.kind === "live" ? t("Live", "Cours en direct") : p.level}${DEMO ? " · demo" : ""}</p>
+    <p class="eyebrow">${pre ? t("Pre-order · ", "Précommande · ") : ""}${p.level === "A0–B1" ? "Introduction to Intermediate" : p.online ? "Introduction to Advanced · online" : p.kind === "live" ? t("Live", "Cours en direct") : p.level}${DEMO ? " · demo" : ""}</p>
     <h2>${L(p, "name")}</h2>
     <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} ${t("your time", "à votre heure")} · ${draft.minutes} min${draft.need ? ` · ${draft.need}` : ""}` : L(p, "contents")}</p>
     <div class="form-grid">
-      ${p.kind === "live" ? "" : `<label for="coName">${t("Your name (printed on your files)", "Votre nom (imprimé sur vos fichiers)")}<input id="coName" name="name" type="text" maxlength="80" autocomplete="name"></label>`}
-      <label for="coEmail">${p.kind === "live" ? t("Email (your booking confirmation will be sent here)", "E-mail (la confirmation de réservation y sera envoyée)") : t("Email (your files will be sent here)", "E-mail (vos fichiers y seront envoyés)")}<input id="coEmail" name="email" type="email" required autocomplete="email" value="${draft ? draft.email : ""}"></label>
+      ${p.kind === "live" ? "" : `<label for="coName">${p.online ? t("Your name (printed on every page of your course)", "Votre nom (imprimé sur chaque page de votre cours)") : t("Your name (printed on your files)", "Votre nom (imprimé sur vos fichiers)")}<input id="coName" name="name" type="text" maxlength="80" autocomplete="name"></label>`}
+      <label for="coEmail">${p.kind === "live" ? t("Email (your booking confirmation will be sent here)", "E-mail (la confirmation de réservation y sera envoyée)") : p.online ? t("Email (you sign in to your course with it)", "E-mail (il vous sert à vous connecter à votre cours)") : t("Email (your files will be sent here)", "E-mail (vos fichiers y seront envoyés)")}<input id="coEmail" name="email" type="email" required autocomplete="email" value="${draft ? draft.email : ""}"></label>
       <div id="coResidence"></div>
     </div>
     <p class="eyebrow pm-title">${t("Payment method", "Moyen de paiement")}</p>
@@ -660,12 +681,12 @@ function openBuy(id, draft = null) {
       ? (p.plan ? `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et les <a href="${POLICIES}#live" target="_blank">règles des cours en direct</a>. Je comprends que ma formule dure 2 mois, que les cours non réservés ne sont pas reportés, et qu'elle se renouvelle selon le mode choisi ci-dessus, que je peux changer ou arrêter à tout moment dans « Mes cours ».`
         : `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et les <a href="${POLICIES}#live" target="_blank">règles des cours en direct</a> (report gratuit jusqu'à 24 heures avant le cours).`)
       : pre ? `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et la <a href="${POLICIES}#licence" target="_blank">licence</a>. Je comprends qu'il s'agit d'une précommande : les fichiers seront envoyés dès qu'ils seront prêts, et je peux annuler jusque-là pour un remboursement intégral.`
-      : `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et la <a href="${POLICIES}#licence" target="_blank">licence</a>. Je veux recevoir les fichiers immédiatement et je comprends que je renonce ainsi à mon droit de rétractation.`)
+      : `J'accepte les <a href="${POLICIES}#terms" target="_blank">conditions de vente</a> et la <a href="${POLICIES}#licence" target="_blank">licence</a>. Je veux ${p.online ? "accéder au cours" : "recevoir les fichiers"} immédiatement et je comprends que je renonce ainsi à mon droit de rétractation.`)
       : p.kind === "live"
       ? (p.plan ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a>. I understand that my plan lasts 2 months, that unused lessons don't carry over, and that it renews in the way I chose above, which I can change or stop at any time in “My courses”.`
         : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#live" target="_blank">live lesson rules</a> (free rescheduling up to 24 hours before the lesson).`)
       : pre ? `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I understand that this is a pre-order. The files will be sent as soon as they're ready, and I can cancel for a full refund until then.`
-      : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I want the files delivered immediately, and I understand that this means I lose my right of withdrawal.`}</label>
+      : `I accept the <a href="policies.html#terms" target="_blank">terms of sale</a> and the <a href="policies.html#licence" target="_blank">licence</a>. I want ${p.online ? "access to the course" : "the files delivered"} immediately, and I understand that this means I lose my right of withdrawal.`}</label>
     <p class="form-error" id="formError" hidden></p>
     <button class="btn btn-primary btn-block" id="payBtn"></button>
     <p class="note">${FR ? (p.plan ? `Le paiement confirme votre premier cours et ouvre votre formule pour 2 mois. Vous réservez les autres cours vous-même dans « Mes cours ».` : p.kind === "live" ? "Le paiement confirme votre cours et vous garde l'heure choisie." : pre ? `C'est une précommande. ${PRE_NOTE} Si elle n'est pas livrée sous 90 jours, vous êtes remboursé, sauf si vous choisissez d'attendre.` : "Les fichiers étant livrés immédiatement, la vente est définitive. Si un fichier est défectueux, nous le remplaçons.")
@@ -804,7 +825,8 @@ async function checkReturn() {
     if (d.booking) return paidBooking(d);
     if (d.preorder) return openModal(`<div class="checkout"><h2>${t("Thank you", "Merci")}</h2><p>${t(`Your payment went through and your pre-order is confirmed. We'll send the files to ${esc(d.email)} as soon as they're ready, and you can cancel for a full refund until then.`,
       `Votre paiement est passé et votre précommande est confirmée. Nous enverrons les fichiers à ${esc(d.email)} dès qu'ils seront prêts, et vous pouvez annuler jusque-là pour un remboursement intégral.`)}</p><button class="btn btn-primary" data-modal-close>${t("Done", "Terminé")}</button></div>`);
-    if (d.account_url) return openModal(`<div class="checkout"><h2>${t("Thank you", "Merci")}</h2><p>${t(`Your payment went through and your course is ready. Start reading online now, and pick up where you left off at any time over the next 12 months. We've also emailed the link and the download to ${esc(d.email)}.`,
+    if (d.account_url) return openModal(`<div class="checkout"><h2>${t("Thank you", "Merci")}</h2><p>${d.online ? t(`Your payment went through and your course is ready: all seven levels, from A0 to C2. Start reading online now, and pick up where you left off at any time: your access never expires. We've also emailed the link to ${esc(d.email)}.`,
+      `Votre paiement est passé et votre cours est prêt : les sept niveaux, de A0 à C2. Ouvrez-le en ligne dès maintenant et reprenez où vous en étiez à tout moment : votre accès n'expire jamais. Le lien vous a aussi été envoyé à ${esc(d.email)}.`) : t(`Your payment went through and your course is ready. Start reading online now, and pick up where you left off at any time over the next 12 months. We've also emailed the link and the download to ${esc(d.email)}.`,
       `Votre paiement est passé et vos fichiers sont prêts. Ouvrez-les en ligne dès maintenant, pendant 12 mois. Le lien et le téléchargement vous ont aussi été envoyés à ${esc(d.email)}.`)}</p>
       <a class="btn btn-primary" href="${esc(d.account_url)}">${t("Open my course", "Ouvrir mes cours")}</a> <button class="btn btn-ghost" data-modal-close>${t("Later", "Plus tard")}</button></div>`);
     openModal(`<div class="checkout"><h2>${t("Thank you", "Merci")}</h2><p>${t(`Your payment went through. Your files will be emailed to ${esc(d.email)} shortly.`, `Votre paiement est passé. Vos fichiers seront envoyés à ${esc(d.email)} dans quelques instants.`)}</p><button class="btn btn-primary" data-modal-close>${t("Done", "Terminé")}</button></div>`);
