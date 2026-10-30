@@ -913,3 +913,8 @@ body { font-size: 17px; }
 .exam-choice button[aria-selected="true"] small { color: #d9def0; }
 .exam-choice button[aria-selected="true"]::before { border-color: #fff; background: #fff; box-shadow: inset 0 0 0 4px var(--bleu); }
 @media (max-width: 520px) { .exam-choice button { padding: .9em 1em .9em 2.8em; } .exam-choice button b { font-size: 1.1rem; } .exam-choice button::before { left: .9em; } }
+
+/* An action in progress (payment, sending, loading): a turning wheel */
+.is-busy { cursor: progress; }
+.is-busy::before, .spin { content: ""; display: inline-block; width: 1em; height: 1em; margin-right: .5em; vertical-align: -.15em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: wheel .7s linear infinite; }
+@keyframes wheel { to { transform: rotate(360deg); } }
