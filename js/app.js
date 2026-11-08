@@ -53,7 +53,7 @@ route();
 // USD and FCFA prices are fixed in the catalogue. XOF has the same parity as XAF.
 // EUR is derived from FCFA (fixed parity 655.957). The others are converted from USD at
 // indicative rates, refreshed once a day from open.er-api.com (free, no key); the values
-// below are the fallback. Mobile money is charged at the FCFA price (Notch Pay); card and PayPal at
+// below are the fallback. Mobile money is charged at the FCFA price (Notch Pay); card at
 // the USD price when Whop charges them, otherwise at the FCFA price.
 const XAF_PER_EUR = 655.957;
 const CURRENCIES = {
@@ -98,7 +98,6 @@ const PAY_METHODS = {
   momo: { label: "MTN MoMo", phone: true, countries: ["Cameroon"] },
   om: { label: "Orange Money", phone: true, countries: ["Cameroon"] },
   card: { label: t("Bank card (Visa, Mastercard)", "Carte bancaire (Visa, Mastercard)") },
-  paypal: { label: "PayPal" },
 };
 const CM_MOBILE = /^(?:\+?237)?6\d{8}$/;
 
@@ -310,14 +309,14 @@ function renderCurrencyPicker() {
       state.currency = v; store.set("currencyChoice", v);
       renderCurrencyPicker(); renderPrices(); if ($("#checkoutForm")) renderPayDetails();
       const exactHere = cardUSD() ? ["USD", "XAF", "XOF"].includes(v) : ["XAF", "XOF"].includes(v);
-      announce(t(`Prices are now shown in ${CURRENCIES[v].label}.${exactHere ? "" : cardUSD() ? " These are estimates. Card and PayPal are charged in US dollars." : " These are estimates. Every payment is charged in FCFA."}`,
-        `Les prix sont maintenant affichés en ${CURRENCIES[v].label}.${exactHere ? "" : cardUSD() ? " Ce sont des estimations : la carte et PayPal se paient en dollars US." : " Ce sont des estimations : tout paiement se fait en FCFA."}`));
+      announce(t(`Prices are now shown in ${CURRENCIES[v].label}.${exactHere ? "" : cardUSD() ? " These are estimates. Card payments are charged in US dollars." : " These are estimates. Every payment is charged in FCFA."}`,
+        `Les prix sont maintenant affichés en ${CURRENCIES[v].label}.${exactHere ? "" : cardUSD() ? " Ce sont des estimations : la carte se paie en dollars US." : " Ce sont des estimations : tout paiement se fait en FCFA."}`));
       flashUpdated();
     } });
 }
 
 // The payment logos of the footer lead to the courses, priced in the currency of that method
-// (US dollars for card, Apple Pay, Google Pay and PayPal; FCFA for MTN MoMo and Orange Money).
+// (US dollars for card, Apple Pay and Google Pay; FCFA for MTN MoMo and Orange Money).
 document.addEventListener("click", (e) => {
   const a = e.target.closest(".pay-link");
   if (!a || !CURRENCIES[a.dataset.cur] || a.dataset.cur === state.currency) return;
@@ -337,7 +336,7 @@ function renderResidence() {
 }
 
 const localFCFA = () => methodsFor(state.country).some(([, m]) => m.phone);
-// Who charges card and PayPal, as the shop server says (/stock): "whop", in US dollars at the
+// Who charges card payments, as the shop server says (/stock): "whop", in US dollars at the
 // catalogue's USD price (seller Nuvalex LLC), or "notchpay", in FCFA. The demo shows Whop.
 let CARD = PAY_API ? "" : "whop";
 const cardUSD = () => CARD === "whop";
@@ -348,29 +347,29 @@ function renderPayCurrency() {
   if (!box) return;
   const c = state.currency, label = CURRENCIES[c].label;
   if (cardUSD()) {
-    // card and PayPal: US dollars at the catalogue's USD price; mobile money (Cameroon): FCFA
+    // card: US dollars at the catalogue's USD price; mobile money (Cameroon): FCFA
     const local = localFCFA(), fcfa = c === "XAF" || (c === "XOF" && local);
     box.innerHTML = FR ? `<h3>Votre devise : ${esc(label)}</h3><p>${c === "USD"
-      ? `Les prix sont affichés en ${esc(label)} : c'est le montant exact que vous paierez par carte ou PayPal${local ? " (le mobile money se paie en FCFA)" : ""}.`
-      : fcfa && local ? `Les prix sont affichés en ${esc(label)} : c'est le montant exact que vous paierez par mobile money. La carte et PayPal se paient en dollars US.`
-      : `Les prix en ${esc(label)} sont indicatifs. La carte et PayPal se paient en dollars US, au prix indiqué au paiement${local ? ", le mobile money en FCFA" : ""}, et votre banque fait la conversion.`}
+      ? `Les prix sont affichés en ${esc(label)} : c'est le montant exact que vous paierez par carte${local ? " (le mobile money se paie en FCFA)" : ""}.`
+      : fcfa && local ? `Les prix sont affichés en ${esc(label)} : c'est le montant exact que vous paierez par mobile money. La carte se paie en dollars US.`
+      : `Les prix en ${esc(label)} sont indicatifs. La carte se paie en dollars US, au prix indiqué au paiement${local ? ", le mobile money en FCFA" : ""}, et votre banque fait la conversion.`}
       Vous pouvez changer de devise en haut de la page.</p>`
       : `<h3>Your currency: ${esc(label)}</h3><p>${c === "USD"
-      ? `Prices are shown in ${esc(label)}. This is the exact amount you'll pay by card or PayPal${local ? " (mobile money is paid in FCFA)" : ""}.`
-      : fcfa && local ? `Prices are shown in ${esc(label)}. This is the exact amount you'll pay by mobile money. Card and PayPal are charged in US dollars.`
-      : `Prices in ${esc(label)} are indicative. Card and PayPal are charged in US dollars, at the price shown at checkout${local ? ", and mobile money in FCFA" : ""}. Your bank handles the conversion.`}
+      ? `Prices are shown in ${esc(label)}. This is the exact amount you'll pay by card${local ? " (mobile money is paid in FCFA)" : ""}.`
+      : fcfa && local ? `Prices are shown in ${esc(label)}. This is the exact amount you'll pay by mobile money. Card payments are charged in US dollars.`
+      : `Prices in ${esc(label)} are indicative. Card payments are charged in US dollars, at the price shown at checkout${local ? ", and mobile money in FCFA" : ""}. Your bank handles the conversion.`}
       You can change the currency at the top of the page.</p>`;
     return;
   }
-  // every payment (mobile money, card, PayPal) is charged in FCFA, at the catalogue's FCFA price
+  // every payment (mobile money, card) is charged in FCFA, at the catalogue's FCFA price
   const exact = c === "XAF" || (c === "XOF" && localFCFA());
   box.innerHTML = FR ? `<h3>Votre devise : ${esc(label)}</h3><p>${exact
-    ? `Les prix sont affichés en ${esc(label)} : c'est le montant exact que vous paierez, par mobile money, carte ou PayPal.`
-    : `Les prix en ${esc(label)} sont indicatifs. Tous les paiements (mobile money, carte, PayPal) se font en francs CFA (FCFA), au prix fixe indiqué au paiement, et votre banque fait la conversion.`}
+    ? `Les prix sont affichés en ${esc(label)} : c'est le montant exact que vous paierez, par mobile money ou par carte.`
+    : `Les prix en ${esc(label)} sont indicatifs. Tous les paiements (mobile money, carte) se font en francs CFA (FCFA), au prix fixe indiqué au paiement, et votre banque fait la conversion.`}
     Vous pouvez changer de devise en haut de la page.</p>`
     : `<h3>Your currency: ${esc(label)}</h3><p>${exact
-    ? `Prices are shown in ${esc(label)}. This is the exact amount you'll pay, by mobile money, card or PayPal.`
-    : `Prices in ${esc(label)} are indicative. Every payment (mobile money, card, PayPal) is charged in CFA francs (FCFA), at the fixed price shown at checkout, and your bank handles the conversion.`}
+    ? `Prices are shown in ${esc(label)}. This is the exact amount you'll pay, by mobile money or card.`
+    : `Prices in ${esc(label)} are indicative. Every payment (mobile money, card) is charged in CFA francs (FCFA), at the fixed price shown at checkout, and your bank handles the conversion.`}
     You can change the currency at the top of the page.</p>`;
 }
 
@@ -408,7 +407,7 @@ const fmtMoney = (value, code) => { const d = CURRENCIES[code]?.whole ? 0 : 2;
 // Price shown in the selected currency. "≈" marks a conversion; USD and FCFA are exact.
 function amount(usd, xaf, currency = state.currency) {
   if (currency === "USD") return fmtUSD(usd);
-  // FCFA: the price charged by mobile money (Notch Pay, in XAF); USD: by card and PayPal (Whop)
+  // FCFA: the price charged by mobile money (Notch Pay, in XAF); USD: by card (Whop)
   if (currency === "XAF") return fmtXAF(xaf);
   if (currency === "XOF") return (localFCFA() ? "" : "≈ ") + fmtXAF(xaf);
   if (currency === "EUR") return "≈ " + fmtMoney(xaf / XAF_PER_EUR, "EUR");
@@ -559,7 +558,7 @@ function renderCompare() {
     ["Talk with a teacher", `Optional live lessons, from ${price(byId("live-30"))}`, "Rarely", "Yes"],
     ["Exam practice tests", "DELF A1 to B2 and all five TCF versions, timed like the real exam", "Rarely", "Depends on the tutor"],
     ["Try before you buy", "All of Module 1, free", "Free version or trial, then a subscription", "Sometimes a trial lesson"],
-    ["Pay the way you're used to", "Card and PayPal worldwide, plus local payment methods where you live", "Card or app store", "Varies"],
+    ["Pay the way you're used to", "Card worldwide, plus local payment methods where you live", "Card or app store", "Varies"],
   ];
   $("#compareTable").innerHTML = `<table class="compare">
     <thead><tr><th scope="col"><span class="sr-only">Feature</span></th><th scope="col" class="us">Pas à Pas FRENCH</th><th scope="col">Language apps</th><th scope="col">Hourly tutors</th></tr></thead>
@@ -653,7 +652,7 @@ function contactHTML() {
   return bits.length ? t(`Until online payment opens, you can order ${bits.join(" or ")}.`, `En attendant le paiement en ligne, vous pouvez commander ${bits.join(" ou ")}.`) : "";
 }
 
-// Cameroon: MTN MoMo, Orange Money, card and PayPal. Elsewhere: card and PayPal.
+// Cameroon: MTN MoMo, Orange Money and card. Elsewhere: card.
 const methodsFor = (country) => Object.entries(PAY_METHODS).filter(([, m]) => !m.countries || m.countries.includes(country));
 
 let checkoutDraft = null;   // a live lesson being booked, set by live.js
@@ -708,7 +707,7 @@ function renderPayDetails() {
   const m = PAY_METHODS[document.querySelector('input[name="pay"]:checked').value];
   $("#payDetails").innerHTML = m.phone ? `<label for="coMomo">${t(`${m.label} phone number`, `Numéro ${m.label}`)}
       <input id="coMomo" name="momo" type="tel" required inputmode="tel" placeholder="6XX XX XX XX" autocomplete="tel"></label>` : "";
-  // Card and PayPal by Whop: the exact USD price, sold by Nuvalex LLC. Otherwise (mobile money,
+  // Card by Whop: the exact USD price, sold by Nuvalex LLC. Otherwise (mobile money,
   // or card by Notch Pay): FCFA. The visitor's currency is shown as an indication.
   const usd = !m.phone && cardUSD();
   const charged = usd ? fmtUSD(p.usd) : fmtXAF(p.xaf);
@@ -718,7 +717,7 @@ function renderPayDetails() {
     ${shown !== charged && !(usd && state.currency === "USD") ? `<div class="note"><span>${t("About", "Environ")} ${CURRENCIES[state.currency].label}</span><span>${shown.replace(/^≈ /, "≈ ")}</span></div>` : ""}
     ${m.phone ? "" : usd ? `<div class="note"><span>${t("Sold by Nuvalex LLC (Pas à Pas FRENCH) · payment processed by Whop, in US dollars.", "Vendu par Nuvalex LLC (Pas à Pas FRENCH) · paiement traité par Whop, en dollars US.")}</span><span></span></div>`
       : `<div class="note"><span>${t("Your bank converts FCFA into your currency.", "Votre banque convertit les FCFA dans votre devise.")}</span><span></span></div>`}
-    ${preByCard ? `<div class="note"><span>${t("Pre-orders can't be paid by card or PayPal yet.", "Les précommandes ne se paient pas encore par carte ni PayPal.")}</span><span></span></div>` : ""}`;
+    ${preByCard ? `<div class="note"><span>${t("Pre-orders can't be paid by card yet.", "Les précommandes ne se paient pas encore par carte.")}</span><span></span></div>` : ""}`;
   $("#payBtn").textContent = m.phone ? t(`Pay with ${m.label}`, `Payer par ${m.label}`) : t(`Pay ${charged}`, `Payer ${charged}`);
   $("#payBtn").disabled = preByCard;
   renderRenew(p, m);
@@ -726,7 +725,7 @@ function renderPayDetails() {
 
 // A plan: how it renews, chosen before paying. Automatic: on the renewal date the server sends a
 // payment request to the phone, approved with the PIN (nothing is taken without it). By link: an
-// email 7 days before. Card and PayPal: by link only (no automatic charge without the phone prompt).
+// email 7 days before. Card: by link only (no automatic charge without the phone prompt).
 let renewChoice = "auto";
 function renderRenew(p, m) {
   const box = $("#renewBox");
