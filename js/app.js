@@ -864,7 +864,8 @@ const normalise = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036
   .replace(/[\u2019\u02bc]/g, "'").toLowerCase().replace(/[.!?;:,]/g, "").replace(/\s+/g, " ").trim();
 
 function drawStep(step) {
-  return pick(step.skills, TEST_PER_STEP).map((s) => {
+  // site français : jamais une compétence écrite en anglais (marquée « en » à l'import)
+  return pick(FR ? step.skills.filter((s) => !s.en) : step.skills, TEST_PER_STEP).map((s) => {
     const [ex, q] = pick(s.items, 2);
     return { skill: s.skill, instruction: s.instruction, example: ex, q: q[0], answer: q[1] };
   });
@@ -878,18 +879,22 @@ function openTest() {
     <p class="eyebrow">${t("Free level test", "Test de niveau gratuit")}</p>
     <h2>${t("Find your level in about 15 minutes", "Votre niveau en 15 minutes environ")}</h2>
     <ol class="intro-steps">
-      <li>${t("<b>Grammar.</b> Short questions taken from the course, from beginner to B1.", "<b>Grammaire.</b> De courtes questions tirées du cours, du niveau débutant au B1.")}</li>
+      <li>${t("<b>Grammar.</b> Short questions taken from the course, from beginner to B1.", "<b>Grammaire.</b> De courtes questions tirées du cours, du A1 au B1.")}</li>
       ${comp ? `<li>${t("<b>Listening and reading.</b> Real French, from A1 up to C2.", "<b>Compréhension orale et écrite.</b> Du vrai français, du A1 au C2.")}</li>` : ""}
     </ol>
     <p>${t("The questions get harder step by step, and the test stops once it has found your level.", "Les questions deviennent plus difficiles pas à pas, et le test s'arrête dès qu'il a trouvé votre niveau.")}</p>
-    ${FR ? `<p class="quiz-note">Le test a été écrit pour des anglophones : les premières consignes et questions sont en anglais, puis tout passe en français.</p>` : ""}
     <p class="quiz-note">${t("Take your time, but don't look anything up: how fast you answer counts too. No account needed.", "Prenez votre temps, sans rien chercher : la rapidité de vos réponses compte aussi. Aucun compte n'est nécessaire.")}</p>
     <button class="btn btn-primary btn-block" data-test-start>${t("Start the test", "Commencer le test")}</button>
   </div>`);
 }
+// Site français : l'étape A0, écrite pour des anglophones (consignes en anglais), est sautée ;
+// le test commence au A1, dont les consignes sont en français.
+const testFirst = () => (FR && LEVEL_TEST.steps[0].skills.filter((s) => !s.en).length < TEST_PER_STEP ? 1 : 0);
+const stepName = (n) => (FR ? n.replace(" Part ", " partie ") : n);
 document.addEventListener("click", (e) => {
   if (!e.target.closest("[data-test-start]")) return;
-  testDraw = drawStep(LEVEL_TEST.steps[0]);
+  testStep = testFirst();
+  testDraw = drawStep(LEVEL_TEST.steps[testStep]);
   renderTestStep();
 });
 
@@ -897,10 +902,10 @@ function renderTestStep() {
   const steps = LEVEL_TEST.steps, step = steps[testStep];
   testActive = 0; testSince = Date.now();
   openModal(`<form class="quiz" id="testForm" autocomplete="off">
-    <div class="quiz-head"><span class="eyebrow">${t("Part 1 · Grammar · step", "Partie 1 · Grammaire · étape")} ${testStep + 1} ${t("of", "sur")} ${steps.length}</span><span class="chip">${step.name}</span></div>
-    <div class="bar"><span style="width:${(testStep / steps.length) * 100}%"></span></div>
-    ${testStep === 0 ? `<p class="quiz-note">${t("Write only the missing word or words. Accents and capital letters don't matter. Not sure? Leave it blank: a guess would give you the wrong level.", "Écrivez seulement le ou les mots qui manquent. Les accents et les majuscules ne comptent pas. Pas sûr ? Laissez vide : une réponse au hasard fausserait votre niveau.")}</p>` : ""}
-    ${testStep === 1 ? `<p class="quiz-note">${t("From now on, the instructions are in French, as in the course. Don't worry: the example under each one shows exactly what to write.", "Désormais, les consignes sont en français, comme dans le cours. L'exemple sous chacune montre exactement quoi écrire.")}</p>` : ""}
+    <div class="quiz-head"><span class="eyebrow">${t("Part 1 · Grammar · step", "Partie 1 · Grammaire · étape")} ${testStep - testFirst() + 1} ${t("of", "sur")} ${steps.length - testFirst()}</span><span class="chip">${stepName(step.name)}</span></div>
+    <div class="bar"><span style="width:${((testStep - testFirst()) / (steps.length - testFirst())) * 100}%"></span></div>
+    ${testStep === testFirst() ? `<p class="quiz-note">${t("Write only the missing word or words. Accents and capital letters don't matter. Not sure? Leave it blank: a guess would give you the wrong level.", "Écrivez seulement le ou les mots qui manquent. Les accents et les majuscules ne comptent pas. Pas sûr ? Laissez vide : une réponse au hasard fausserait votre niveau.")}</p>` : ""}
+    ${testStep === 1 && !FR ? `<p class="quiz-note">${t("From now on, the instructions are in French, as in the course. Don't worry: the example under each one shows exactly what to write.", "Désormais, les consignes sont en français, comme dans le cours. L'exemple sous chacune montre exactement quoi écrire.")}</p>` : ""}
     ${testDraw.map((t, i) => `<div class="quiz-q" lang="fr">
       <p class="quiz-inst">${esc(t.instruction)}</p>
       <p class="quiz-ex"><b>${FR ? "Exemple" : "Example"}</b> ${esc(t.example[0])} → <strong>${esc(t.example[1])}</strong></p>
@@ -945,8 +950,8 @@ function renderComp() {
       <p class="quiz-inst">${it.type === "listen" ? `🎧 ${t("Listening", "Écoute")} ${lv.items.slice(0, i + 1).filter((x) => x.type === "listen").length}` : `📄 ${t("Reading", "Lecture")} ${lv.items.slice(0, i + 1).filter((x) => x.type === "read").length}`}</p>
       ${it.type === "listen" ? `<audio class="comp-audio" controls controlsList="nodownload noplaybackrate" preload="none" src="${esc((FR ? "../" : "") + it.audio)}" data-plays="0"></audio><small class="comp-plays">${t("You can listen twice", "Deux écoutes possibles")}</small>`
         : `<div class="comp-text" lang="fr">${esc(it.text).replace(/\n/g, "<br>")}</div>`}
-      <p class="comp-question" ${compLevel >= 2 ? 'lang="fr"' : ""}><b>${esc(it.question)}</b></p>
-      <div class="comp-options">${it.options.map((o, k) => `<label><input type="radio" name="c${i}" value="${k}"> <span ${compLevel >= 2 ? 'lang="fr"' : ""}>${esc(o)}</span></label>`).join("")}</div>
+      <p class="comp-question" ${compLevel >= 2 ? 'lang="fr"' : ""}><b>${esc(FR && it.question_fr ? it.question_fr : it.question)}</b></p>
+      <div class="comp-options">${(FR && it.options_fr ? it.options_fr : it.options).map((o, k) => `<label><input type="radio" name="c${i}" value="${k}"> <span ${compLevel >= 2 ? 'lang="fr"' : ""}>${esc(o)}</span></label>`).join("")}</div>
     </div>`).join("")}
     <button class="btn btn-primary btn-block" type="submit">${compLevel + 1 < levels.length ? t("Next", "Suivant") : t("See my result", "Voir mon résultat")}</button>
   </form>`);
@@ -1011,8 +1016,8 @@ function testResultFr(finishedAll) {
   const offres = [examen, live].filter(Boolean);
   openModal(`<div class="quiz quiz-result">
     <p class="eyebrow">Votre résultat</p>
-    <h2>${reached ? `Votre niveau : <em>${reached}</em>` : `À renforcer : <em>${last.step.name}</em>`}</h2>
-    <p>${finishedAll ? `Vous maîtrisez la grammaire jusqu'au ${topLevel}.` : `En grammaire, les points à revoir commencent au niveau ${last.step.name} (${last.right} bonne(s) réponse(s) sur ${last.total}).`}
+    <h2>${reached ? `Votre niveau : <em>${reached}</em>` : `À renforcer : <em>${stepName(last.step.name)}</em>`}</h2>
+    <p>${finishedAll ? `Vous maîtrisez la grammaire jusqu'au ${topLevel}.` : `En grammaire, les points à revoir commencent au niveau ${stepName(last.step.name)} (${last.right} bonne(s) réponse(s) sur ${last.total}).`}
     ${examen ? ` Le ${examen.exam} est à votre portée : entraînez-vous dans les conditions de l'examen.` : ""}
     Pour le Canada ou le Québec, le TCF donne directement votre niveau, du A1 au C2.</p>
     ${compSummary()}
