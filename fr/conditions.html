@@ -3,14 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="canonical" href="https://pasapasfrench.com/fr/conditions.html">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' data: blob:; connect-src 'self' https://api.pasapasfrench.com https://get.geojs.io https://open.er-api.com http://127.0.0.1:8767 http://localhost:8767; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://api.pasapasfrench.com">
+  <meta name="theme-color" content="#1d2f6f">
+  <meta property="og:url" content="https://pasapasfrench.com/fr/conditions.html">
+  <meta property="og:site_name" content="Pas à Pas FRENCH">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:image" content="https://pasapasfrench.com/img/og-image-fr.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:title" content="Conditions — Pas à Pas FRENCH">
+  <meta property="og:type" content="website">
+  <meta property="og:description" content="Conditions de Pas à Pas FRENCH : vente, licence, cours en direct, sujets d'entraînement, confidentialité et cookies.">
   <title>Conditions — Pas à Pas FRENCH</title>
   <meta name="description" content="Conditions de Pas à Pas FRENCH : vente, licence, cours en direct, sujets d'entraînement, confidentialité et cookies.">
   <link rel="alternate" hreflang="en" href="https://pasapasfrench.com/policies.html">
   <link rel="alternate" hreflang="fr" href="https://pasapasfrench.com/fr/conditions.html">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231d2f6f'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>Pà</text></svg>">
+  <link rel="alternate" hreflang="x-default" href="https://pasapasfrench.com/policies.html">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../img/favicon-48.png" sizes="48x48" type="image/png">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css?v=20261118a">
+  <link rel="stylesheet" href="../css/style.css?v=20261119a">
 </head>
 <body>
 
@@ -146,8 +163,8 @@
   </div>
 </footer>
 
-<script src="../js/shop.js?v=20261118a"></script>
-<script src="../js/i18n.js?v=20261118a"></script>
+<script src="../js/shop.js?v=20261119a"></script>
+<script src="../js/i18n.js?v=20261119a"></script>
 <script>
   const get = (path) => path.split(".").reduce((o, k) => (o || {})[k], SHOP) || "";
   document.querySelectorAll("[data-shop]").forEach((el) => { el.textContent = get(el.dataset.shop); });
@@ -157,6 +174,6 @@
   if (ways.length) document.getElementById("contactWays").innerHTML = ways.join(" · ");
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
-<script src="../js/chat.js?v=20261118a"></script>
+<script src="../js/chat.js?v=20261119a"></script>
 </body>
 </html>
