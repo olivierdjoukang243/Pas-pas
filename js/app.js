@@ -657,6 +657,12 @@ const methodsFor = (country) => Object.entries(PAY_METHODS).filter(([, m]) => !m
 
 let checkoutDraft = null;   // a live lesson being booked, set by live.js
 
+// Exam packs: several at once (Olivier, 23/11/2026). Each purchase sends the buyer's next packs; the
+// server refuses more than the packs they don't have yet, and charges the number chosen × the price.
+function qtyMax(p) { return p.kind === "exam" && !isPre(p) && p.packs > 1 ? p.packs : 1; }
+function qtyOf() { const q = parseInt(($("#coQty") || {}).value, 10); return q > 0 ? q : 1; }
+function withQty(p, q) { return q > 1 ? { ...p, usd: p.usd * q, xaf: p.xaf * q } : p; }
+
 function openBuy(id, draft = null) {
   const p = byId(id);
   if (!p || !buyable(p)) return;      // a product that can be neither delivered nor pre-ordered is never sold
@@ -667,6 +673,8 @@ function openBuy(id, draft = null) {
     <h2>${L(p, "name")}</h2>
     <p>${draft ? `${localDay(draft.start)}, ${localTime(draft.start)} ${t("your time", "à votre heure")} · ${draft.minutes} min${draft.need ? ` · ${draft.need}` : ""}` : L(p, "contents")}</p>
     <div class="form-grid">
+      ${qtyMax(p) > 1 ? `<label for="coQty">${t("Number of packs (each one: 6 new tests, none of them in another pack)", "Nombre de packs (chacun : 6 nouveaux sujets, absents des autres packs)")}
+        <select id="coQty" name="qty">${Array.from({ length: qtyMax(p) }, (_, i) => `<option value="${i + 1}">${i + 1} pack${i ? "s" : ""} · ${price(withQty(p, i + 1))}</option>`).join("")}</select></label>` : ""}
       ${p.kind === "live" ? "" : `<label for="coName">${p.online ? t("Your name (printed on every page of your course)", "Votre nom (imprimé sur chaque page de votre cours)") : t("Your name (printed on your files)", "Votre nom (imprimé sur vos fichiers)")}<input id="coName" name="name" type="text" maxlength="80" autocomplete="name"></label>`}
       <label for="coEmail">${p.kind === "live" ? t("Email (your booking confirmation will be sent here)", "E-mail (la confirmation de réservation y sera envoyée)") : p.online ? t("Email (you sign in to your course with it)", "E-mail (il vous sert à vous connecter à votre cours)") : t("Email (your files will be sent here)", "E-mail (vos fichiers y seront envoyés)")}<input id="coEmail" name="email" type="email" required autocomplete="email" value="${draft ? draft.email : ""}"></label>
       <div id="coResidence"></div>
@@ -702,7 +710,7 @@ function renderPayOptions() {
 }
 
 function renderPayDetails() {
-  const p = byId($("#checkoutForm").dataset.product);
+  const p = withQty(byId($("#checkoutForm").dataset.product), qtyOf());
   const country = $("#coCountry").value;
   const m = PAY_METHODS[document.querySelector('input[name="pay"]:checked').value];
   $("#payDetails").innerHTML = m.phone ? `<label for="coMomo">${t(`${m.label} phone number`, `Numéro ${m.label}`)}
@@ -746,7 +754,7 @@ function renderRenew(p, m) {
 }
 
 function submitCheckout(form) {
-  const p = byId(form.dataset.product);
+  const q = qtyOf(), p = withQty(byId(form.dataset.product), q);
   const data = new FormData(form);
   const m = PAY_METHODS[data.get("pay")];
   const err = $("#formError");
@@ -763,7 +771,7 @@ function submitCheckout(form) {
   const order = { product: p.id, email: data.get("email"), name: String(data.get("name") || (checkoutDraft && checkoutDraft.name) || "").trim(),
     country: state.country, method: data.get("pay"),
     phone: m.phone ? String(data.get("momo")).replace(/[\s.-]/g, "") : "",
-    currency: usd ? "USD" : "XAF", amount: usd ? p.usd : p.xaf, preorder: isPre(p), booking: checkoutDraft, lang: LANG,
+    currency: usd ? "USD" : "XAF", amount: usd ? p.usd : p.xaf, quantity: q, preorder: isPre(p), booking: checkoutDraft, lang: LANG,
     renew: p.plan ? (m.phone ? (data.get("renew") || "auto") : "lien") : undefined };
 
   // Live payment: the server creates the Notch Pay transaction and sends back its page.
@@ -1225,6 +1233,7 @@ document.addEventListener("click", (e) => {
 modal.addEventListener("click", (e) => { if (e.target === modal) modal.close(); });
 modal.addEventListener("change", (e) => {
   if (e.target.name === "renew") renewChoice = e.target.value;
+  if (e.target.name === "qty") renderPayDetails();
   if (e.target.name === "pay") {
     renderPayDetails();
     if ($("#coMomo")) bringIntoView($("#coMomo"), $("#coMomo"));   // the number to type comes into view
