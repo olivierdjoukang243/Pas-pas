@@ -590,7 +590,7 @@ function renderExams() {
     <h3>${p.exam}</h3>
     ${(examFormat(p.format) || {}).official ? `<p class="exam-official" lang="fr">${examFormat(p.format).official}</p>` : ""}
     <p class="exam-levels">${L(p, "contents")}</p>
-    <p class="exam-packs">${t("At least 5 packs, all different: each purchase sends your next one.", "Au moins 5 packs, tous différents : chaque achat vous envoie le suivant.")}</p>
+    <p class="exam-packs">${p.packs ? t(`${p.packs} packs, all different: each purchase sends your next one.`, `${p.packs} packs, tous différents : chaque achat vous envoie le suivant.`) : t("At least 5 packs, all different: each purchase sends your next one.", "Au moins 5 packs, tous différents : chaque achat vous envoie le suivant.")}</p>
     ${formatHTML(examFormat(p.format))}
     <div class="exam-buy"><span class="price">${price(p)}</span>${buyable(p) ? `<button class="btn btn-primary mini" data-buy="${p.id}">${buyLabel(p)}</button>` : `<span class="exam-wait">${t("Not on sale yet", "Pas encore en vente")}</span>`}</div>
     ${isPre(p) ? `<p class="pre-note">${t("Emailed as soon as they're written. Cancel anytime for a full refund.", "Envoyés dès qu'ils sont rédigés. Annulable à tout moment, remboursement intégral.")}</p>` : ""}
